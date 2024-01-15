@@ -94,6 +94,10 @@ Cloud Drive and Assignment uploading and submission website to replicate functio
 3. saubhagya - frontend half
 4. krish - frontend half
 
+# Current research
+1. ask vinayak sir for money and aws
+2. jwt token
+3. cloud integration
 
 # !no media queries
 # credit
