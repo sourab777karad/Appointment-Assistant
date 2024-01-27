@@ -32,13 +32,43 @@ Cloud Service for Maintaining Apppointments via slots for personal Meetings.
 3. saubhagya - frontend half
 4. krish - frontend half
 
+
 # Collections
-1. 
+1. Keys {
+  KEK: string,
+  users_dek: {
+    id: string,
+    dek: string
+  }
+},
+
+2. Users {
+    id: string,
+    name: string,
+    email: string,
+    password: string, // encrypted
+    salt: string,
+    appointments : [ appointment_id, appointment_id, ... ]
+}
+
+3. Appointment {
+  id: string,
+  creation_time: string,
+  appointment_time: string,
+  appointment_duration: number,
+  appointment_purpose: string,
+  appointment_description: string,
+  status: string, // accepted, rejected, pending
+  appointee: user_id, ( user who is taking the appointment ) - user
+  appointer: user_id, ( user who is giving the appointment ) - admin
+}
 
 # Current research
 1. ask vinayak sir for money and aws
 2. jwt token
 3. cloud integration
+4. KEK storing in amazong safely
+5. Real Time notifications without using multiple api calls
 
 # !no media queries
 # credit
