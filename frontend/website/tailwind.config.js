@@ -1,5 +1,5 @@
 const withMT = require("@material-tailwind/react/utils/withMT");
- 
+
 module.exports = withMT({
 	content: [
 		"./*/*.{html,js, jsx, ts, tsx, md, mdx}",

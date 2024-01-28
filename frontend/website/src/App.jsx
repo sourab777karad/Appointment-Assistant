@@ -18,9 +18,9 @@ function App() {
     const [isNavbarPresent, setisNavbarPresent] = useState(false);
     const customTheme = {
         button: {
-            defaultProps: {...},
-            valid: {...},
-            styles: {...}
+            defaultProps: {},
+            valid: {},
+            styles: {}
         }
     }
 
