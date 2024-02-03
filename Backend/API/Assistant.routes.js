@@ -1,5 +1,5 @@
 import express from 'express'
-import assistantCtrl from 'Assistant.controller.js'
+import assistantCtrl from './Assistant.controllers.js'
 import authenticator from '../Middlewares/Assistant.middleware.js'
 
 const router = express.Router()
@@ -8,7 +8,9 @@ const router = express.Router()
 
 router.post('/login',authenticator.loginAuthenticator, assistantCtrl.login)
 
-route.post('/signup', assistantCtrl.signup)
+router.post('/test',authenticator.refreshTokenAuthenticator, assistantCtrl.test)
 
-route.post('/refresh-token',authenticator.refreshTokenAuthenticator,assistantCtrl.refreshToken)
+router.post('/signup', assistantCtrl.signup)
+
+router.post('/refresh-token',authenticator.refreshTokenAuthenticator,assistantCtrl.refreshToken)
 export default router
