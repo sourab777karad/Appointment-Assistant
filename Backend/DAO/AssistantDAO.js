@@ -1,15 +1,15 @@
-import AWS from 'aws-sdk';
-import config from '../config/config.js'
+// import AWS from 'aws-sdk';
+// import config from '../config/config.js'
 
-// variable to hold db connection
-let dbConnection = null;
+// // variable to hold db connection
+// let dbConnection = null;
 
-export default class AssistantDAO {
+// export default class AssistantDAO {
 
-    //estabished connection with db
-    static async InjectDB(conn){
-        dbConnection = conn;
-    }
+//     //estabished connection with db
+//     static async InjectDB(conn){
+//         dbConnection = conn;
+//     }
 
-    //rest of the function
-}
+//     //rest of the function
+// }
