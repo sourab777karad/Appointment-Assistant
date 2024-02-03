@@ -48,10 +48,11 @@ Cloud Service for Maintaining Apppointments via slots for personal Meetings.
     email: string,
     password: string, // encrypted
     salt: string,
+    user_image_link: "" // string link for s3 url
     appointments : [ appointment_id, appointment_id, ... ]
 }
 
-3. Appointment {
+4. Appointment {
   id: string,
   creation_time: string,
   appointment_time: string,
