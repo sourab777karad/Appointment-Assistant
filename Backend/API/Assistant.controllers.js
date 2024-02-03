@@ -1,4 +1,4 @@
-import KakshaDAO from "../DAO/kakshaDAO";
+import AssistantDAO from "../DAO/AssistantDAO";
 
 export default class KakshaController {
 

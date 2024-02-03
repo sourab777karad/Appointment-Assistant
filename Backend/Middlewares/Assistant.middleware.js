@@ -1,4 +1,4 @@
-// Middlewares for Kaksha JWT Authentication
+// Middlewares for Assistant JWT Authentication
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/config.js';
 

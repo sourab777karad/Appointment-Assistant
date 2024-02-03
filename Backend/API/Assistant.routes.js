@@ -1,5 +1,5 @@
 import express from 'express'
-import KakshaCtrl from 'kanban.controller.js'
+import assistantCtrl from 'Assistant.controller.js'
 
 const router = express.Router()
 
