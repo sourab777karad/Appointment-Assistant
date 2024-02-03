@@ -6,5 +6,7 @@ module.export = {
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         region: process.env.AWS_REGION
     },
-    JWT_SECRET: process.env.JWT_SECRET
+    JWT_SECRET: process.env.JWT_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
+
 }
