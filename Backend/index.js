@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import config from './config/config.js';
 import app from './server.js';
-import KakshaDAO from './DAO/kakshaDAO.js';
+import assistantDAO from './DAO/AssistantDAO.js';
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -25,7 +25,7 @@ try {
 
 // Inject the client into the DAO
 try {
-    KakshaDAO.InjectDB(dynamoClient);
+    assistantDAO.InjectDB(dynamoClient);
 } catch (error) {
     console.error(`Failed to inject DynamoDB client into DAO: ${error}`);
     process.exit(1);
