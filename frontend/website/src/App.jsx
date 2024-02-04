@@ -14,43 +14,43 @@ import Login from "./pages/Login";
 import Home from "./pages/Home.jsx";
 
 function App() {
-	const [isNavbarPresent, setisNavbarPresent] = useState(false);
-	const customTheme = {
-		button: {
-			defaultProps: {},
-			valid: {},
-			styles: {},
-		},
-	};
+  const [isNavbarPresent, setisNavbarPresent] = useState(false);
+  const customTheme = {
+    button: {
+      defaultProps: {},
+      valid: {},
+      styles: {},
+    },
+  };
 
-	useEffect(() => {
-		if (
-			window.location.pathname === "/signup" ||
-			window.location.pathname === "/forgot_password" ||
-			window.location.pathname === "/"
-		) {
-			setisNavbarPresent(false);
-		} else {
-			setisNavbarPresent(true);
-		}
-	}, [isNavbarPresent]);
+  useEffect(() => {
+    if (
+      window.location.pathname === "/signup" ||
+      window.location.pathname === "/forgot_password" ||
+      window.location.pathname === "/"
+    ) {
+      setisNavbarPresent(false);
+    } else {
+      setisNavbarPresent(true);
+    }
+  }, [isNavbarPresent]);
 
-	return (
-		<ThemeProvider value={customTheme}>
-			<div className="">
-				{isNavbarPresent ? (
-					<NavbarWithSearch setisNavbarPresent={setisNavbarPresent} />
-				) : null}
-				<div>
-					<Routes>
-						<Route path="/" element={<Login />} />
-						<Route path="/home" element={<Home />} />
-						<Route path="/signup" element={<Login />} />
-					</Routes>
-				</div>
-			</div>
-		</ThemeProvider>
-	);
+  return (
+    <ThemeProvider value={customTheme}>
+      <div className="">
+        {isNavbarPresent ? (
+          <NavbarWithSearch setisNavbarPresent={setisNavbarPresent} />
+        ) : null}
+        <div>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/signup" element={<Login />} />
+          </Routes>
+        </div>
+      </div>
+    </ThemeProvider>
+  );
 }
 
 export default App;
