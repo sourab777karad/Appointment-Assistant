@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 import {
   Navbar,
   MobileNav,
@@ -126,12 +128,14 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
           href="#"
           className="mr-4 cursor-pointer py-1.5 font-medium"
         >
-          <img
-            className="p-0 m-0 scale-150"
-            src={logo}
-            height="50"
-            width="50"
-          ></img>
+          <Link to="/home">
+            <img
+              className="p-0 m-0 scale-150"
+              src={logo}
+              height="50"
+              width="50"
+            ></img>
+          </Link>
         </Typography>
 
         <div className="hidden lg:block">{navList}</div>
