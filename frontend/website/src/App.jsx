@@ -12,6 +12,8 @@ import NavbarWithSearch from "./components/NavbarWithSearch.jsx";
 // importing pages
 import Login from "./pages/Login";
 import Home from "./pages/Home.jsx";
+import Appointment from "./pages/Appointment_user";
+import Appointment_admin from "./pages/Appointment_admin";
 
 function App() {
   const [isNavbarPresent, setisNavbarPresent] = useState(false);
@@ -46,6 +48,8 @@ function App() {
             <Route path="/" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/signup" element={<Login />} />
+            <Route path="/appointment-user" element={<Appointment />} />
+            <Route path="/appointment-admin" element={<Appointment_admin />} />
           </Routes>
         </div>
       </div>
