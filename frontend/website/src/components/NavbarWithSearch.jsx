@@ -38,7 +38,7 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
           />
         </svg>
 
-        <a href="#" className="flex items-center">
+        <a href="appointment-user" className="flex items-center">
           Appointments
         </a>
       </Typography>
@@ -61,7 +61,7 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
             fill="#90A4AE"
           />
         </svg>
-        <a href="#" className="flex items-center">
+        <a href="appointment-past" className="flex items-center">
           Past Appointments
         </a>
       </Typography>
@@ -86,7 +86,7 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
             fill="#90A4AE"
           />
         </svg>
-        <a href="#" className="flex items-center">
+        <a href="Profile" className="flex items-center">
           Account
         </a>
       </Typography>

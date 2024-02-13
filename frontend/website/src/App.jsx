@@ -14,7 +14,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home.jsx";
 import Appointment from "./pages/Appointment_user";
 import Appointment_admin from "./pages/Appointment_admin";
-
+import Appointment_past from "./pages/Appointment_past";
+import Profile from "./pages/Profile";
 function App() {
   const [isNavbarPresent, setisNavbarPresent] = useState(false);
   const customTheme = {
@@ -50,6 +51,8 @@ function App() {
             <Route path="/signup" element={<Login />} />
             <Route path="/appointment-user" element={<Appointment />} />
             <Route path="/appointment-admin" element={<Appointment_admin />} />
+            <Route path="/appointment-past" element={<Appointment_past />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </div>
