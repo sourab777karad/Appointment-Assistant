@@ -17,9 +17,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
 
   return (
     <div className="timetable">
-      <h2 className="text-4xl font-bold  mt-12 mb-12 text-center">
-        Your Timetable
-      </h2>
+      <h2 className="text-4xl font-bold  mt-12 mb-12 text-center">Timetable</h2>
       <div className="grid grid-cols-7 gap-0 border border-gray-300">
         <div className="border-r border-b border-gray-300 p-4"></div>
         <div className="border-r border-b border-gray-300 font-bold p-4">
