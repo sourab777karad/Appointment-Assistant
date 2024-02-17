@@ -33,9 +33,7 @@ jobs:
 
       - name: Build website
         run: |
-          cd frontend
-          cd website
-          cd 
+          cd docs
           npm run build
 
       # Popular action to deploy to GitHub Pages:
