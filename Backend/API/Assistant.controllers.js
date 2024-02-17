@@ -1,6 +1,8 @@
 // import AssistantDAO from "../DAO/AssistantDAO";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET, REFRESH_TOKEN_SECRET } from "../config/config.js";
+import firebase from "firebase-admin";
+import AssistantDAO from "../DAO/AssistantDAO.js";
 
 // Dummy users for testing
 const users =[
@@ -10,58 +12,48 @@ const users =[
 
 export default class AssistantController {
 
-    // all methods
-    static async login(req, res){
-        try {
-            const { user, token } = req;
+    
+static async login(req, res) {
+    try {
+        const idToken = req.body.idToken;
 
-            if (user && token) {
-                return res.status(200).json({ data: user, token, message: 'Login successful' });
-            }
+        // Verify the ID token
+        const decodedToken = await firebase.auth().verifyIdToken(idToken);
 
-            return res.status(401).json({ message: 'Invalid credentials' });
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Internal server error' });
-        }
-       
+        // Get the user record
+        const userRecord = await firebase.auth().getUser(decodedToken.uid);
+
+        // If successful, return a success response
+        return res.status(200).json({ data: userRecord, message: 'Login successful' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Internal server error', error: err.message });
     }
-
+}
     static async test(req, res){
         res.status(200).json({ message: 'Test successful' });
     }
 
-    static async signup(req, res){
+    static async signup(req, res) {
         try {
-            const { email, password, name } = req.body;
+            const { email, password, name, room_address} = req.body;
 
-            // Check if the user already exists
-            const existingUser = await AssistantDAO.findByEmail(email);
-            if (existingUser) {
-                return res.status(400).json({ message: 'Email already registered' });
-            }
+            // Create a new user using Firebase Authentication
+            const userRecord = await firebase.auth().createUser({
+                email,
+                password,
+                displayName: name,
+            });
 
-            // If not, create a new user
-            const newUser = await AssistantDAO.create({ email, password, name });
-
-            // Sign a JWT for the new user
-            const token = jwt.sign({ userId: newUser._id, email: newUser.email }, JWT_SECRET, { expiresIn: '1h' });
-
-            return res.status(201).json({ data: newUser, token, message: 'Signup successful' });
+            // Create a custom token
+            const token = await firebase.auth().createCustomToken(userRecord.uid);
+            
+            const user = await AssistantDAO.newUser(email,name,room_address)
+            // If successful, return a success response
+            return res.status(201).json({ uid: userRecord.uid, token, message: 'Signup successful' });
         } catch (err) {
             console.error(err);
             return res.status(500).json({ message: 'Internal server error', error: err.message });
-        }
-    }
-    static async refreshToken(req, res) {
-        try {
-            const user = req.user;
-            const newAccessToken = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
-    
-            return res.status(200).json({ accessToken: newAccessToken, message: 'Token refreshed successfully' });
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Error generating new access token' });
         }
     }
     static async getAppointment(req, res) {
@@ -87,7 +79,7 @@ export default class AssistantController {
                 appointment_description 
             } = req.body;
     
-            const appointment = await AssistantDAO.setappointment({ 
+            const appointment = await AssistantDAO.SetAppointment({ 
                 appointee, 
                 appointer, 
                 creation_time, 
@@ -96,7 +88,7 @@ export default class AssistantController {
                 appointment_purpose, 
                 appointment_description 
             });
-    
+
             return res.status(201).json({ data: appointment, message: 'Appointment set successfully' });
         } catch (err) {
             console.error(err);
