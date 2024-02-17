@@ -29,8 +29,8 @@ jobs:
       - name: Generate JSdoc documentation for frontend
         run: |
           cd docs
-          npm run build_docs
-          
+          ./node_modules/.bin/jsdoc2md ../frontend/website/*/*.js > ./docs/frontend/api.md
+
       - name: Build website
         run: |
           cd docs
