@@ -191,3 +191,6 @@ res:
 
 # !no media queries
 # credit
+
+# added github pages at 
+![here](https://krishnarajt.github.io/Appointment-Assistant)
