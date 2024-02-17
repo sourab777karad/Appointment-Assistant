@@ -1,5 +1,5 @@
-import AWS from 'aws-sdk';
-import config from '../config/config.js'
+// import AWS from 'aws-sdk';
+// import config from '../config/config.js'
 
 // variable to hold db connection
 let dbConnection = null;
