@@ -6,6 +6,11 @@ const APP_ID = "your-app-id";
 const INDEX_NAME = "your-index-name";
 const API_KEY = "your-algolia-api-key";
 
+/**
+ * Renders a search bar component.
+ *
+ * @returns {JSX.Element} The rendered search bar component.
+ */
 export function Searchbar() {
   return (
     <div className="group relative">

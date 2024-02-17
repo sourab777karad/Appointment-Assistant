@@ -26,6 +26,11 @@ jobs:
           cd docs
           npm install
 
+      - name: Generate JSdoc documentation for frontend
+        run: |
+          cd docs
+          npm run build_docs
+          
       - name: Build website
         run: |
           cd docs

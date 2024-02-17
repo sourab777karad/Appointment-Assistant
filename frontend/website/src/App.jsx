@@ -16,8 +16,20 @@ import Appointment from "./pages/Appointment_user";
 import Appointment_admin from "./pages/Appointment_admin";
 import Appointment_past from "./pages/Appointment_past";
 import Profile from "./pages/Profile";
+
+/**
+ * The main component of the application.
+ * @returns {JSX.Element} The rendered App component.
+ */
 function App() {
+  /**
+   * State variable to determine if the navbar is present.
+   */
   const [isNavbarPresent, setisNavbarPresent] = useState(false);
+
+  /**
+   * Custom theme object for the application.
+   */
   const customTheme = {
     button: {
       defaultProps: {},
@@ -26,6 +38,9 @@ function App() {
     },
   };
 
+  /**
+   * Effect hook to update the navbar presence based on the current URL path.
+   */
   useEffect(() => {
     if (
       window.location.pathname === "/signup" ||
