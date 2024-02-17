@@ -10,7 +10,7 @@ export default class Authenticator{
     static async loginAuthenticator(req, res, next){
         try{
             const { email, password } = req.body;
-            // const user = await AssistantDAO.login(email, password);
+            // const user = await AssistantDAOw.login(email, passord);
             console.log(email + " " + password);
            
             const user = users.find(user => user.email === email && user.password === password);
@@ -29,7 +29,7 @@ export default class Authenticator{
         
     }
 
-    static async refreshTokenAuthenticator(req, res, next){
+    static async TokenAuthenticator(req, res, next){
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
     
