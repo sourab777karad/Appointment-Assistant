@@ -1,5 +1,6 @@
 import express from 'express';
 import AssistantRoutes from './API/Assistant.routes.js';
+import cors from 'cors';
 const app = express();
 
 app.use(cors());
