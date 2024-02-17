@@ -7,17 +7,15 @@ const router = express.Router()
 //rest of the routes.
 router.post('/test',authenticator.TokenAuthenticator, assistantCtrl.test)
 
-router.post('/login',authenticator.loginAuthenticator, assistantCtrl.login)
+router.post('/login',assistantCtrl.login)
 
 router.post('/signup', assistantCtrl.signup)
-
-router.post('/refresh-token',authenticator.TokenAuthenticator,assistantCtrl.refreshToken)
 
 // router.post('/forgot-password', assistantCtrl.forgotPassword)
 
 // router.get('/get-appointment',authenticator.TokenAuthenticator, assistantCtrl.getAppointment)
 
-// router.post('/set-appointment',authenticator.TokenAuthenticator, assistantCtrl.setAppointment)
+router.post('/set-appointment',authenticator.TokenAuthenticator, assistantCtrl.setAppointment)
 
 // router.post('/change-status',authenticator.TokenAuthenticator, assistantCtrl.changeStatus)
 
