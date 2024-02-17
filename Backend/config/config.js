@@ -9,3 +9,5 @@ export const aws_remote_config = {
 
 export const JWT_SECRET = process.env.JWT_TOKEN_SECRET;
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+export const MONGO_URI = process.env.MONGO_URI;
