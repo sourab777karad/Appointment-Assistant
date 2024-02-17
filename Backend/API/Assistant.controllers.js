@@ -64,4 +64,44 @@ export default class AssistantController {
             return res.status(500).json({ message: 'Error generating new access token' });
         }
     }
+    static async getAppointment(req, res) {
+        try {
+            const Ap_date = req.date;
+            const appointment = await AssistantDAO.getAppointment(Ap_date);
+    
+            return res.status(200).json({ data: appointment, message: 'Appointment retrieved successfully' });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Error retrieving appointment' });
+        }
+    }
+    static async setAppointment(req, res) {
+        try {
+            const { 
+                appointee, 
+                appointer, 
+                creation_time, 
+                appointment_time, 
+                appointment_duration, 
+                appointment_purpose, 
+                appointment_description 
+            } = req.body;
+    
+            const appointment = await AssistantDAO.setappointment({ 
+                appointee, 
+                appointer, 
+                creation_time, 
+                appointment_time, 
+                appointment_duration, 
+                appointment_purpose, 
+                appointment_description 
+            });
+    
+            return res.status(201).json({ data: appointment, message: 'Appointment set successfully' });
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Error setting appointment' });
+        }
+    }
+    
 }
