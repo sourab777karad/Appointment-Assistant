@@ -7,7 +7,7 @@ module.exports = {
 	title: "Appointment Assistant",
 	tagline: "Make Appointments, the right way.",
 	url: "https://your-docusaurus-test-site.com",
-	baseUrl: "/",
+	baseUrl: "/Appointment-Assistant/",
 	onBrokenLinks: "throw",
 	onBrokenMarkdownLinks: "warn",
 	favicon: "img/favicon.ico",
@@ -46,7 +46,11 @@ module.exports = {
 					src: "img/logo.svg",
 				},
 				items: [
-					{ to: "/docs/how_to_use/intro", label: "Tutorial", position: "left" },
+					{
+						to: "/docs/how_to_use/intro",
+						label: "Tutorial",
+						position: "left",
+					},
 					{
 						type: "doc",
 						docId: "intro",
