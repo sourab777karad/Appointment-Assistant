@@ -102,7 +102,9 @@ res:
 4. GET appointment - POSt
 req{
     date: x
-    token: given token
+    token: given token,
+    id = userid,
+    admin = true/false
 }
 res:
 {
@@ -118,7 +120,7 @@ eg: 5 appointments in day x
 req {
     appointee: userid
     appionter: userid
-    creation_time: string,
+    creation_date: string,
     appointment_time: string,
     appointment_duration: number,
     appointment_purpose: string,

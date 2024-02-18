@@ -134,4 +134,27 @@ export default class AssistantDAO {
 
 		return appointment;
 	}
+	static async getAppointment(appointmentId) {
+        try {
+          if (!appointmentId) {
+            console.log("Invalid appointment ID");
+            return { message: "Invalid appointment ID" };
+          }
+      
+          console.log('Attempting to retrieve appointment with ID:', appointmentId);
+      
+          const appointment = await cluster0.collection("appointments").findOne({ _id: appointmentId });
+      
+          if (!appointment) {
+            console.log("Appointment not found");
+            return { message: "Appointment not found" };
+          }
+      
+          console.log('Appointment retrieved:', appointment);
+          return appointment;
+        } catch (e) {
+          console.error(`Unable to get appointment: ${e}`);
+          throw e;
+        }
+      }
 }
