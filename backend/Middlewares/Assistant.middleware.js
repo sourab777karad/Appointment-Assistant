@@ -1,13 +1,23 @@
 // Middlewares for Assistant JWT Authentication
-import jwt from 'jsonwebtoken';
-import { JWT_SECRET , REFRESH_TOKEN_SECRET} from '../config/config.js';
+
+
 import firebase from 'firebase-admin';
 const users =[
     { id: 1, name: 'John', email:'1234@gmail.com', password: 'password'},
     { id: 2, name: 'Doe', email:'4123@gmail.com', password: 'password' }
 ]
+/**
+ * Middleware to authenticate Token
+ * @class
+ */
 export default class Authenticator{
-    // Middleware to authenticate Token
+    /**
+     * Middleware to authenticate Token
+     * @param {Object} req - The request object
+     * @param {Object} res - The response object
+     * @param {Function} next - The next middleware function
+     * @returns {Object} - The response object
+     */
     static async TokenAuthenticator(req, res, next){
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
