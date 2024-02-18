@@ -58,16 +58,13 @@ static async login(req, res) {
     }
     static async getAppointment(req, res) {
         try {
-            const appointments = await AssistantDAO.getAppointment();
+            const Ap_date = req.body.appointer;
+            const appointment = await AssistantDAO.getAppointment(Ap_date);
     
-            if (!appointments || appointments.length === 0) {
-                return res.status(404).json({ message: 'No appointments found' });
-            }
-    
-            return res.status(200).json({ data: appointments, message: 'Appointments retrieved successfully' });
+            return res.status(200).json({ data: appointment, message: 'Appointment retrieved successfully' });
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ message: 'Error retrieving appointments' });
+            return res.status(500).json({ message: 'Error retrieving appointment' });
         }
     }
     static async setAppointment(req, res) {
@@ -75,7 +72,7 @@ static async login(req, res) {
             const { 
                 appointee, 
                 appointer, 
-                creation_time, 
+                creation_date, 
                 appointment_time, 
                 appointment_duration, 
                 appointment_purpose, 
@@ -85,7 +82,7 @@ static async login(req, res) {
             const appointment = await AssistantDAO.SetAppointment({ 
                 appointee, 
                 appointer, 
-                creation_time, 
+                creation_date, 
                 appointment_time, 
                 appointment_duration, 
                 appointment_purpose, 
