@@ -14,7 +14,9 @@
         firebase.initializeApp(firebaseConfig);
 
         // Sign in the user
+
         firebase.auth().signInWithEmailAndPassword('sourab@gmail.com', '3456789')
+
             .then((userCredential) => {
                 // Signed in 
                 var user = userCredential.user;
