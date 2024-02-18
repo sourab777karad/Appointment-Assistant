@@ -21,7 +21,7 @@ export default class Authenticator{
     static async TokenAuthenticator(req, res, next){
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
-
+        // added comment
         if (!token) {
             return res.status(403).send({ message: "Unauthorized - No token provided!" });
         }
