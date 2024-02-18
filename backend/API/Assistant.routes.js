@@ -11,8 +11,6 @@ router.post('/login',assistantCtrl.login)
 
 router.post('/signup', assistantCtrl.signup)
 
-// router.post('/forgot-password', assistantCtrl.forgotPassword)
-
 router.post('/get-appointment',authenticator.TokenAuthenticator, assistantCtrl.getAppointment)
 
 router.post('/set-appointment',authenticator.TokenAuthenticator, assistantCtrl.setAppointment)
@@ -24,6 +22,5 @@ router.post('/set-appointment',authenticator.TokenAuthenticator, assistantCtrl.s
 // router.get('/get-users',authenticator.TokenAuthenticator, assistantCtrl.getUsers)
 
 // router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getProfile)
-
 
 export default router

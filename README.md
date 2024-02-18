@@ -1,7 +1,7 @@
 # Appointment Assistant
 Cloud Service for Maintaining Apppointments via slots for personal Meetings.
 
-# Target date Mar 1
+# Target date feb 20
 
 # Functionality
 1. Log in sign up
