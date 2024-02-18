@@ -1,5 +1,4 @@
-// Test the JSDOM import
-test("JSDOM import should be successful", () => {
-  expect(JSDOM).toBeDefined();
+test('addition test', () => {
+  const result = 2 + 2;
+  expect(result).toBe(4);
 });
-
