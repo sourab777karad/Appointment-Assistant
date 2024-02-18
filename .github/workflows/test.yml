@@ -22,11 +22,16 @@ jobs:
           node-version: '14'
 
       # Iterate over each directory and run Jest tests
-      - name: Run Jest tests
+      - name: Run Jest test on frontend
         run: |
-          for dir in frontend backend; do
-            cd $dir
-            npm install
-            npm test
-            cd ..
+          cd frontend
+          cd website
+          npm install
+          npm test
+          done
+      - name: Run Jest test for backend
+        run: |
+          cd backend
+          npm install
+          npm test
           done
