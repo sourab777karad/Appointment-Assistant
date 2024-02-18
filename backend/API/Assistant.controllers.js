@@ -1,14 +1,6 @@
 // import AssistantDAO from "../DAO/AssistantDAO";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET, REFRESH_TOKEN_SECRET } from "../config/config.js";
 import firebase from "firebase-admin";
 import AssistantDAO from "../DAO/AssistantDAO.js";
-
-// Dummy users for testing
-const users =[
-    { id: 1, name: 'John', email:' 1234@gmail.com ', password: 'password'},
-    { id: 2, name: 'Doe', email:'4123@gmail.com', password: 'password' }
-]
 
 export default class AssistantController {
 
@@ -56,15 +48,19 @@ static async login(req, res) {
             return res.status(500).json({ message: 'Internal server error', error: err.message });
         }
     }
+    
     static async getAppointment(req, res) {
         try {
-            const Ap_date = req.date;
-            const appointment = await AssistantDAO.getAppointment(Ap_date);
+            const appointments = await AssistantDAO.getAppointment();
     
-            return res.status(200).json({ data: appointment, message: 'Appointment retrieved successfully' });
+            if (!appointments || appointments.length === 0) {
+                return res.status(404).json({ message: 'No appointments found' });
+            }
+    
+            return res.status(200).json({ data: appointments, message: 'Appointments retrieved successfully' });
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ message: 'Error retrieving appointment' });
+            return res.status(500).json({ message: 'Error retrieving appointments' });
         }
     }
     static async setAppointment(req, res) {
