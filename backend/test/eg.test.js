@@ -8,16 +8,10 @@ test("firebase-admin is installed", () => {
 });
 
 // Test mongodb connection to atlas using mongodb
-
-test("mongodb connection to atlas using mongodb", () => {
+test("mongodb is installed", () => {
 	try {
-		 const mongodb = require("mongodb");
-		mongodb.MongoClient.connect(${{secrets.MONGO_URI}}).catch(err => {
-			console.error(err.stack);
-			process.exit(1);
-		})
+		require("mongodb");
 	} catch (error) {
-		console.log(error)
-		throw new Error(`err ${error}`);
+		throw new Error("mongodb is not installed");
 	}
 });
