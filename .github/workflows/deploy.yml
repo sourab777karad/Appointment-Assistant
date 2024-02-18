@@ -33,10 +33,10 @@ jobs:
           ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/frontend/website/*/components/*.jsx > $GITHUB_WORKSPACE/docs/docs/frontend/components_api.md
           ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/frontend/website/*/context/*.jsx > $GITHUB_WORKSPACE/docs/docs/frontend/context_api.md
           ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/frontend/website/*/pages/*.jsx > $GITHUB_WORKSPACE/docs/docs/frontend/pages_api.md
-          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/Backend/API/*.js > $GITHUB_WORKSPACE/docs/docs/backend/api.md
-          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/Backend/DAO/*.js > $GITHUB_WORKSPACE/docs/docs/backend/dao.md
-          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/Backend/Middlewares/*.js > $GITHUB_WORKSPACE/docs/docs/backend/middlewares.md
-          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/Backend/*.js > $GITHUB_WORKSPACE/docs/docs/backend/backend_api.md
+          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/backend/API/*.js > $GITHUB_WORKSPACE/docs/docs/backend/api.md
+          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/backend/DAO/*.js > $GITHUB_WORKSPACE/docs/docs/backend/dao.md
+          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/backend/Middlewares/*.js > $GITHUB_WORKSPACE/docs/docs/backend/middlewares.md
+          ./node_modules/.bin/jsdoc2md $GITHUB_WORKSPACE/backend/*.js > $GITHUB_WORKSPACE/docs/docs/backend/backend_api.md
       - name: Build website
         run: |
           cd docs
