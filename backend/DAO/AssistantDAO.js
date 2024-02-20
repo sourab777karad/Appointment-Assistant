@@ -11,7 +11,7 @@
 
 // import AWS from 'aws-sdk';
 // import config from '../config/config.js'
-
+import { ObjectId } from 'mongodb';
 // variable to hold db connection
 let cluster0;
 export default class AssistantDAO {
@@ -112,5 +112,80 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
+	static async getUsers() {
+		try {
+			const users = await cluster0.collection("users").find().toArray();
+			return users;
+		} catch (e) {
+			console.error(`Unable to get users: ${e}`);
+			throw e;
+		}
+	}
+	static async getProfile(userId) {
+		try {
+		  // Assuming you have a collection named 'appointments' and 'users'
+		  const userAppointments = await cluster0
+			.collection("appointments")
+			.find({ appointer: userId })
+			.toArray();
 	
+		  // Additional logic to calculate statistics based on user appointments
+		  const totalAppointments = userAppointments.length;
+		  // Add more statistics calculations as needed
+	
+		  const statistics = [
+			{ name: 'Total Appointments', value: String(totalAppointments) },
+			// Add more statistics as needed
+		  ];
+	
+		  return statistics;
+		} catch (e) {
+		  console.error(`Unable to get profile stats: ${e}`);
+		  throw e;
+		}
+	  }
+	  static async deleteAppointment(appointmentId) {
+		try {
+			const result = await cluster0.collection("appointments").deleteOne(
+				{ _id: new ObjectId(appointmentId) }
+			);
+	
+			console.log(`Deleted count: ${result.deletedCount}`); // Log the number of deleted documents
+	
+			if (result.deletedCount === 0) {
+				console.log("No appointment found with the given ID");
+				return { message: "No appointment found with the given ID" };
+			}
+	
+			return { message: "Appointment deleted successfully" };
+		} catch (e) {
+			console.error(`Unable to delete appointment: ${e}`);
+			throw e;
+		}
+	}
+	static async changeStatus(appointmentId, status) {
+		if (!ObjectId.isValid(appointmentId)) {
+			console.log(`Invalid ID: ${appointmentId}`);
+			return { message: "Invalid ID" };
+		}
+	
+		try {
+			const result = await cluster0.collection("appointments").updateOne(
+				{ _id: new ObjectId(appointmentId) },
+				{ $set: { status: status } }
+			);
+	
+			if (result.matchedCount === 0) {
+				console.log("No appointment found with the given ID");
+				return { message: "No appointment found with the given ID" };
+			}
+	
+			const updatedAppointment = await cluster0.collection("appointments").findOne({ _id: new ObjectId(appointmentId) });
+	
+			return { appointment: updatedAppointment };
+		} catch (e) {
+			console.error(`Unable to change status: ${e}`);
+			throw e;
+		}
+	}
 }
