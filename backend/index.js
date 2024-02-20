@@ -18,7 +18,8 @@ const __dirname = dirname(__filename);
 const serviceAccount = JSON.parse(fs.readFileSync(`${__dirname}/config/appointment-assistant-2c9de-firebase-adminsdk-j926f-b687826473.json`, 'utf8'));
 
 // Initialize Firebase
-firebase.initializeApp({ credential: firebase.credential.cert(serviceAccount) });
+firebase.initializeApp({ credential: firebase.credential.cert(serviceAccount),
+    storageBucket: process.env.FIREBASE_DATABASE_URL});
 
 mongodb.MongoClient.connect(process.env.MONGO_URI).catch(err => {
     console.error(err.stack);

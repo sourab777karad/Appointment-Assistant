@@ -12,6 +12,7 @@
 // import AWS from 'aws-sdk';
 // import config from '../config/config.js'
 import { ObjectId } from 'mongodb';
+
 // variable to hold db connection
 let cluster0;
 export default class AssistantDAO {
@@ -188,4 +189,13 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
+	static async uploadProfilePhoto(userId, imageUri) {
+		try {
+			const result = await cluster0.collection("users").updateOne({email: userId}, { $set: { profile_photo: imageUri } });
+			return result;
+	}catch(err){
+		console.error(`Unable to upload profile photo: ${err}`);
+		throw err;
+	}
+}
 }

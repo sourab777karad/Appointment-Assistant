@@ -1,7 +1,8 @@
 import express from 'express'
 import assistantCtrl from './Assistant.controllers.js'
 import authenticator from '../Middlewares/Assistant.middleware.js'
-
+import multer from 'multer'
+const upload = multer({ storage: multer.memoryStorage()})
 const router = express.Router()
 
 //rest of the routes.
@@ -23,4 +24,5 @@ router.get('/get-users',authenticator.TokenAuthenticator, assistantCtrl.getUsers
 
 router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getProfile)
 
+router.post('/uploadProfilePhoto',authenticator.TokenAuthenticator,upload.single('image'), assistantCtrl.uploadProfilePhoto)
 export default router
