@@ -15,12 +15,12 @@ router.post('/get-appointment',authenticator.TokenAuthenticator, assistantCtrl.g
 
 router.post('/set-appointment',authenticator.TokenAuthenticator, assistantCtrl.setAppointment)
 
-// router.post('/change-status',authenticator.TokenAuthenticator, assistantCtrl.changeStatus)
+router.post('/change-status',authenticator.TokenAuthenticator, assistantCtrl.changeStatus)
 
-// router.post('/get-appointments',authenticator.TokenAuthenticator, assistantCtrl.getAppointments)
+router.post('/delete-appointment',authenticator.TokenAuthenticator, assistantCtrl.deleteAppointment)
 
-// router.get('/get-users',authenticator.TokenAuthenticator, assistantCtrl.getUsers)
+router.get('/get-users',authenticator.TokenAuthenticator, assistantCtrl.getUsers)
 
-// router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getProfile)
+router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getProfile)
 
 export default router
