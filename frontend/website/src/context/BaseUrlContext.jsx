@@ -1,4 +1,5 @@
 import { createContext, useState } from "react";
+import PropTypes from 'prop-types';
 
 export const BaseUrlContext = createContext();
 
@@ -13,4 +14,8 @@ export const BaseUrlProvider = ({ children }) => {
 			{children}
 		</BaseUrlContext.Provider>
 	);
+};
+
+BaseUrlProvider.propTypes = {
+	children: PropTypes.node.isRequired,
 };
