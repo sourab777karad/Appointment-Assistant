@@ -1,0 +1,23 @@
+.year-scroll-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.arrow-button {
+  font-size: 20px;
+  padding: 5px 10px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.arrow-button:hover {
+  transform: scale(1.2); /* Scale the button on hover */
+}
+
+.year {
+  font-size: 20px;
+}

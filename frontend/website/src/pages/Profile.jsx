@@ -16,8 +16,8 @@ const Profile = () => {
               <h2 className="text-xl font-bold">John Doe</h2>
               <p className="text-gray-600">Software Engineer</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="neumorphic rounded-lg p-4 bg-white border border-gray-300">
+            <div className="gap-4">
+              <div className="mb-4 neumorphic rounded-lg p-4 bg-white border border-gray-300">
                 <h3 className="text-lg font-semibold mb-4">
                   Contact Information
                 </h3>
