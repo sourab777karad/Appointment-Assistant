@@ -1,4 +1,4 @@
-test('addition test', () => {
+test("addition test", () => {
   const result = 2 + 2;
   expect(result).toBe(4);
 });
