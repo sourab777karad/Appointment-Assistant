@@ -6,80 +6,118 @@ import { NavLink } from "react-router-dom";
 import mit_logo_image from "../assets/mitwpu logo.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+
+import { app, provider } from "../firebase";
+import {
+	getAuth,
+	signInWithEmailAndPassword,
+	signInWithPopup,
+	GoogleAuthProvider,
+} from "firebase/auth";
 
 const Login = (props) => {
-	const base_url = React.useContext(BaseUrlContext).baseUrl;
-	const setUserInfo = React.useContext(UserInfoContext).setUserInfo;
+	const auth = getAuth(app);
 
-	const comment = document.getElementById("comment");
+	const base_url = React.useContext(BaseUrlContext).baseUrl;
+	const setUserToken = React.useContext(UserInfoContext).setUserToken;
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [emailError, setEmailError] = useState("");
-	const [passwordError, setPasswordError] = useState("");
 
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
 		"https://www.searchurcollege.com/blog/wp-content/uploads/2022/12/MIT-WPU.png",
-		"https://media.licdn.com/dms/image/C561BAQE3_siH6TBwIA/company-background_1536_768/0/1583912936297?e=2147483647&v=beta&t=_rQiWPDh2NCVHmpqARsIraO7N75Bh-W-P7FWAggl-qQ",
 	];
 
 	let navigate = useNavigate();
 
 	function redirect() {
 		props.setisNavbarPresent(true);
-		setUserInfo(email);
 		navigate("/home");
 	}
 
-	async function handleClick() {
-		const response = await axios
-			.post(
-				`${base_url}/auth`,
-				{},
-				{
-					params: {
-						email: email,
-						password: password,
-					},
-				}
-			)
-			.then((response) => {
-				return response;
-			})
-			.catch((error) => {
-				console.error(error);
-				alert("server not running! a simulated response is being sent");
-				const response = {
-					data: {
-						message: "simulation",
-					},
-				};
-				return response;
-			});
-		if (response.data.message === "simulation") {
-			// comment.innerHTML = "Login Successful! Redirecting to Home Page!";
-			setTimeout(() => {
-				redirect();
-			}, 1000);
-		}
-		// check if the user exists in the database
-		else if (response.data.message === "user found pass correct") {
-			setTimeout(() => {
-				redirect();
-			}, 1000);
-		} else if (response.data.message === "user found pass incorrect") {
-			comment.innerHTML = "Password Incorrect! Try Again!";
-		} else if (response.data.message === "user not found") {
-			comment.innerHTML = "User Doesnt Exist! Try Again or Sign Up!";
-		} else {
-			comment.innerHTML = "Something went wrong! Call the Devs!";
-			alert("Something went wrong! Call the Devs!");
-		}
+	async function loginUser() {
+		// this function logs in the user and returns a promise
+		// if the user is logged in successfully, the promise is resolved
+		// if the user is not logged in, the promise is rejected
+		console.log("logging in user", email, password);
+		return new Promise((resolve, reject) => {
+			signInWithEmailAndPassword(auth, email, password)
+				.then((userCredential) => {
+					// Signed in
+					const user = userCredential.user;
+					console.log("user logged in: ", user);
+					setUserToken(user.accessToken);
+					console.log("user logged in successfully");
+					resolve();
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					console.log("error code: ", errorCode);
+					const errorMessage = error.message;
+					console.log("error logging in: ", errorMessage);
+					reject(error);
+				});
+		});
 	}
 
+	const loginUserWithGoogle = () => {
+		return new Promise((resolve, reject) => {
+			signInWithPopup(auth, provider)
+				.then((result) => {
+					// This gives you a Google Access Token. You can use it to access the Google API.
+					const credential =
+						GoogleAuthProvider.credentialFromResult(result);
+					const token = credential.accessToken;
+					const user = result.user;
+					console.log("user logged in: ", user);
+					setUserToken(token);
+					resolve();
+				})
+				.catch((error) => {
+					console.log("error logging in: ", error);
+					// Handle Errors here.
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					// The email of the user's account used.
+					const email = error.email;
+					// The AuthCredential type that was used.
+					const credential =
+						GoogleAuthProvider.credentialFromError(error);
+					console.log(
+						"error logging in: ",
+						errorMessage,
+						errorCode,
+						email,
+						credential
+					);
+					reject(error);
+				});
+		});
+	};
+
+	const handleGoogleLogin = () => {
+		const login_promise = loginUserWithGoogle();
+		toast.promise(login_promise, {
+			loading: "Logging in with Google...",
+			success: "Logged in with Google successfully",
+			error: "Error logging in with Google",
+		});
+
+		login_promise
+			.then(() => {
+				redirect();
+			})
+			.catch((error) => {
+				console.log("error logging in with Google", error);
+			});
+	};
+
 	const validateEmail = (email) => {
-		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return re.test(email);
+		// regex check for email
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
 	};
 
 	const validatePassword = (password) => {
@@ -91,18 +129,30 @@ const Login = (props) => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (!validateEmail(email)) {
-			setEmailError("Please enter a valid email address.");
-		} else {
-			setEmailError("");
+			toast.error("Please enter a valid email address");
+			return;
 		}
-		if (!validatePassword(password)) {
-			setPasswordError(
-				"Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
-			);
-		} else {
-			setPasswordError("");
-			handleClick();
-		}
+		// if (!validatePassword(password)) {
+		// 	toast.error(
+		// 		"Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
+		// 	);
+		// 	return;
+		// }
+
+		const login_promise = loginUser();
+		toast.promise(login_promise, {
+			loading: "Logging in...",
+			success: "Logged in successfully",
+			error: "Invalid email or password",
+		});
+
+		login_promise
+			.then(() => {
+				redirect();
+			})
+			.catch((error) => {
+				console.log("error logging in", error);
+			});
 	};
 
 	return (
@@ -138,13 +188,15 @@ const Login = (props) => {
 									</label>
 									<input
 										type="email"
-										name=""
-										id=""
 										placeholder="Enter Email Address"
 										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-										autoFocus=""
-										autoComplete=""
-										required=""
+										autoFocus={true}
+										onChange={(e) =>
+											setEmail(e.target.value)
+										}
+										value={email}
+										autoComplete="on"
+										required={true}
 									/>
 								</div>
 								<div className="mt-4">
@@ -153,13 +205,15 @@ const Login = (props) => {
 									</label>
 									<input
 										type="password"
-										name=""
-										id=""
 										placeholder="Enter Password"
-										minLength={6}
+										onChange={(e) =>
+											setPassword(e.target.value)
+										}
+										value={password}
+										minLength={8}
 										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
           focus:bg-white focus:outline-none"
-										required=""
+										required={true}
 									/>
 								</div>
 								<div className="text-right mt-2">
@@ -174,6 +228,7 @@ const Login = (props) => {
 									type="submit"
 									className="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
         px-4 py-3 mt-6"
+									onClick={handleSubmit}
 								>
 									Log In
 								</button>
@@ -182,6 +237,9 @@ const Login = (props) => {
 							<button
 								type="button"
 								className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
+								onClick={() => {
+									handleGoogleLogin();
+								}}
 							>
 								<div className="flex items-center justify-center">
 									<svg
@@ -224,7 +282,7 @@ const Login = (props) => {
 										/>
 									</svg>
 									<span className="ml-4">
-										Log in with Google
+										Log in / Sign Up with Google
 									</span>
 								</div>
 							</button>

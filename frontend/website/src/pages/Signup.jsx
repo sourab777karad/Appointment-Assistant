@@ -7,10 +7,16 @@ import mit_logo_image from "../assets/mitwpu logo.jpg";
 import aalogo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+
+import { app, provider } from "../firebase";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const Login = (props) => {
+	const auth = getAuth(app);
+
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
-	const setUserInfo = React.useContext(UserInfoContext).setUserInfo;
+	const setUserToken = React.useContext(UserInfoContext).setUserToken;
 
 	const comment = document.getElementById("comment");
 	const [email, setEmail] = useState("");
@@ -28,9 +34,60 @@ const Login = (props) => {
 
 	function redirect() {
 		props.setisNavbarPresent(true);
-		setUserInfo(email);
 		navigate("/home");
 	}
+
+	const loginUserWithGoogle = () => {
+		return new Promise((resolve, reject) => {
+			signInWithPopup(auth, provider)
+				.then((result) => {
+					// This gives you a Google Access Token. You can use it to access the Google API.
+					const credential =
+						GoogleAuthProvider.credentialFromResult(result);
+					const token = credential.accessToken;
+					const user = result.user;
+					console.log("user logged in: ", user);
+					setUserToken(token);
+					resolve();
+				})
+				.catch((error) => {
+					console.log("error logging in: ", error);
+					// Handle Errors here.
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					// The email of the user's account used.
+					const email = error.email;
+					// The AuthCredential type that was used.
+					const credential =
+						GoogleAuthProvider.credentialFromError(error);
+					console.log(
+						"error logging in: ",
+						errorMessage,
+						errorCode,
+						email,
+						credential
+					);
+					reject(error);
+				});
+		});
+	};
+
+	const handleGoogleLogin = () => {
+		const login_promise = loginUserWithGoogle();
+		toast.promise(login_promise, {
+			loading: "Logging in with Google...",
+			success: "Logged in with Google successfully",
+			error: "Error logging in with Google",
+		});
+
+		login_promise
+			.then(() => {
+				redirect();
+			})
+			.catch((error) => {
+				console.log("error logging in with Google", error);
+			});
+	};
 
 	async function handleClick() {
 		const response = await axios
@@ -264,6 +321,7 @@ const Login = (props) => {
 						<button
 							type="button"
 							className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
+							onClick={handleGoogleLogin}
 						>
 							<div className="flex items-center justify-center">
 								<svg

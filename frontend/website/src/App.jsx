@@ -1,6 +1,7 @@
 // importing basics
 import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { toast, Toaster } from "react-hot-toast";
 
 // importing css
 import "./index.css";
@@ -18,6 +19,9 @@ import Appointment_past from "./pages/Appointment_past";
 import Profile from "./pages/Profile";
 import { BaseUrlProvider } from "./context/BaseUrlContext.jsx";
 import { UserInfoContextProvider } from "./context/UserInfoContext.jsx";
+
+// importing firebase
+import { app } from "./firebase.js";
 
 /**
  * The main component of the application.
@@ -58,6 +62,16 @@ function App() {
 	return (
 		<BaseUrlProvider>
 			<UserInfoContextProvider>
+				<Toaster
+					position="top-right"
+					reverseOrder={false}
+					toastOptions={{
+						style: {
+							background: "#333",
+							color: "#fff",
+						},
+					}}
+				/>
 				<div className="">
 					{isNavbarPresent ? (
 						<NavbarWithSearch
@@ -66,9 +80,13 @@ function App() {
 					) : null}
 					<div>
 						<Routes>
-							<Route path="/" element={<Login />} />
+							<Route path="/" element={<Login
+								setisNavbarPresent={setisNavbarPresent}
+							/>} />
 							<Route path="/home" element={<Home />} />
-							<Route path="/signup" element={<Signup />} />
+							<Route path="/signup" element={<Signup
+								setisNavbarPresent={setisNavbarPresent}
+							/>} />
 							<Route
 								path="/appointment-user"
 								element={<Appointment />}
