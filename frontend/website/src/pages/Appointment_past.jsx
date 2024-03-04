@@ -1,44 +1,70 @@
 import React, { useState } from "react";
+import YearScroll from "../components/YearScroll";
 
-const Appointment_past = ({}) => {
+const Appointment_past = () => {
   const pastAppointments = [
     {
       title: "Dentist Appointment",
-      date: "2023-12-15",
+      month: "December",
+      year: 2023,
+      date: 15,
       time: "10:00 AM",
       description: "Regular checkup",
     },
     {
       title: "Meeting with Client",
-      date: "2023-11-28",
+      month: "November",
+      year: 2023,
+      date: 28,
       time: "2:30 PM",
       description: "Discuss project details",
     },
     {
       title: "Job Interview",
-      date: "2023-10-20",
+      month: "October",
+      year: 2023,
+      date: 20,
       time: "11:00 AM",
       description: "Interview for software engineer position",
     },
     {
       title: "Doctor's Appointment",
-      date: "2023-09-05",
+      month: "September",
+      year: 2023,
+      date: 5,
       time: "9:15 AM",
       description: "Follow-up on medication",
     },
     // Add more past appointments here
   ];
 
+  const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
 
-  // Function to handle month selection
+  const handleYearSelect = (year) => {
+    setSelectedYear(year);
+    console.log("Selected Year:", year);
+  };
+
   const handleMonthSelect = (month) => {
     setSelectedMonth(month);
+    console.log("Selected Month:", month);
+  };
+
+  const getAppointmentsForSelectedMonth = () => {
+    if (!selectedYear || !selectedMonth) return []; // If year or month not selected, return empty array
+    const filteredAppointments = pastAppointments.filter(
+      (appointment) =>
+        appointment.year === selectedYear && appointment.month === selectedMonth
+    );
+    console.log("Filtered Appointments:", filteredAppointments);
+    return filteredAppointments;
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Past Appointments</h1>
+      <YearScroll onSelectYear={handleYearSelect} />
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
           "January",
@@ -65,27 +91,22 @@ const Appointment_past = ({}) => {
           </div>
         ))}
       </div>
-      {selectedMonth && (
+      {selectedMonth && selectedYear && (
         <div>
-          <h2 className="text-xl font-bold mb-4">{selectedMonth}</h2>
+          <h2 className="text-xl font-bold mb-4">
+            {selectedMonth} {selectedYear}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pastAppointments
-              .filter(
-                (appointment) =>
-                  new Date(appointment.date).toLocaleString("default", {
-                    month: "long",
-                  }) === selectedMonth
-              )
-              .map((appointment, index) => (
-                <div key={index} className="bg-white rounded-lg shadow-md p-4">
-                  <h2 className="text-lg font-bold mb-2">
-                    {appointment.title}
-                  </h2>
-                  <p className="text-gray-600">{appointment.date}</p>
-                  <p className="text-gray-600">{appointment.time}</p>
-                  <p className="text-gray-600">{appointment.description}</p>
-                </div>
-              ))}
+            {getAppointmentsForSelectedMonth().map((appointment, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-md p-4">
+                <h2 className="text-lg font-bold mb-2">{appointment.title}</h2>
+                <p className="text-gray-600">
+                  {appointment.date} {appointment.month}, {appointment.year}
+                </p>
+                <p className="text-gray-600">{appointment.time}</p>
+                <p className="text-gray-600">{appointment.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
