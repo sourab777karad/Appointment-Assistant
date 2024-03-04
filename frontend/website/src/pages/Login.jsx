@@ -1,248 +1,250 @@
-// import React, { useState, useEffect } from "react";
-// import { BaseUrlContext } from "../context/BaseUrlContext";
-// import { UserInfoContext } from "../context/UserInfoContext";
-// import "../index.css";
-// import { NavLink } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { BaseUrlContext } from "../context/BaseUrlContext";
+import { UserInfoContext } from "../context/UserInfoContext";
+import "../index.css";
+import { NavLink } from "react-router-dom";
+import mit_logo_image from "../assets/mitwpu logo.jpg";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-// const Login = (props) => {
-// 	const base_url = React.useContext(BaseUrlContext).baseUrl;
-// 	const setUserInfo = React.useContext(UserInfoContext).setUserInfo;
+const Login = (props) => {
+	const base_url = React.useContext(BaseUrlContext).baseUrl;
+	const setUserInfo = React.useContext(UserInfoContext).setUserInfo;
 
-// 	const comment = document.getElementById("comment");
-// 	const [email, setEmail] = useState("");
-// 	const [password, setPassword] = useState("");
-// 	const [emailError, setEmailError] = useState("");
-// 	const [passwordError, setPasswordError] = useState("");
+	const comment = document.getElementById("comment");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [emailError, setEmailError] = useState("");
+	const [passwordError, setPasswordError] = useState("");
 
-// 	let navigate = useNavigate();
+	const mit_wpu_images = [
+		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
+		"https://www.searchurcollege.com/blog/wp-content/uploads/2022/12/MIT-WPU.png",
+		"https://media.licdn.com/dms/image/C561BAQE3_siH6TBwIA/company-background_1536_768/0/1583912936297?e=2147483647&v=beta&t=_rQiWPDh2NCVHmpqARsIraO7N75Bh-W-P7FWAggl-qQ",
+	];
 
-// 	function redirect() {
-// 		props.setisNavbarPresent(true);
-// 		setUserInfo(email);
-// 		navigate("/home");
-// 	}
+	let navigate = useNavigate();
 
-// 	async function handleClick() {
-// 		const response = await axios
-// 			.post(
-// 				`${base_url}/auth`,
-// 				{},
-// 				{
-// 					params: {
-// 						email: email,
-// 						password: password,
-// 					},
-// 				}
-// 			)
-// 			.then((response) => {
-// 				return response;
-// 			})
-// 			.catch((error) => {
-// 				console.error(error);
-// 				alert("server not running! a simulated response is being sent");
-// 				const response = {
-// 					data: {
-// 						message: "simulation",
-// 					},
-// 				};
-// 				return response;
-// 			});
-// 		if (response.data.message === "simulation") {
-// 			// comment.innerHTML = "Login Successful! Redirecting to Home Page!";
-// 			setTimeout(() => {
-// 				redirect();
-// 			}, 1000);
-// 		}
-// 		// check if the user exists in the database
-// 		else if (response.data.message === "user found pass correct") {
-// 			setTimeout(() => {
-// 				redirect();
-// 			}, 1000);
-// 		} else if (response.data.message === "user found pass incorrect") {
-// 			comment.innerHTML = "Password Incorrect! Try Again!";
-// 		} else if (response.data.message === "user not found") {
-// 			comment.innerHTML = "User Doesnt Exist! Try Again or Sign Up!";
-// 		} else {
-// 			comment.innerHTML = "Something went wrong! Call the Devs!";
-// 			alert("Something went wrong! Call the Devs!");
-// 		}
-// 	}
+	function redirect() {
+		props.setisNavbarPresent(true);
+		setUserInfo(email);
+		navigate("/home");
+	}
 
-// 	const { setTheme } = React.useContext(ThemeContext);
+	async function handleClick() {
+		const response = await axios
+			.post(
+				`${base_url}/auth`,
+				{},
+				{
+					params: {
+						email: email,
+						password: password,
+					},
+				}
+			)
+			.then((response) => {
+				return response;
+			})
+			.catch((error) => {
+				console.error(error);
+				alert("server not running! a simulated response is being sent");
+				const response = {
+					data: {
+						message: "simulation",
+					},
+				};
+				return response;
+			});
+		if (response.data.message === "simulation") {
+			// comment.innerHTML = "Login Successful! Redirecting to Home Page!";
+			setTimeout(() => {
+				redirect();
+			}, 1000);
+		}
+		// check if the user exists in the database
+		else if (response.data.message === "user found pass correct") {
+			setTimeout(() => {
+				redirect();
+			}, 1000);
+		} else if (response.data.message === "user found pass incorrect") {
+			comment.innerHTML = "Password Incorrect! Try Again!";
+		} else if (response.data.message === "user not found") {
+			comment.innerHTML = "User Doesnt Exist! Try Again or Sign Up!";
+		} else {
+			comment.innerHTML = "Something went wrong! Call the Devs!";
+			alert("Something went wrong! Call the Devs!");
+		}
+	}
 
-// 	useEffect(() => {
-// 		setTheme("light");
-// 		const light_button = document.getElementById("light_button");
-// 		light_button.click();
-// 	});
+	const validateEmail = (email) => {
+		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return re.test(email);
+	};
 
-// 	const validateEmail = (email) => {
-// 		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// 		return re.test(email);
-// 	};
+	const validatePassword = (password) => {
+		const re =
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+		return re.test(password);
+	};
 
-// 	const validatePassword = (password) => {
-// 		const re =
-// 			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-// 		return re.test(password);
-// 	};
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		if (!validateEmail(email)) {
+			setEmailError("Please enter a valid email address.");
+		} else {
+			setEmailError("");
+		}
+		if (!validatePassword(password)) {
+			setPasswordError(
+				"Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+			);
+		} else {
+			setPasswordError("");
+			handleClick();
+		}
+	};
 
-// 	const handleSubmit = (e) => {
-// 		e.preventDefault();
-// 		if (!validateEmail(email)) {
-// 			setEmailError("Please enter a valid email address.");
-// 		} else {
-// 			setEmailError("");
-// 		}
-// 		if (!validatePassword(password)) {
-// 			setPasswordError(
-// 				"Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
-// 			);
-// 		} else {
-// 			setPasswordError("");
-// 			handleClick();
-// 		}
-// 	};
+	return (
+		<div className="p-0 m-0">
+			<>
+				<section className="flex flex-col md:flex-row h-screen items-center">
+					<div className="bg-indigo-600 hidden lg:block w-full md:w-1/2 xl:w-2/3 h-screen">
+						<img
+							src={mit_wpu_images[0]}
+							alt=""
+							className="w-full h-full object-cover"
+						/>
+					</div>
+					<div
+						className="bg-white w-full md:max-w-md lg:max-w-full md:mx-auto md:mx-0 md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
+  flex items-center justify-center"
+					>
+						<div className="w-full h-100">
+							<div className="flex justify-center items-center flex-col h-44">
+								<img
+									src={mit_logo_image}
+									alt="mit logo"
+									className="w-full p-0 m-0"
+								/>
+							</div>
+							<h1 className="text-xl md:text-2xl font-bold leading-tight">
+								Log in to your account
+							</h1>
+							<form className="mt-6" action="#" method="POST">
+								<div>
+									<label className="block text-gray-700">
+										Email Address
+									</label>
+									<input
+										type="email"
+										name=""
+										id=""
+										placeholder="Enter Email Address"
+										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
+										autoFocus=""
+										autoComplete=""
+										required=""
+									/>
+								</div>
+								<div className="mt-4">
+									<label className="block text-gray-700">
+										Password
+									</label>
+									<input
+										type="password"
+										name=""
+										id=""
+										placeholder="Enter Password"
+										minLength={6}
+										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
+          focus:bg-white focus:outline-none"
+										required=""
+									/>
+								</div>
+								<div className="text-right mt-2">
+									<a
+										href="#"
+										className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"
+									>
+										Forgot Password?
+									</a>
+								</div>
+								<button
+									type="submit"
+									className="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
+        px-4 py-3 mt-6"
+								>
+									Log In
+								</button>
+							</form>
+							<hr className="my-6 border-gray-300 w-full" />
+							<button
+								type="button"
+								className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
+							>
+								<div className="flex items-center justify-center">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										xmlnsXlink="http://www.w3.org/1999/xlink"
+										className="w-6 h-6"
+										viewBox="0 0 48 48"
+									>
+										<defs>
+											<path
+												id="a"
+												d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"
+											/>
+										</defs>
+										<clipPath id="b">
+											<use
+												xlinkHref="#a"
+												overflow="visible"
+											/>
+										</clipPath>
+										<path
+											clipPath="url(#b)"
+											fill="#FBBC05"
+											d="M0 37V11l17 13z"
+										/>
+										<path
+											clipPath="url(#b)"
+											fill="#EA4335"
+											d="M0 11l17 13 7-6.1L48 14V0H0z"
+										/>
+										<path
+											clipPath="url(#b)"
+											fill="#34A853"
+											d="M0 37l30-23 7.9 1L48 0v48H0z"
+										/>
+										<path
+											clipPath="url(#b)"
+											fill="#4285F4"
+											d="M48 48L17 24l-4-3 35-10z"
+										/>
+									</svg>
+									<span className="ml-4">
+										Log in with Google
+									</span>
+								</div>
+							</button>
+							<p className="mt-8 w-full text-center">
+								Need an account?{" "}
+								<a
+									onClick={() => {
+										navigate("/signup");
+									}}
+									className="text-blue-500 hover:text-blue-700 font-semibold"
+								>
+									Create an account
+								</a>
+							</p>
+						</div>
+					</div>
+				</section>
+			</>
+		</div>
+	);
+};
 
-// 	return (
-// 		<div className="p-0 m-0 bg-base-100">
-// 			<div className="overflow-hidden">
-// 				<div className="lg:flex rubik overflow-hidden">
-// 					<div className="lg:w-1/2 xl:max-w-screen-sm">
-// 						<div className="py-12 bg-base-100 lg:bg-transparent flex justify-center lg:justify-start lg:px-12">
-// 							<div className="cursor-pointer flex items-center">
-// 								<div
-// 									id="brutuslogo"
-// 									className="w-12 h-12 m-4"
-// 								></div>
-// 								<div className="text-2xl text-primary-content tracking-wide ml-2 font-semibold">
-// 									Anti Brutus
-// 								</div>
-// 							</div>
-// 						</div>
-// 						<div className="mt-10 px-12 sm:px-24 md:px-48 lg:px-12 lg:mt-16 xl:px-24 xl:max-w-2xl">
-// 							<h2
-// 								className="text-center text-4xl text-primary-content font-display font-semibold lg:text-left xl:text-5xl
-//               xl:text-bold"
-// 							>
-// 								Log in
-// 							</h2>
-// 							<div
-// 								className="text-center text-xl text-secondary font-display font-semibold lg:text-left xl:text-xl
-//               xl:text-bold rubik pt-3"
-// 							>
-// 								<span className="italic">
-// 									“There are no tricks in plain and simple
-// 									faith.”{" "}
-// 								</span>
-// 								<br></br>
-// 								<span className="text-accent">
-// 									{" "}
-// 									Brutus to Lucillius, Act 4, Scene 2
-// 								</span>
-// 							</div>
-// 							<div className="mt-12">
-// 								<form onSubmit={handleSubmit}>
-// 									<div>
-// 										<div className="text-2xl font-bold text-primary-content tracking-wide">
-// 											Email Address
-// 										</div>
-// 										<input
-// 											className="w-full text-xl py-2 border-b border-primary focus:outline-none focus:border-accent bg-transparent"
-// 											type="email"
-// 											placeholder="baldev@gmail.com"
-// 											value={email}
-// 											onChange={(e) =>
-// 												setEmail(e.target.value)
-// 											}
-// 										/>
-// 										{emailError && (
-// 											<div className="text-red-500 text-sm mt-1">
-// 												{emailError}
-// 											</div>
-// 										)}
-// 									</div>
-// 									<div className="mt-8">
-// 										<div className="flex justify-between items-center">
-// 											<div className="text-2xl font-bold text-primary-content bg-transparent tracking-wide">
-// 												Master Password
-// 											</div>
-// 											<div>
-// 												<NavLink
-// 													className="text-xl font-display font-semibold text-accent hover:text-accent-focus
-//                                   cursor-pointer"
-// 													to="/fpass"
-// 												>
-// 													Forgot Password?
-// 												</NavLink>
-// 											</div>
-// 										</div>
-// 										<input
-// 											className="w-full text-lg py-2 border-b border-primary focus:outline-none focus:border-accent bg-transparent"
-// 											type="password"
-// 											placeholder="Enter your password"
-// 											value={password}
-// 											onChange={(e) =>
-// 												setPassword(e.target.value)
-// 											}
-// 										/>
-// 										{passwordError && (
-// 											<div className="text-red-500 text-sm mt-1">
-// 												{passwordError}
-// 											</div>
-// 										)}
-// 									</div>
-// 									<div
-// 										id="comment"
-// 										className="text-xl text-center mt-10 text-accent"
-// 									>
-// 										Enter Credentials to Log In!
-// 									</div>
-// 									<div className="mt-10">
-// 										<button
-// 											className="bg-primary p-4 w-full rounded-full tracking-wide
-//                           font-semibold font-display focus:outline-none focus:shadow-outline hover:bg-primary-focus text-primary-content
-//                           shadow-lg text-xl cursor-pointer"
-// 											type="submit"
-// 										>
-// 											Log In
-// 										</button>
-// 									</div>
-// 								</form>
-// 								<div className="mt-12 text-xl font-display font-semibold text-primary-content text-center">
-// 									Don't have an account ?{" "}
-// 									<NavLink
-// 										className="cursor-pointer text-accent hover:text-accent-focus"
-// 										to="/signup"
-// 									>
-// 										Sign up
-// 									</NavLink>
-// 								</div>
-// 							</div>
-// 						</div>
-// 					</div>
-// 					<div className="hidden lg:flex items-center justify-center bg-indigo-200 flex-1 h-screen">
-// 						<div className="max-w-xs transform duration-200 hover:scale-110 cursor-pointer">
-// 							<div
-// 								id="mainsvg"
-// 								className="w-[50rem] h-[40rem]"
-// 							></div>
-// 						</div>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</div>
-// 	);
-// };
-
-// export default Login;
-
-export default function Login() {
-  return (
-    <div>
-      <h1>Login</h1>
-    </div>
-  );
-}
+export default Login;
