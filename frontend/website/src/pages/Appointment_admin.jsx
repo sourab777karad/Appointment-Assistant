@@ -314,7 +314,10 @@ const Appointment_admin = () => {
       {contextMenuVisible && (
         <div
           className="context-menu"
-          style={{ top: contextMenuPosition.y, left: contextMenuPosition.x }}
+          style={{
+            top: contextMenuPosition.y,
+            left: contextMenuPosition.x,
+          }}
         >
           <div onClick={() => handleMenuOption("Option 1")}>Option 1</div>
           <div onClick={() => handleMenuOption("Option 2")}>Option 2</div>

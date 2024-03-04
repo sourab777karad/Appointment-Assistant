@@ -20,7 +20,7 @@ const Home = () => {
             </Link>
             <Link to="/Appointment-past">
               <Button className="text-[16px] w-[400px] h-[100px] border-2 border-black bg-red-400 mt-8 rounded-2xl">
-                Previous Appointments
+                Previous Appointmentss
               </Button>
             </Link>
           </div>

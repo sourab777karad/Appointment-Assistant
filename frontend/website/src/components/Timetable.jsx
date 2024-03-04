@@ -4,7 +4,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
   // Helper function to get scheduled slot details for a given day and time
   const getScheduledSlotDetails = (day, time) => {
     const slot = scheduledSlots.find(
-      (slot) => slot.day === day && slot.time === time
+      (slot) => slot.day === day && slot.time === time,
     );
     return slot ? (
       <div>
@@ -46,7 +46,8 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
             <div
               className={`border-r border-b border-gray-300 p-4 ${
                 scheduledSlots.some(
-                  (slot) => slot.day === "Monday" && slot.time === timeslot.time
+                  (slot) =>
+                    slot.day === "Monday" && slot.time === timeslot.time,
                 )
                   ? "bg-green-200"
                   : ""
@@ -58,7 +59,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
               className={`border-r border-b border-gray-300 p-4 ${
                 scheduledSlots.some(
                   (slot) =>
-                    slot.day === "Tuesday" && slot.time === timeslot.time
+                    slot.day === "Tuesday" && slot.time === timeslot.time,
                 )
                   ? "bg-green-200"
                   : ""
@@ -70,7 +71,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
               className={`border-r border-b border-gray-300 p-4 ${
                 scheduledSlots.some(
                   (slot) =>
-                    slot.day === "Wednesday" && slot.time === timeslot.time
+                    slot.day === "Wednesday" && slot.time === timeslot.time,
                 )
                   ? "bg-green-200"
                   : ""
@@ -82,7 +83,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
               className={`border-r border-b border-gray-300 p-4 ${
                 scheduledSlots.some(
                   (slot) =>
-                    slot.day === "Thursday" && slot.time === timeslot.time
+                    slot.day === "Thursday" && slot.time === timeslot.time,
                 )
                   ? "bg-green-200"
                   : ""
@@ -93,7 +94,8 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
             <div
               className={`border-r border-b border-gray-300 p-4 ${
                 scheduledSlots.some(
-                  (slot) => slot.day === "Friday" && slot.time === timeslot.time
+                  (slot) =>
+                    slot.day === "Friday" && slot.time === timeslot.time,
                 )
                   ? "bg-green-200"
                   : ""
@@ -105,7 +107,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
               className={`border-r border-b border-gray-300 p-4 ${
                 scheduledSlots.some(
                   (slot) =>
-                    slot.day === "Saturday" && slot.time === timeslot.time
+                    slot.day === "Saturday" && slot.time === timeslot.time,
                 )
                   ? "bg-green-200"
                   : ""

@@ -55,7 +55,8 @@ const Appointment_past = () => {
     if (!selectedYear || !selectedMonth) return []; // If year or month not selected, return empty array
     const filteredAppointments = pastAppointments.filter(
       (appointment) =>
-        appointment.year === selectedYear && appointment.month === selectedMonth
+        appointment.year === selectedYear &&
+        appointment.month === selectedMonth,
     );
     console.log("Filtered Appointments:", filteredAppointments);
     return filteredAppointments;
