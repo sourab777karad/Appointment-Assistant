@@ -14,54 +14,74 @@ import { UserInfoContextProvider } from "./context/UserInfoContext.jsx";
 import { app } from "./firebase.js";
 
 function App() {
-  const location = useLocation(); // Hook to get current location
-  const [isNavbarPresent, setisNavbarPresent] = useState(true); // Initially set Navbar as present
+	const location = useLocation(); // Hook to get current location
+	const [isNavbarPresent, setisNavbarPresent] = useState(true); // Initially set Navbar as present
 
-  useEffect(() => {
-    // Array of paths where Navbar should not be present
-    const pathsWithoutNavbar = ["/", "/signup", "/forgot_password"];
+	useEffect(() => {
+		// Array of paths where Navbar should not be present
+		const pathsWithoutNavbar = ["/", "/signup", "/forgot_password"];
 
-    // Check if current path is in the array of paths without Navbar
-    const isPathWithoutNavbar = pathsWithoutNavbar.includes(location.pathname);
+		// Check if current path is in the array of paths without Navbar
+		const isPathWithoutNavbar = pathsWithoutNavbar.includes(
+			location.pathname
+		);
 
-    // Update isNavbarPresent based on the result
-    setisNavbarPresent(!isPathWithoutNavbar);
-  }, [location]); // useEffect dependency changed to location
+		// Update isNavbarPresent based on the result
+		setisNavbarPresent(!isPathWithoutNavbar);
+	}, [location]); // useEffect dependency changed to location
 
-  return (
-    <BaseUrlProvider>
-      <UserInfoContextProvider>
-        <Toaster
-          position="top-right"
-          reverseOrder={false}
-          toastOptions={{
-            style: {
-              background: "#333",
-              color: "#fff",
-            },
-          }}
-        />
-        <div className="z-1">
-          {isNavbarPresent && <NavbarWithSearch isNavbarPresent={true} />}{" "}
-          {/* Render Navbar based on state */}
-          <div>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/appointment-user" element={<Appointment />} />
-              <Route
-                path="/appointment-admin"
-                element={<Appointment_admin />}
-              />
-              <Route path="/appointment-past" element={<Appointment_past />} />
-              <Route path="/profile" element={<Profile />} />
-            </Routes>
-          </div>
-        </div>
-      </UserInfoContextProvider>
-    </BaseUrlProvider>
-  );
+	return (
+		<BaseUrlProvider>
+			<UserInfoContextProvider>
+				<Toaster
+					position="top-right"
+					reverseOrder={false}
+					toastOptions={{
+						style: {
+							background: "#333",
+							color: "#fff",
+						},
+					}}
+				/>
+				<div className="z-1">
+					{isNavbarPresent && (
+						<NavbarWithSearch isNavbarPresent={true} />
+					)}{" "}
+					{/* Render Navbar based on state */}
+					<div>
+						<Routes>
+							<Route
+								path="/"
+								element={
+									<Login setisNavbarPresent={setisNavbarPresent} />
+								}
+							/>
+							<Route path="/home" element={<Home />} />
+							<Route
+								path="/signup"
+								element={
+									<Signup setisNavbarPresent={setisNavbarPresent} />
+								}
+							/>
+							<Route
+								path="/appointment-user"
+								element={<Appointment />}
+							/>
+							<Route
+								path="/appointment-admin"
+								element={<Appointment_admin />}
+							/>
+							<Route
+								path="/appointment-past"
+								element={<Appointment_past />}
+							/>
+							<Route path="/profile" element={<Profile />} />
+						</Routes>
+					</div>
+				</div>
+			</UserInfoContextProvider>
+		</BaseUrlProvider>
+	);
 }
 
 export default App;
