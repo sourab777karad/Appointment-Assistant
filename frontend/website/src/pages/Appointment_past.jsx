@@ -55,15 +55,14 @@ const Appointment_past = () => {
     if (!selectedYear || !selectedMonth) return []; // If year or month not selected, return empty array
     const filteredAppointments = pastAppointments.filter(
       (appointment) =>
-        appointment.year === selectedYear &&
-        appointment.month === selectedMonth,
+        appointment.year === selectedYear && appointment.month === selectedMonth
     );
     console.log("Filtered Appointments:", filteredAppointments);
     return filteredAppointments;
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-24">
       <h1 className="text-3xl font-bold mb-8 text-center">Past Appointments</h1>
       <YearScroll onSelectYear={handleYearSelect} />
       <div className="grid grid-cols-4 gap-4 mb-8">

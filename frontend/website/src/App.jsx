@@ -1,15 +1,7 @@
-// importing basics
 import { useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
-
-// importing css
-import "./index.css";
-
-// importing components
 import NavbarWithSearch from "./components/NavbarWithSearch.jsx";
-
-// importing pages
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
 import Home from "./pages/Home.jsx";
@@ -19,45 +11,24 @@ import Appointment_past from "./pages/Appointment_past";
 import Profile from "./pages/Profile";
 import { BaseUrlProvider } from "./context/BaseUrlContext.jsx";
 import { UserInfoContextProvider } from "./context/UserInfoContext.jsx";
-
-// importing firebase
 import { app } from "./firebase.js";
 
-/**
- * The main component of the application.
- * @returns {JSX.Element} The rendered App component.
- */
 function App() {
-	/**
-	 * State variable to determine if the navbar is present.
-	 */
-	const [isNavbarPresent, setisNavbarPresent] = useState(false);
+	const location = useLocation(); // Hook to get current location
+	const [isNavbarPresent, setisNavbarPresent] = useState(true); // Initially set Navbar as present
 
-	/**
-	 * Custom theme object for the application.
-	 */
-	const customTheme = {
-		button: {
-			defaultProps: {},
-			valid: {},
-			styles: {},
-		},
-	};
-
-	/**
-	 * Effect hook to update the navbar presence based on the current URL path.
-	 */
 	useEffect(() => {
-		if (
-			window.location.pathname === "/signup" ||
-			window.location.pathname === "/forgot_password" ||
-			window.location.pathname === "/"
-		) {
-			setisNavbarPresent(false);
-		} else {
-			setisNavbarPresent(true);
-		}
-	}, [isNavbarPresent]);
+		// Array of paths where Navbar should not be present
+		const pathsWithoutNavbar = ["/", "/signup", "/forgot_password"];
+
+		// Check if current path is in the array of paths without Navbar
+		const isPathWithoutNavbar = pathsWithoutNavbar.includes(
+			location.pathname
+		);
+
+		// Update isNavbarPresent based on the result
+		setisNavbarPresent(!isPathWithoutNavbar);
+	}, [location]); // useEffect dependency changed to location
 
 	return (
 		<BaseUrlProvider>
@@ -72,21 +43,26 @@ function App() {
 						},
 					}}
 				/>
-				<div className="">
-					{isNavbarPresent ? (
-						<NavbarWithSearch
-							setisNavbarPresent={setisNavbarPresent}
-						/>
-					) : null}
+				<div className="z-1">
+					{isNavbarPresent && (
+						<NavbarWithSearch isNavbarPresent={true} />
+					)}{" "}
+					{/* Render Navbar based on state */}
 					<div>
 						<Routes>
-							<Route path="/" element={<Login
-								setisNavbarPresent={setisNavbarPresent}
-							/>} />
+							<Route
+								path="/"
+								element={
+									<Login setisNavbarPresent={setisNavbarPresent} />
+								}
+							/>
 							<Route path="/home" element={<Home />} />
-							<Route path="/signup" element={<Signup
-								setisNavbarPresent={setisNavbarPresent}
-							/>} />
+							<Route
+								path="/signup"
+								element={
+									<Signup setisNavbarPresent={setisNavbarPresent} />
+								}
+							/>
 							<Route
 								path="/appointment-user"
 								element={<Appointment />}

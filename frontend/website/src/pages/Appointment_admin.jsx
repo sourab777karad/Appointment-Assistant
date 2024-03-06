@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Timetable from "../components/Timetable";
 
 const timetableData = [
@@ -302,8 +302,26 @@ const scheduledSlots = [
 ];
 
 const Appointment_admin = () => {
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuPosition, setContextMenuPosition] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    setContextMenuVisible(true);
+    setContextMenuPosition({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleMenuOption = (option) => {
+    // Handle menu option click here
+    console.log("Selected option:", option);
+    setContextMenuVisible(false);
+  };
+
   return (
-    <div>
+    <div className="mt-32">
       <Timetable
         timetableData={timetableData}
         scheduledSlots={scheduledSlots}
