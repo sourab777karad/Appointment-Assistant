@@ -56,7 +56,7 @@ const Appointment_user = (myappointments) => {
     return canceledAppointments.includes(index);
   };
   return (
-    <div className="body">
+    <div className="body mt-24">
       <div className="ap-heading">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold mb-4">Your Appointments</h1>
