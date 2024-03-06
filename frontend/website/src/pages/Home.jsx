@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
-import Carousel from "../components/MyCarousel";
+import TeacherList from "../components/TeacherList";
 import { Button, Input } from "@material-tailwind/react";
-import { useState } from "react"; // Import useState hook
-import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Import react-toastify stylesheet
+import { useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../pages/style.css";
 
 const Home = () => {
-  // Sample teacher names, you can replace them with your data
   const teacherNames = [
     "Teacher 1",
     "Teacher 2",
@@ -16,18 +15,22 @@ const Home = () => {
     "Teacher 5",
   ];
 
-  // State variables for form inputs and errors
+  const appointments = [
+    { time: "9:00 AM", appointee: "John Doe" },
+    { time: "10:00 AM", appointee: "Jane Smith" },
+    { time: "11:00 AM", appointee: "Michael Johnson" },
+    { time: "12:00 PM", appointee: "Emily Davis" },
+  ];
+
   const [selectedTeacher, setSelectedTeacher] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [topic, setTopic] = useState("");
   const [errors, setErrors] = useState({});
 
-  // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validation rules
     let errors = {};
     if (!selectedTeacher) {
       errors.teacher = "Please select a teacher";
@@ -42,14 +45,10 @@ const Home = () => {
       errors.topic = "Please enter a topic";
     }
 
-    // Set errors state
     setErrors(errors);
 
-    // If no errors, proceed with form submission
     if (Object.keys(errors).length === 0) {
-      // Your form submission logic here
       console.log("Form submitted successfully!");
-      // Show notification
       toast.success("Appointment Request Sent Successfully", {
         position: "top-right",
         autoClose: 3000,
@@ -63,13 +62,12 @@ const Home = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative mt-32">
       <ToastContainer />
-      <h2 className="text-2xl flex text-[48px] mt-12 mb-8 font-bold  items-center justify-center">
+      <h2 className="text-2xl flex text-[48px] mt-12 mb-8 font-bold items-center justify-center">
         Make an Appointment
       </h2>
       <div className="flex flex-col items-center justify-center ">
-        {/* Form for making appointments */}
         <div className="p-6 border border-gray-300 rounded-lg w-[800px]">
           <form onSubmit={handleSubmit}>
             <div className="mb-8">
@@ -108,7 +106,6 @@ const Home = () => {
                 <option value="">Select a time slot</option>
                 <option value="3pm-4pm">3pm - 4pm</option>
                 <option value="5pm-6pm">5pm - 6pm</option>
-                {/* Add more time slot options as needed */}
               </select>
               {errors.time && (
                 <p className="text-red-500 mt-1">{errors.time}</p>
@@ -153,13 +150,12 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Remaining content */}
-      <div className="flex w-full p-auto m-auto items-center">
-        <div className="ml-12 mt-24 w-[40%] h-[40%] rounded-xl mr-4">
-          <Carousel />
+      <div className="flex w-full p-auto m-auto h-[100vh] justify-center items-center">
+        <div className="ml-12 mt-8 w-[50%] rounded-xl mr-4">
+          <TeacherList />
         </div>
 
-        <div className="m-auto p-auto flex justify-center w-[50%]">
+        <div className="m-auto p-auto flex justify-center items-center w-[50%]">
           <div className="flex flex-col">
             <Link to="/Appointment-user">
               <Button className="text-lg w-[400px] h-[100px] border-2 border-black bg-green-400 mt-20 rounded-2xl">
@@ -175,9 +171,11 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="flex relative w-[90vw] h-[100vh] mt-2 m-auto p-auto">
-        <div className="m-auto p-auto items-center">
-          <table className="neumorphic">
+      <div className="flex relative w-[100%] h-[100vh] mt-2 ">
+        <div className="m-auto p-auto  flex flex-col items-center justify-center">
+          <h2 className="text-[48px] mb-12">Your Appointments</h2>
+
+          <table className="neumorphic w-[80%]">
             <thead>
               <tr>
                 <th className="text-lg">Time</th>
@@ -185,22 +183,12 @@ const Home = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Cell 1</td>
-                <td>Cell 2</td>
-              </tr>
-              <tr>
-                <td>Cell 1</td>
-                <td>Cell 2</td>
-              </tr>
-              <tr>
-                <td>Cell 1</td>
-                <td>Cell 2</td>
-              </tr>
-              <tr>
-                <td>Cell 1</td>
-                <td>Cell 2</td>
-              </tr>
+              {appointments.map((appointment, index) => (
+                <tr key={index}>
+                  <td>{appointment.time}</td>
+                  <td>{appointment.appointee}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

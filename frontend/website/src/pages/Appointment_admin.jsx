@@ -321,7 +321,7 @@ const Appointment_admin = () => {
   };
 
   return (
-    <div>
+    <div className="mt-32">
       <Timetable
         timetableData={timetableData}
         scheduledSlots={scheduledSlots}

@@ -2,7 +2,7 @@ import React from "react";
 
 const Profile = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-200">
+    <div className="min-h-screen flex mt-16 items-center justify-center bg-gray-200">
       <div className="flex justify-between w-4/5 max-w-screen-xl gap-20">
         {/* Profile Information */}
         <div className="w-2/5">
