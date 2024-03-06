@@ -7,14 +7,33 @@ import {
   IconButton,
   Input,
 } from "@material-tailwind/react";
-import { BiCalendar, BiCalendarCheck, BiUser, BiBell } from "react-icons/bi"; // Importing icons from React Icons library
+import {
+  BiCalendar,
+  BiCalendarCheck,
+  BiUser,
+  BiBell,
+  BiSearch,
+} from "react-icons/bi";
 import logo from "../assets/logo.png";
 
-export default function NavbarWithSearch({ setisNavbarPresent }) {
+function NavbarWithSearch({ isNavbarPresent }) {
   const [openNav, setOpenNav] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "Notification 1" },
+    { id: 2, text: "Notification 2" },
+    { id: 3, text: "Notification 3" },
+    { id: 4, text: "Notification 1" },
+    { id: 5, text: "Notification 2" },
+    { id: 6, text: "Notification 3" },
+  ]);
 
-  if (!setisNavbarPresent) {
-    return <></>;
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  if (!isNavbarPresent) {
+    return null;
   }
 
   const navList = (
@@ -59,18 +78,44 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-1 font-medium"
+        className="flex items-center gap-x-2 p-1 font-medium relative"
       >
         <BiBell size={25} />
-        <a href="#" className="flex items-center">
-          Notifications
-        </a>
+        <div className="flex items-center">
+          <Button
+            size="sm"
+            onClick={handleNotificationClick}
+            ripple="light"
+            className="bg-white text-black"
+          >
+            Notifications
+          </Button>
+          {showNotifications && (
+            <div className="absolute left-0 mt-2 w-72 h-full rounded-lg shadow-lg bg-white z-50">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className="p-2 cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleNotificationClick(notification.id)}
+                >
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                  >
+                    {notification.text}
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </Typography>
     </ul>
   );
 
   return (
-    <Navbar className="mx-auto max-w-[90%]  py-2  lg:py-4">
+    <Navbar className="mx-auto max-w-[90%] py-2 lg:py-4">
       <div className="container flex flex-wrap items-center justify-between text-blue-gray-900">
         <Typography
           as="a"
@@ -84,7 +129,7 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
               height="50"
               width="50"
               alt="Logo"
-            ></img>
+            />
           </Link>
         </Typography>
 
@@ -98,14 +143,16 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
               containerProps={{
                 className: "min-w-[288px]",
               }}
-              className=" !border-t-blue-gray-300 pl-9 placeholder:text-blue-gray-300 focus:!border-blue-gray-300"
+              className="!border-t-blue-gray-300 pl-9 placeholder:text-blue-gray-300 focus:!border-blue-gray-300"
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
             />
-            <div className="!absolute left-3 top-[13px]"></div>
+            <div className="absolute left-3 top-[13px]">
+              <BiSearch size={20} />
+            </div>
           </div>
-          <Button size="md" className="rounded-lg ">
+          <Button size="md" className="rounded-lg">
             Search
           </Button>
         </div>
@@ -151,3 +198,5 @@ export default function NavbarWithSearch({ setisNavbarPresent }) {
     </Navbar>
   );
 }
+
+export default NavbarWithSearch;
