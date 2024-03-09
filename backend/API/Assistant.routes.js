@@ -6,11 +6,12 @@ const upload = multer({ storage: multer.memoryStorage()})
 const router = express.Router()
 
 //rest of the routes.
-router.post('/test',authenticator.TokenAuthenticator, assistantCtrl.test)
 
-router.post('/login',assistantCtrl.login)
+router.post('/are-user-details-filled',authenticator.TokenAuthenticator, assistantCtrl.areUserDetailsFilled)
 
-router.post('/signup', assistantCtrl.signup)
+router.post('/add-new-user',authenticator.TokenAuthenticator, assistantCtrl.addNewUser)
+
+router.post('/update-user-details',authenticator.TokenAuthenticator, assistantCtrl.updateUserDetails)
 
 router.post('/get-appointment',authenticator.TokenAuthenticator, assistantCtrl.getAppointment)
 
