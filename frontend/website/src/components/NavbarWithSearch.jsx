@@ -1,204 +1,532 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
-  Navbar,
-  Typography,
-  Button,
-  IconButton,
-  Input,
+	Navbar,
+	Typography,
 } from "@material-tailwind/react";
-import {
-  BiCalendar,
-  BiCalendarCheck,
-  BiUser,
-  BiBell,
-  BiSearch,
-} from "react-icons/bi";
+
 import logo from "../assets/logo.png";
 
 function NavbarWithSearch({ isNavbarPresent }) {
-  const [openNav, setOpenNav] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "Notification 1" },
-    { id: 2, text: "Notification 2" },
-    { id: 3, text: "Notification 3" },
-    { id: 4, text: "Notification 1" },
-    { id: 5, text: "Notification 2" },
-    { id: 6, text: "Notification 3" },
-  ]);
+	const navigate = useNavigate();
+	const [openNav, setOpenNav] = useState(false);
+	const [showNotifications, setShowNotifications] = useState(false);
+	const [notifications, setNotifications] = useState([
+		{ id: 1, text: "Notification 1" },
+		{ id: 2, text: "Notification 2" },
+		{ id: 3, text: "Notification 3" },
+		{ id: 4, text: "Notification 1" },
+		{ id: 5, text: "Notification 2" },
+		{ id: 6, text: "Notification 3" },
+	]);
 
-  const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications);
-  };
+	const handleNotificationClick = () => {
+		setShowNotifications(!showNotifications);
+	};
 
-  if (!isNavbarPresent) {
-    return null;
-  }
+	if (!isNavbarPresent) {
+		return null;
+	}
 
-  const navList = (
-    <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="flex items-center gap-x-2 p-1 font-medium"
-      >
-        <BiCalendar size={25} />
-        <Link to="/appointment-user" className="flex items-center">
-          Appointments
-        </Link>
-      </Typography>
+	const navList = (
+		<ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
+			<Typography
+				as="li"
+				variant="small"
+				color="blue-gray"
+				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-yellow-900"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					className="h-7 w-7"
+					viewBox="0 0 24 24"
+				>
+					<g
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<g
+							fill="none"
+							stroke-dasharray="10"
+							stroke-dashoffset="10"
+							stroke-width="2"
+						>
+							<path d="M3 5L5 7L9 3">
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									dur="0.2s"
+									values="10;0"
+								></animate>
+							</path>
+							<path d="M3 12L5 14L9 10">
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="0.5s"
+									dur="0.2s"
+									values="10;0"
+								></animate>
+							</path>
+							<path d="M3 19L5 21L9 17">
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="1s"
+									dur="0.2s"
+									values="10;0"
+								></animate>
+							</path>
+						</g>
+						<g
+							fill="currentColor"
+							fillOpacity="0"
+							stroke-dasharray="22"
+							stroke-dashoffset="22"
+						>
+							<rect
+								width="9"
+								height="3"
+								x="11.5"
+								y="3.5"
+								rx="1.5"
+							>
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="0.2s"
+									dur="0.5s"
+									values="22;0"
+								></animate>
+								<animate
+									fill="freeze"
+									attributeName="fill-opacity"
+									begin="1.7s"
+									dur="0.5s"
+									values="0;1"
+								></animate>
+							</rect>
+							<rect
+								width="9"
+								height="3"
+								x="11.5"
+								y="10.5"
+								rx="1.5"
+							>
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="0.7s"
+									dur="0.5s"
+									values="22;0"
+								></animate>
+								<animate
+									fill="freeze"
+									attributeName="fill-opacity"
+									begin="1.9s"
+									dur="0.5s"
+									values="0;1"
+								></animate>
+							</rect>
+							<rect
+								width="9"
+								height="3"
+								x="11.5"
+								y="17.5"
+								rx="1.5"
+							>
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="1.2s"
+									dur="0.5s"
+									values="22;0"
+								></animate>
+								<animate
+									fill="freeze"
+									attributeName="fill-opacity"
+									begin="2.1s"
+									dur="0.5s"
+									values="0;1"
+								></animate>
+							</rect>
+						</g>
+					</g>
+				</svg>
+				<Link to="/appointment-past" className="flex items-center">
+					Past Appointments
+				</Link>
+			</Typography>
+			<Typography
+				as="li"
+				variant="small"
+				color="blue-gray"
+				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-green-900"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					className="h-7 w-7"
+					viewBox="0 0 24 24"
+				>
+					<g
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-width="2"
+					>
+						<g stroke-dasharray="12" stroke-dashoffset="12">
+							<path d="M12 7V17">
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="0.8s"
+									dur="0.2s"
+									values="12;0"
+								></animate>
+							</path>
+							<path d="M7 12H17">
+								<animate
+									fill="freeze"
+									attributeName="stroke-dashoffset"
+									begin="0.6s"
+									dur="0.2s"
+									values="12;0"
+								></animate>
+							</path>
+						</g>
+						<path
+							stroke-dasharray="60"
+							stroke-dashoffset="60"
+							d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
+						>
+							<animate
+								fill="freeze"
+								attributeName="stroke-dashoffset"
+								dur="0.5s"
+								values="60;0"
+							></animate>
+						</path>
+					</g>
+				</svg>
+				<Link to="/new_appointment" className="flex items-center">
+					<span className="text-green-900">Make New Appointment</span>
+				</Link>
+			</Typography>
+			<Typography
+				as="li"
+				variant="small"
+				color="blue-gray"
+				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					className="h-7 w-7"
+					viewBox="0 0 24 24"
+				>
+					<g
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+					>
+						<rect
+							width="16"
+							height="16"
+							x="4"
+							y="4"
+							stroke-dasharray="64"
+							stroke-dashoffset="64"
+							rx="1"
+						>
+							<animate
+								fill="freeze"
+								attributeName="stroke-dashoffset"
+								dur="0.5s"
+								values="64;0"
+							></animate>
+						</rect>
+						<path
+							stroke-dasharray="6"
+							stroke-dashoffset="6"
+							d="M7 4V2M17 4V2"
+						>
+							<animate
+								fill="freeze"
+								attributeName="stroke-dashoffset"
+								begin="0.5s"
+								dur="0.2s"
+								values="6;0"
+							></animate>
+						</path>
+						<path
+							stroke-dasharray="12"
+							stroke-dashoffset="12"
+							d="M7 11H17"
+						>
+							<animate
+								fill="freeze"
+								attributeName="stroke-dashoffset"
+								begin="0.8s"
+								dur="0.2s"
+								values="12;0"
+							></animate>
+						</path>
+						<path
+							stroke-dasharray="9"
+							stroke-dashoffset="9"
+							d="M7 15H14"
+						>
+							<animate
+								fill="freeze"
+								attributeName="stroke-dashoffset"
+								begin="1s"
+								dur="0.2s"
+								values="9;0"
+							></animate>
+						</path>
+					</g>
+					<rect width="14" height="0" x="5" y="5" fill="currentColor">
+						<animate
+							fill="freeze"
+							attributeName="height"
+							begin="0.5s"
+							dur="0.2s"
+							values="0;3"
+						></animate>
+					</rect>
+				</svg>
+				<Link to="/appointment-user" className="flex items-center">
+					Upcoming Appointments
+				</Link>
+			</Typography>
+		</ul>
+	);
 
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="flex items-center gap-x-2 p-1 font-medium"
-      >
-        <BiCalendarCheck size={25} />
-        <Link to="/appointment-past" className="flex items-center">
-          Past Appointments
-        </Link>
-      </Typography>
+	return (
+		<div className="fixed top-0 w-full z-50">
+			<Navbar className="mx-auto max-w-[95%] py-2">
+				<div className="flex flex-wrap items-center justify-between text-blue-gray-900">
+					{/* logo */}
+					<Typography
+						as="a"
+						href="#"
+						className="mr-4 cursor-pointer py-1.5 font-medium"
+					>
+						<Link to="/home">
+							<img
+								className="p-0 m-0 scale-150"
+								src={logo}
+								height="50"
+								width="50"
+								alt="Logo"
+							/>
+						</Link>
+					</Typography>
+					{/* navlist */}
+					<div className="hidden lg:block">{navList}</div>
 
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="flex items-center gap-x-2 p-1 font-medium"
-      >
-        <BiUser size={25} />
-        <Link to="/profile" className="flex items-center">
-          Account
-        </Link>
-      </Typography>
-
-      <Typography
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="flex items-center gap-x-2 p-1 font-medium relative"
-      >
-        <BiBell size={25} />
-        <div className="flex items-center">
-          <Button
-            size="sm"
-            onClick={handleNotificationClick}
-            ripple="light"
-            className="bg-white text-black"
-          >
-            Notifications
-          </Button>
-          {showNotifications && (
-            <div className="absolute left-0 mt-2 w-72 h-full rounded-lg shadow-lg bg-white z-50">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className="p-2 cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleNotificationClick(notification.id)}
-                >
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-medium"
-                  >
-                    {notification.text}
-                  </Typography>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </Typography>
-    </ul>
-  );
-
-  return (
-    <div className="fixed top-0 w-full z-50">
-      <Navbar className="mx-auto max-w-[90%] py-2 lg:py-4">
-        <div className="container flex flex-wrap items-center justify-between text-blue-gray-900">
-          <Typography
-            as="a"
-            href="#"
-            className="mr-4 cursor-pointer py-1.5 font-medium"
-          >
-            <Link to="/home">
-              <img
-                className="p-0 m-0 scale-150"
-                src={logo}
-                height="50"
-                width="50"
-                alt="Logo"
-              />
-            </Link>
-          </Typography>
-
-          <div className="hidden lg:block">{navList}</div>
-
-          <div className="hidden items-center gap-x-2 lg:flex">
-            <div className="relative flex w-full gap-2 md:w-max">
-              <Input
-                type="search"
-                placeholder="Search"
-                containerProps={{
-                  className: "min-w-[288px]",
-                }}
-                className="!border-t-blue-gray-300 pl-9 placeholder:text-blue-gray-300 focus:!border-blue-gray-300"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-              />
-              <div className="absolute left-3 top-[13px]">
-                <BiSearch size={20} />
-              </div>
-            </div>
-            <Button size="md" className="rounded-lg">
-              Search
-            </Button>
-          </div>
-          <IconButton
-            variant="text"
-            className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
-            ripple={false}
-            onClick={() => setOpenNav(!openNav)}
-          >
-            {openNav ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                className="h-6 w-6"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            )}
-          </IconButton>
-        </div>
-        {openNav && <div className="lg:hidden">{navList}</div>}
-      </Navbar>
-    </div>
-  );
+					<div className="flex">
+						{/* Search */}
+						<Typography
+							as="li"
+							variant="small"
+							color="blue-gray"
+							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
+							onClick={() => navigate("/profile")}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-7 w-7"
+								viewBox="0 0 24 24"
+							>
+								<g
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-width="2"
+								>
+									<path
+										fill="none"
+										stroke-dasharray="16"
+										stroke-dashoffset="16"
+										d="M10.5 13.5L3 21"
+									>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											begin="0.4s"
+											dur="0.2s"
+											values="16;0"
+										></animate>
+									</path>
+									<path
+										fill="currentColor"
+										fillOpacity="0"
+										stroke-dasharray="40"
+										stroke-dashoffset="40"
+										d="M10.7574 13.2426C8.41421 10.8995 8.41421 7.10051 10.7574 4.75736C13.1005 2.41421 16.8995 2.41421 19.2426 4.75736C21.5858 7.10051 21.5858 10.8995 19.2426 13.2426C16.8995 15.5858 13.1005 15.5858 10.7574 13.2426Z"
+									>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											dur="0.4s"
+											values="40;0"
+										></animate>
+										<animate
+											fill="freeze"
+											attributeName="fill-opacity"
+											begin="0.6s"
+											dur="0.15s"
+											values="0;0.3"
+										></animate>
+									</path>
+								</g>
+							</svg>
+						</Typography>
+						{/* Account */}
+						<Typography
+							as="li"
+							variant="small"
+							color="blue-gray"
+							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
+							onClick={() => navigate("/profile")}
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-7 w-7"
+								viewBox="0 0 24 24"
+							>
+								<g
+									fill="currentColor"
+									fillOpacity="0"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+								>
+									<path
+										stroke-dasharray="20"
+										stroke-dashoffset="20"
+										d="M12 5C13.66 5 15 6.34 15 8C15 9.65685 13.6569 11 12 11C10.3431 11 9 9.65685 9 8C9 6.34315 10.3431 5 12 5z"
+									>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											dur="0.4s"
+											values="20;0"
+										></animate>
+									</path>
+									<path
+										stroke-dasharray="36"
+										stroke-dashoffset="36"
+										d="M12 14C16 14 19 16 19 17V19H5V17C5 16 8 14 12 14z"
+										opacity="0"
+									>
+										<set
+											attributeName="opacity"
+											begin="0.5s"
+											to="1"
+										></set>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											begin="0.5s"
+											dur="0.4s"
+											values="36;0"
+										></animate>
+									</path>
+									<animate
+										fill="freeze"
+										attributeName="fill-opacity"
+										begin="0.9s"
+										dur="0.5s"
+										values="0;1"
+									></animate>
+								</g>
+							</svg>
+						</Typography>
+						{/* Log out */}
+						<Typography
+							as="li"
+							variant="small"
+							color="blue-gray"
+							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-7 w-7"
+								viewBox="0 0 24 24"
+								onClick={() => {
+									navigate("/");
+								}}
+							>
+								<g
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-width="2"
+								>
+									<path
+										stroke-dasharray="46"
+										stroke-dashoffset="46"
+										d="M16 5V4C16 3.44772 15.5523 3 15 3H6C5.44771 3 5 3.44772 5 4V20C5 20.5523 5.44772 21 6 21H15C15.5523 21 16 20.5523 16 20V19"
+									>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											dur="0.5s"
+											values="46;0"
+										></animate>
+									</path>
+									<path
+										stroke-dasharray="12"
+										stroke-dashoffset="12"
+										d="M10 12h11"
+										opacity="0"
+									>
+										<set
+											attributeName="opacity"
+											begin="0.6s"
+											to="1"
+										></set>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											begin="0.6s"
+											dur="0.2s"
+											values="12;0"
+										></animate>
+									</path>
+									<path
+										stroke-dasharray="6"
+										stroke-dashoffset="6"
+										d="M21 12l-3.5 -3.5M21 12l-3.5 3.5"
+										opacity="0"
+									>
+										<set
+											attributeName="opacity"
+											begin="0.8s"
+											to="1"
+										></set>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											begin="0.8s"
+											dur="0.2s"
+											values="6;0"
+										></animate>
+									</path>
+								</g>
+							</svg>
+						</Typography>
+					</div>
+				</div>
+				{openNav && <div className="lg:hidden">{navList}</div>}
+			</Navbar>
+		</div>
+	);
 }
 
 export default NavbarWithSearch;

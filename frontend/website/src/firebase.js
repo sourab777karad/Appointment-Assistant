@@ -1,17 +1,14 @@
-import {
-	initializeApp,
-} from "firebase/app";
+import { initializeApp } from "firebase/app";
 
 import { GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-	apiKey: "AIzaSyCiQAtx17n-LmaZRK5Gq7yCPYURG19ZSUE",
-	projectId: "appointment-assistant-2c9de",
-	authDomain: "appointment-assistant-2c9de.firebaseapp.com",
+	apiKey: "AIzaSyC3n_giJsoJsyVBWB6Bp4kWAjibEofEALo",
+	projectId: "banded-access-416709",
+	authDomain: "banded-access-416709.firebaseapp.com",
 };
 
 const app = initializeApp(firebaseConfig);
 const provider = new GoogleAuthProvider();
-
 
 export { app, provider };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import NavbarWithSearch from "./components/NavbarWithSearch.jsx";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import { BaseUrlProvider } from "./context/BaseUrlContext.jsx";
 import { UserInfoContextProvider } from "./context/UserInfoContext.jsx";
 import { app } from "./firebase.js";
+import NewAppointment from "./pages/NewAppointment.jsx";
 
 function App() {
 	const location = useLocation(); // Hook to get current location
@@ -53,14 +54,18 @@ function App() {
 							<Route
 								path="/"
 								element={
-									<Login setisNavbarPresent={setisNavbarPresent} />
+									<Login
+										setisNavbarPresent={setisNavbarPresent}
+									/>
 								}
 							/>
 							<Route path="/home" element={<Home />} />
 							<Route
 								path="/signup"
 								element={
-									<Signup setisNavbarPresent={setisNavbarPresent} />
+									<Signup
+										setisNavbarPresent={setisNavbarPresent}
+									/>
 								}
 							/>
 							<Route
@@ -74,6 +79,10 @@ function App() {
 							<Route
 								path="/appointment-past"
 								element={<Appointment_past />}
+							/>
+							<Route
+								path="/new_appointment"
+								element={<NewAppointment />}
 							/>
 							<Route path="/profile" element={<Profile />} />
 						</Routes>

@@ -14,6 +14,7 @@ import {
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	GoogleAuthProvider,
+	sendPasswordResetEmail,
 } from "firebase/auth";
 
 const Login = (props) => {
@@ -115,9 +116,9 @@ const Login = (props) => {
 	};
 
 	const validateEmail = (email) => {
-		// regex check for email
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return emailRegex.test(email);
+		// regex check for domain
+		const domainRegex = /^[\w-]+(\.[\w-]+)*@mitwpu\.edu\.in$/;
+		return domainRegex.test(email);
 	};
 
 	const validatePassword = (password) => {
@@ -132,12 +133,10 @@ const Login = (props) => {
 			toast.error("Please enter a valid email address");
 			return;
 		}
-		// if (!validatePassword(password)) {
-		// 	toast.error(
-		// 		"Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
-		// 	);
-		// 	return;
-		// }
+		if (!validatePassword(password)) {
+			toast.error("Password Invalid. Does not satisfy requirements.");
+			return;
+		}
 
 		const login_promise = loginUser();
 		toast.promise(login_promise, {
@@ -152,6 +151,17 @@ const Login = (props) => {
 			})
 			.catch((error) => {
 				console.log("error logging in", error);
+			});
+	};
+
+	const handleForgotPassword = () => {
+		sendPasswordResetEmail(auth, email)
+			.then(() => {
+				toast.success("Password reset email sent successfully");
+			})
+			.catch((error) => {
+				console.log("error sending password reset email", error);
+				toast.error("Error sending password reset email");
 			});
 	};
 
@@ -188,7 +198,7 @@ const Login = (props) => {
 									</label>
 									<input
 										type="email"
-										placeholder="Enter Email Address"
+										placeholder="example@mitwpu.edu.in"
 										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
 										autoFocus={true}
 										onChange={(e) =>
@@ -216,7 +226,10 @@ const Login = (props) => {
 										required={true}
 									/>
 								</div>
-								<div className="text-right mt-2">
+								<div
+									className="text-right mt-2"
+									onClick={handleForgotPassword}
+								>
 									<a
 										href="#"
 										className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"

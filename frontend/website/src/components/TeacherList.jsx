@@ -14,7 +14,7 @@ export function TeachersList() {
   return (
     <div className="bg-white border-2 border-black rounded-lg neumorphic p-4 ml-4">
       <h2 className="text-2xl  mb-4 flex justify-center items-center">
-        Teacher's Catalogue
+        Teacher Catalogue
       </h2>
       <div className="bg-white border-2 border-black rounded-lg neumorphic p-4 max-h-80 overflow-y-auto">
         <table className="w-full table-fixed">
