@@ -35,19 +35,22 @@ function App() {
 
 	useEffect(() => {
 		// Array of paths where Navbar should not be present
-		const pathsWithoutNavbar = ["/", "/signup", "/forgot_password"];
+		const pathsWithoutNavbar = ["/", "/signup"];
 
 		// Check if current path is in the array of paths without Navbar
 		const isPathWithoutNavbar = pathsWithoutNavbar.includes(
 			location.pathname
 		);
 
-		// Update isNavbarPresent based on the result
-		setisNavbarPresent(!isPathWithoutNavbar);
-
-		if (!isAuthenticated(userToken)) {
-			// replace this with your actual authentication check
-			navigate("/");
+		if (isPathWithoutNavbar) {
+			// Update isNavbarPresent based on the result
+			setisNavbarPresent(false);
+		} else {
+			setisNavbarPresent(true);
+			if (!isAuthenticated(userToken)) {
+				// replace this with your actual authentication check
+				// navigate("/");
+			}
 		}
 	}, [location.pathname, userToken, setisNavbarPresent, navigate]); // useEffect dependency changed to location
 

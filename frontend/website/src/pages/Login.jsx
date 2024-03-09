@@ -14,6 +14,7 @@ import {
 	signInWithPopup,
 	GoogleAuthProvider,
 	sendPasswordResetEmail,
+	sendEmailVerification,
 } from "firebase/auth";
 
 const Login = (props) => {
@@ -24,10 +25,10 @@ const Login = (props) => {
 	const [localUserToken, setLocalUserToken] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [userDetailsFilled, setUserDetailsFilled] = useState(false);
 	const [userFullName, setUserFullName] = useState("");
 	const [userEmail, setUserEmail] = useState("");
 	const [user, setUser] = useState(null);
+	const [firebaseid, setFirebaseid] = useState("");
 
 	useEffect(() => {
 		if (user) {
@@ -35,6 +36,9 @@ const Login = (props) => {
 			setUserEmail(user.email);
 			setUserToken(user.accessToken);
 			setLocalUserToken(user.accessToken);
+			setFirebaseid(user.uid);
+
+			console.log("inside use effect", user.accessToken);
 		}
 	}, [user, setUserFullName, setUserEmail, setUserToken, setLocalUserToken]);
 
@@ -50,23 +54,29 @@ const Login = (props) => {
 		navigate("/home");
 	}
 
-	async function askServerForUserDetails(userToken) {
+	async function askServerForUserDetails(user) {
 		// this function asks the server for user details and returns a promise
 		// if the user details are fetched successfully, the promise is resolved
 		// if the user details are not fetched, the promise is rejected
 		console.log("asking server for user details");
-		console.log("user token: ", userToken);
+		console.log("user token: ", user.accessToken);
 		return new Promise((resolve, reject) => {
 			axios
-				.post(base_url + "/are-user-details-filled", {
-					headers: {
-						authorization: "Bearer " + userToken,
+				.post(
+					base_url + "/are-user-details-filled",
+					{
+						accessToken: user.accessToken,
+						firebase_id: user.uid,
 					},
-				})
+					{
+						headers: {
+							authorization: "Bearer " + user.accessToken,
+						},
+					}
+				)
 				.then((response) => {
 					console.log("user details: ", response.data);
-					setUserDetailsFilled(response.data.filled);
-					resolve();
+					resolve(response.data);
 				})
 				.catch((error) => {
 					console.log("error fetching user details: ", error);
@@ -75,22 +85,27 @@ const Login = (props) => {
 		});
 	}
 
-	async function addUserToDatabase() {
+	async function addUserToDatabase(user) {
 		// this function adds the user to the database and returns a promise
 		// if the user is added successfully, the promise is resolved
 		// if the user is not added, the promise is rejected
 		console.log("adding user to database");
+		console.log("local user token: ", user.accessToken);
 		return new Promise((resolve, reject) => {
 			axios
 				.post(
 					base_url + "/add-new-user",
 					{
-						email: userEmail,
-						fullName: userFullName,
+						email: user.email,
+						full_name: user.displayName,
+						firebase_id: user.uid,
+						profile_pic_url: user.photoURL,
+						room: "",
+						phone_number: user.phoneNumber ? user.phoneNumber : "",
 					},
 					{
 						headers: {
-							Authorization: "Bearer " + localUserToken,
+							authorization: "Bearer " + user.accessToken,
 						},
 					}
 				)
@@ -180,12 +195,11 @@ const Login = (props) => {
 				setUserEmail(user.email);
 				setUserToken(user.accessToken);
 				setLocalUserToken(user.accessToken);
+				setFirebaseid(user.uid);
 				console.log(user.accessToken);
 				console.log("user logged in with Google: ", user);
 				// check if user details are filled
-				const user_details_promise = askServerForUserDetails(
-					user.accessToken
-				);
+				const user_details_promise = askServerForUserDetails(user);
 				toast.promise(user_details_promise, {
 					loading: "Fetching user details...",
 					success: "User details fetched successfully",
@@ -194,16 +208,14 @@ const Login = (props) => {
 				// now if the user details are filled, redirect to home
 				// else, redirect to the user details page
 				user_details_promise
-					.then(() => {
-						if (userDetailsFilled) {
-							redirect();
-						} else {
+					.then((user_details) => {
+						if (user_details.newUser) {
 							// first add the user to the database
-							const add_user_promise = addUserToDatabase();
+							const add_user_promise = addUserToDatabase(user);
 							toast.promise(add_user_promise, {
 								loading: "Adding user to database...",
 								success: "User added to database successfully",
-								error: "You have not filled your details yet. Please fill your details.",
+								error: "Could not add user to database.",
 							});
 							add_user_promise
 								.then(() => {
@@ -217,6 +229,15 @@ const Login = (props) => {
 										error
 									);
 								});
+						}
+						if (user_details.filled) {
+							redirect();
+						} else if (!user.filled) {
+							toast.error(
+								"User details not filled. Please fill your details."
+							);
+							props.setisNavbarPresent(true);
+							navigate("/profile");
 						}
 					})
 					.catch((error) => {
@@ -260,6 +281,31 @@ const Login = (props) => {
 
 		login_promise
 			.then(() => {
+				// check if the users' email is verified
+				const user = auth.currentUser;
+				if (user.emailVerified) {
+					console.log("user email verified");
+				} else {
+					console.log("user email not verified");
+					toast.error("Please verify your email address");
+					// send email verification link
+					sendEmailVerification(user)
+						.then(() => {
+							toast.success(
+								"Email verification link sent successfully"
+							);
+						})
+						.catch((error) => {
+							console.log(
+								"error sending email verification link",
+								error
+							);
+							toast.error(
+								"Error sending email verification link"
+							);
+						});
+					return;
+				}
 				redirect();
 			})
 			.catch((error) => {
@@ -268,6 +314,12 @@ const Login = (props) => {
 	};
 
 	const handleForgotPassword = () => {
+		// make sure email is valid
+		if (!validateEmail(email)) {
+			toast.error("Please enter a valid email address");
+			return;
+		}
+		// send password reset email
 		sendPasswordResetEmail(auth, email)
 			.then(() => {
 				toast.success("Password reset email sent successfully");
@@ -418,7 +470,7 @@ const Login = (props) => {
 									onClick={() => {
 										navigate("/signup");
 									}}
-									className="text-blue-500 hover:text-blue-700 font-semibold"
+									className="text-blue-500 hover:text-blue-700 font-semibold hover:cursor-pointer"
 								>
 									Create an account
 								</a>

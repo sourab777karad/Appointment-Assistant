@@ -98,7 +98,7 @@ const Appointment_past = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {getAppointmentsForSelectedMonth().map((appointment, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md p-4">
+              <div key={index} className="bg-gray-200 rounded-lg shadow-md p-4">
                 <h2 className="text-lg font-bold mb-2">{appointment.title}</h2>
                 <p className="text-gray-600">
                   {appointment.date} {appointment.month}, {appointment.year}

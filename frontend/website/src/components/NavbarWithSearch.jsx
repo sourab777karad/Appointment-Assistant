@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import {
-	Navbar,
-	Typography,
-} from "@material-tailwind/react";
+import { Navbar, Typography } from "@material-tailwind/react";
 
 import logo from "../assets/logo.png";
 
@@ -36,6 +33,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
 				variant="small"
 				color="blue-gray"
 				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-yellow-900"
+				onClick={() => navigate("/appointment-past")}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -155,15 +153,14 @@ function NavbarWithSearch({ isNavbarPresent }) {
 						</g>
 					</g>
 				</svg>
-				<Link to="/appointment-past" className="flex items-center">
-					Past Appointments
-				</Link>
+				Past Appointments
 			</Typography>
 			<Typography
 				as="li"
 				variant="small"
 				color="blue-gray"
 				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-green-900"
+				onClick={() => navigate("/new_appointment")}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -210,15 +207,14 @@ function NavbarWithSearch({ isNavbarPresent }) {
 						</path>
 					</g>
 				</svg>
-				<Link to="/new_appointment" className="flex items-center">
-					<span className="text-green-900">Make New Appointment</span>
-				</Link>
+				<span className="text-green-900">Make New Appointment</span>
 			</Typography>
 			<Typography
 				as="li"
 				variant="small"
 				color="blue-gray"
 				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+				onClick={() => navigate("/appointment-user")}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -298,9 +294,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
 						></animate>
 					</rect>
 				</svg>
-				<Link to="/appointment-user" className="flex items-center">
-					Upcoming Appointments
-				</Link>
+				Upcoming Appointments
 			</Typography>
 		</ul>
 	);

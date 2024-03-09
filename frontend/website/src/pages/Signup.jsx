@@ -9,7 +9,12 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 import { app, provider } from "../firebase";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+	createUserWithEmailAndPassword,
+} from "firebase/auth";
 
 const Signup = (props) => {
 	const auth = getAuth(app);
@@ -20,15 +25,27 @@ const Signup = (props) => {
 	const [fullName, setFullName] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
-
+	const [user, setUser] = useState(null);
+	const [firebaseid, setFirebaseid] = useState("");
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
 	const setUserToken = React.useContext(UserInfoContext).setUserToken;
 	const userToken = React.useContext(UserInfoContext).userToken;
+
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
 		"https://www.searchurcollege.com/blog/wp-content/uploads/2022/12/MIT-WPU.png",
 		"https://media.licdn.com/dms/image/C561BAQE3_siH6TBwIA/company-background_1536_768/0/1583912936297?e=2147483647&v=beta&t=_rQiWPDh2NCVHmpqARsIraO7N75Bh-W-P7FWAggl-qQ",
 	];
+
+	useEffect(() => {
+		if (user) {
+			setUserToken(user.accessToken);
+			setFullName(user.displayName);
+			setEmail(user.email);
+			setFirebaseid(user.uid);
+			console.log("inside use effect", user);
+		}
+	}, [user, setUserToken, setFullName, setEmail, setFirebaseid]);
 
 	let navigate = useNavigate();
 
@@ -37,24 +54,27 @@ const Signup = (props) => {
 		navigate("/home");
 	}
 
-	async function addUserToDatabase() {
+	async function addUserToDatabase(user) {
 		// this function adds the user to the database and returns a promise
 		// if the user is added successfully, the promise is resolved
 		// if the user is not added, the promise is rejected
 		console.log("adding user to database");
+		console.log("local user token: ", user.accessToken);
 		return new Promise((resolve, reject) => {
 			axios
 				.post(
 					base_url + "/add-new-user",
 					{
 						email: email,
-						fullName: fullName,
-						phoneNumber: phoneNumber,
+						full_name: fullName,
+						firebase_id: user.uid,
+						profile_pic_url: user.photoURL,
 						room: room,
+						phone_number: phoneNumber,
 					},
 					{
 						headers: {
-							Authorization: "Bearer " + userToken,
+							authorization: "Bearer " + user.accessToken,
 						},
 					}
 				)
@@ -85,11 +105,14 @@ const Signup = (props) => {
 					// The user was created and signed in.
 					const user = userCredential.user;
 					// You can use the 'user' object here.
+					resolve(user);
 				})
 				.catch((error) => {
 					const errorCode = error.code;
 					const errorMessage = error.message;
 					// Handle errors here.
+					console.log("error signing up: ", errorCode, errorMessage);
+					reject(error);
 				});
 		});
 	};
@@ -97,15 +120,11 @@ const Signup = (props) => {
 	const signUpWithGoogle = () => {
 		return new Promise((resolve, reject) => {
 			signInWithPopup(auth, provider)
-				.then((result) => {
+				.then(async (result) => {
 					// This gives you a Google Access Token. You can use it to access the Google API.
-					const credential =
-						GoogleAuthProvider.credentialFromResult(result);
-					const token = credential.accessToken;
-					const user = result.user;
-					console.log("user logged in: ", user);
-					setUserToken(token);
-					resolve();
+					setUser(result.user);
+					console.log("user logged in: ", result.user);
+					resolve(result.user);
 				})
 				.catch((error) => {
 					console.log("error logging in: ", error);
@@ -151,9 +170,9 @@ const Signup = (props) => {
 		});
 
 		login_promise
-			.then(() => {
-				redirect();
-				const userPromise = addUserToDatabase();
+			.then((user) => {
+				console.log("user logged in with google: ", user);
+				const userPromise = addUserToDatabase(user);
 				toast.promise(userPromise, {
 					loading: "Adding user to database...",
 					success: "User added to database successfully",
@@ -173,6 +192,11 @@ const Signup = (props) => {
 	};
 
 	const handleNormalSignup = (e) => {
+		if (!email || !password || !room || !fullName || !phoneNumber) {
+			toast.error("Please fill all the fields");
+			return;
+		}
+
 		e.preventDefault();
 		// check for all the validations
 		if (!validateAll()) {
@@ -188,8 +212,23 @@ const Signup = (props) => {
 		});
 
 		signup_promise
-			.then(() => {
-				redirect();
+			.then((user) => {
+				console.log("user signed up: ", user);
+				// add user to database
+				const userPromise = addUserToDatabase(user);
+				toast.promise(userPromise, {
+					loading: "Adding user to database...",
+					success: "User added to database successfully",
+					error: "Error adding user to database",
+				});
+
+				userPromise
+					.then(() => {
+						redirect();
+					})
+					.catch((error) => {
+						console.log("error adding user to database", error);
+					});
 			})
 			.catch((error) => {
 				console.log("error signing up", error);
@@ -437,9 +476,7 @@ const Signup = (props) => {
 							type="submit"
 							className="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
         px-4 py-3 mt-6"
-							onClick={() => {
-								handleNormalSignup();
-							}}
+							onClick={handleNormalSignup}
 						>
 							Sign Up!
 						</button>
