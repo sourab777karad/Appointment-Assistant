@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { UserInfoContext } from "../context/UserInfoContext";
 import "../index.css";
-import { NavLink } from "react-router-dom";
 import mit_logo_image from "../assets/mitwpu logo.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -20,12 +19,14 @@ import {
 const Login = (props) => {
 	const auth = getAuth(app);
 
-	const base_url = React.useContext(BaseUrlContext).baseUrl;
-	const setUserToken = React.useContext(UserInfoContext).setUserToken;
-
+	const base_url = useContext(BaseUrlContext).baseUrl;
+	const setUserToken = useContext(UserInfoContext).setUserToken;
+	const userToken = useContext(UserInfoContext).userToken;
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-
+	const [userDetailsFilled, setUserDetailsFilled] = useState(false);
+	const [userFullName, setUserFullName] = useState("");
+	const [userEmail, setUserEmail] = useState("");
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
 		"https://www.searchurcollege.com/blog/wp-content/uploads/2022/12/MIT-WPU.png",
@@ -36,6 +37,64 @@ const Login = (props) => {
 	function redirect() {
 		props.setisNavbarPresent(true);
 		navigate("/home");
+	}
+
+	async function askServerForUserDetails() {
+		// this function asks the server for user details and returns a promise
+		// if the user details are fetched successfully, the promise is resolved
+		// if the user details are not fetched, the promise is rejected
+		console.log("asking server for user details");
+		return new Promise((resolve, reject) => {
+			axios
+				.get(base_url + "/user/details", {
+					headers: {
+						Authorization: "Bearer " + userToken,
+					},
+				})
+				.then((response) => {
+					console.log("user details: ", response.data);
+					setUserDetailsFilled(response.data.filled);
+					resolve();
+				})
+				.catch((error) => {
+					console.log("error fetching user details: ", error);
+					reject(error);
+				});
+		});
+	}
+
+	async function addUserToDatabase() {
+		// this function adds the user to the database and returns a promise
+		// if the user is added successfully, the promise is resolved
+		// if the user is not added, the promise is rejected
+		console.log("adding user to database");
+		return new Promise((resolve, reject) => {
+			axios
+				.post(
+					base_url + "/user/add",
+					{
+						email: userEmail,
+						fullName: userFullName,
+					},
+					{
+						headers: {
+							Authorization: "Bearer " + userToken,
+						},
+					}
+				)
+				.then((response) => {
+					console.log("user added to database: ", response.data);
+					// false means that the user already exists. 
+					if (response.data.status === false) {
+						reject(response.data.message);
+					}
+					resolve();
+				})
+				.catch((error) => {
+					console.log("error adding user to database: ", error);
+					reject(error);
+				});
+		});
 	}
 
 	async function loginUser() {
@@ -73,6 +132,8 @@ const Login = (props) => {
 					const token = credential.accessToken;
 					const user = result.user;
 					console.log("user logged in: ", user);
+					setUserFullName(user.displayName);
+					setUserEmail(user.email);
 					setUserToken(token);
 					resolve();
 				})
@@ -108,7 +169,44 @@ const Login = (props) => {
 
 		login_promise
 			.then(() => {
-				redirect();
+				// check if user details are filled
+				const user_details_promise = askServerForUserDetails();
+				toast.promise(user_details_promise, {
+					loading: "Fetching user details...",
+					success: "User details fetched successfully",
+					error: "Error fetching user details",
+				});
+				// now if the user details are filled, redirect to home
+				// else, redirect to the user details page
+				user_details_promise
+					.then(() => {
+						if (userDetailsFilled) {
+							redirect();
+						} else {
+							// first add the user to the database
+							const add_user_promise = addUserToDatabase();
+							toast.promise(add_user_promise, {
+								loading: "Adding user to database...",
+								success: "User added to database successfully",
+								error: "You have not filled your details yet. Please fill your details.",
+							});
+							add_user_promise
+								.then(() => {
+									// now redirect to the user details page
+									props.setisNavbarPresent(true);
+									navigate("/profile");
+								})
+								.catch((error) => {
+									console.log(
+										"error adding user to database",
+										error
+									);
+								});
+						}
+					})
+					.catch((error) => {
+						console.log("error fetching user details", error);
+					});
 			})
 			.catch((error) => {
 				console.log("error logging in with Google", error);
@@ -189,7 +287,7 @@ const Login = (props) => {
 								/>
 							</div>
 							<h1 className="text-xl md:text-2xl font-bold leading-tight">
-								Log in to your account
+								Log in to Appointment Assistant
 							</h1>
 							<form className="mt-6" action="#" method="POST">
 								<div>
@@ -319,3 +417,10 @@ const Login = (props) => {
 };
 
 export default Login;
+
+import PropTypes from "prop-types";
+
+Login.propTypes = {
+	props: PropTypes.object,
+	setisNavbarPresent: PropTypes.func,
+};

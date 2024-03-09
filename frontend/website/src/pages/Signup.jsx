@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { UserInfoContext } from "../context/UserInfoContext";
 import "../index.css";
-import { NavLink } from "react-router-dom";
 import mit_logo_image from "../assets/mitwpu logo.jpg";
 import aalogo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +14,15 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const Signup = (props) => {
 	const auth = getAuth(app);
 
-	const base_url = React.useContext(BaseUrlContext).baseUrl;
-	const setUserToken = React.useContext(UserInfoContext).setUserToken;
-
-	const comment = document.getElementById("comment");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [room, setRoom] = useState("");
+	const [fullName, setFullName] = useState("");
+	const [phoneNumber, setPhoneNumber] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+
+	const base_url = React.useContext(BaseUrlContext).baseUrl;
+	const setUserToken = React.useContext(UserInfoContext).setUserToken;
 
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
@@ -35,7 +37,28 @@ const Signup = (props) => {
 		navigate("/home");
 	}
 
-	const loginUserWithGoogle = () => {
+	// signup user normally
+	const signupNormally = () => {
+		// create account with email and password in firebase
+		// if successful, redirect to home page
+		// if not, show error
+
+		return new Promise((resolve, reject) => {
+			createUserWithEmailAndPassword(auth, email, password)
+				.then((userCredential) => {
+					// The user was created and signed in.
+					const user = userCredential.user;
+					// You can use the 'user' object here.
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					// Handle errors here.
+				});
+		});
+	};
+
+	const signUpWithGoogle = () => {
 		return new Promise((resolve, reject) => {
 			signInWithPopup(auth, provider)
 				.then((result) => {
@@ -70,8 +93,21 @@ const Signup = (props) => {
 		});
 	};
 
-	const handleGoogleLogin = () => {
-		const login_promise = loginUserWithGoogle();
+	const handleGoogleSignup = () => {
+		// check if all fields are filled
+		// if not, show error
+
+		if (!email || !password || !room || !fullName || !phoneNumber) {
+			toast.error("Please fill all the fields");
+			return;
+		}
+
+		// validate
+		if (!validateAll()) {
+			return;
+		}
+
+		const login_promise = signUpWithGoogle();
 		toast.promise(login_promise, {
 			loading: "Logging in with Google...",
 			success: "Logged in with Google successfully",
@@ -87,51 +123,29 @@ const Signup = (props) => {
 			});
 	};
 
-	async function handleClick() {
-		const response = await axios
-			.post(
-				`${base_url}/auth`,
-				{},
-				{
-					params: {
-						email: email,
-						password: password,
-					},
-				}
-			)
-			.then((response) => {
-				return response;
+	const handleNormalSignup = (e) => {
+		e.preventDefault();
+		// check for all the validations
+		if (!validateAll()) {
+			return;
+		}
+
+		// now handle the signups.
+		const signup_promise = signupNormally();
+		toast.promise(signup_promise, {
+			loading: "Signing up...",
+			success: "Signed up successfully",
+			error: "Error signing up",
+		});
+
+		signup_promise
+			.then(() => {
+				redirect();
 			})
 			.catch((error) => {
-				console.error(error);
-				alert("server not running! a simulated response is being sent");
-				const response = {
-					data: {
-						message: "simulation",
-					},
-				};
-				return response;
+				console.log("error signing up", error);
 			});
-		if (response.data.message === "simulation") {
-			// comment.innerHTML = "Login Successful! Redirecting to Home Page!";
-			setTimeout(() => {
-				redirect();
-			}, 1000);
-		}
-		// check if the user exists in the database
-		else if (response.data.message === "user found pass correct") {
-			setTimeout(() => {
-				redirect();
-			}, 1000);
-		} else if (response.data.message === "user found pass incorrect") {
-			comment.innerHTML = "Password Incorrect! Try Again!";
-		} else if (response.data.message === "user not found") {
-			comment.innerHTML = "User Doesnt Exist! Try Again or Sign Up!";
-		} else {
-			comment.innerHTML = "Something went wrong! Call the Devs!";
-			alert("Something went wrong! Call the Devs!");
-		}
-	}
+	};
 
 	const validateEmail = (email) => {
 		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -144,21 +158,57 @@ const Signup = (props) => {
 		return re.test(password);
 	};
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
+	const validateRoom = (room) => {
+		const re = /^[A-Z]{2}[0-9]{3}$/;
+		return re.test(room);
+	};
+
+	const validatePhoneNumber = (phoneNumber) => {
+		// 10 digit number without country code
+		const re = /^[0-9]{10}$/;
+		return re.test(phoneNumber);
+	};
+
+	const validatefullName = (fullName) => {
+		const re = /^[a-zA-Z\s]+$/;
+		return re.test(fullName);
+	};
+
+	const validateAll = () => {
+		// check for all the validations
 		if (!validateEmail(email)) {
-			setEmailError("Please enter a valid email address.");
-		} else {
-			setEmailError("");
+			toast.error("Invalid Email. Please use your MIT WPU Email ID.");
+			return false;
 		}
 		if (!validatePassword(password)) {
-			setPasswordError(
-				"Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number."
+			toast.error(
+				"Invalid Password. Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character."
 			);
-		} else {
-			setPasswordError("");
-			handleClick();
+			return false;
 		}
+
+		if (password !== confirmPassword) {
+			toast.error("Passwords do not match");
+			return false;
+		}
+
+		if (!validateRoom(room)) {
+			toast.error(
+				"Invalid Room Number. Please enter your Building and Room Number (eg. DR107)"
+			);
+			return false;
+		}
+		if (!validatePhoneNumber(phoneNumber)) {
+			toast.error(
+				"Invalid Phone Number. Please enter a valid 10 digit phone number (without code)"
+			);
+			return false;
+		}
+		if (!validatefullName(fullName)) {
+			toast.error("Invalid Full Name. Please enter a valid name.");
+			return false;
+		}
+		return true;
 	};
 
 	return (
@@ -209,11 +259,15 @@ const Signup = (props) => {
 											type="text"
 											name=""
 											id=""
+											value={fullName}
+											onChange={(e) =>
+												setFullName(e.target.value)
+											}
 											placeholder="Enter your Full Name"
 											className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
 											autoFocus=""
 											autoComplete=""
-											required=""
+											required="true"
 										/>
 									</div>
 									<div className="mt-4">
@@ -223,7 +277,11 @@ const Signup = (props) => {
 										<input
 											type="email"
 											name=""
-											id=""
+											value={email}
+											onChange={(e) =>
+												setEmail(e.target.value)
+											}
+											required="true"
 											placeholder="example@mitwpu.edu.in"
 											minLength={6}
 											className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
@@ -238,8 +296,13 @@ const Signup = (props) => {
 											type="telephone"
 											name=""
 											id=""
-											placeholder="+91 XXXXXXXXXX"
+											value={phoneNumber}
+											onChange={(e) =>
+												setPhoneNumber(e.target.value)
+											}
+											placeholder="XXXXXXXXXX (without country code)"
 											minLength={6}
+											required="true"
 											className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
           focus:bg-white focus:outline-none"
 										/>
@@ -266,11 +329,15 @@ const Signup = (props) => {
 											type="password"
 											name=""
 											id=""
+											value={password}
+											onChange={(e) =>
+												setPassword(e.target.value)
+											}
 											placeholder="Enter Password"
 											minLength={8}
 											className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
           focus:bg-white focus:outline-none"
-											required=""
+											required="true"
 										/>
 									</div>
 									<div className="mt-4">
@@ -279,13 +346,18 @@ const Signup = (props) => {
 										</label>
 										<input
 											type="password"
-											name=""
+											value={confirmPassword}
+											onChange={(e) =>
+												setConfirmPassword(
+													e.target.value
+												)
+											}
 											id=""
-											placeholder="Enter Password"
+											placeholder="Enter Password Again to Confirm"
 											minLength={8}
 											className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
           focus:bg-white focus:outline-none"
-											required=""
+											required="true"
 										/>
 									</div>
 									<div className="mt-4">
@@ -293,14 +365,18 @@ const Signup = (props) => {
 											Room Number
 										</label>
 										<input
-											type="email"
+											type="text"
 											name=""
 											id=""
+											value={room}
+											onChange={(e) =>
+												setRoom(e.target.value)
+											}
 											placeholder="Enter your Building and Room Number (eg. DR107)"
 											className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
 											autoFocus=""
 											autoComplete=""
-											required=""
+											required="true"
 										/>
 									</div>
 								</form>
@@ -313,7 +389,7 @@ const Signup = (props) => {
 							className="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
         px-4 py-3 mt-6"
 							onClick={() => {
-								handleSubmit();
+								handleNormalSignup();
 							}}
 						>
 							Sign Up!
@@ -322,7 +398,7 @@ const Signup = (props) => {
 						<button
 							type="button"
 							className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
-							onClick={handleGoogleLogin}
+							onClick={handleGoogleSignup}
 						>
 							<div className="flex items-center justify-center">
 								<svg
