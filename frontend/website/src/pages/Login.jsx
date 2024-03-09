@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { UserInfoContext } from "../context/UserInfoContext";
 import "../index.css";
@@ -21,12 +21,23 @@ const Login = (props) => {
 
 	const base_url = useContext(BaseUrlContext).baseUrl;
 	const setUserToken = useContext(UserInfoContext).setUserToken;
-	const userToken = useContext(UserInfoContext).userToken;
+	const [localUserToken, setLocalUserToken] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [userDetailsFilled, setUserDetailsFilled] = useState(false);
 	const [userFullName, setUserFullName] = useState("");
 	const [userEmail, setUserEmail] = useState("");
+	const [user, setUser] = useState(null);
+
+	useEffect(() => {
+		if (user) {
+			setUserFullName(user.displayName);
+			setUserEmail(user.email);
+			setUserToken(user.accessToken);
+			setLocalUserToken(user.accessToken);
+		}
+	}, [user, setUserFullName, setUserEmail, setUserToken, setLocalUserToken]);
+
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
 		"https://www.searchurcollege.com/blog/wp-content/uploads/2022/12/MIT-WPU.png",
@@ -39,16 +50,17 @@ const Login = (props) => {
 		navigate("/home");
 	}
 
-	async function askServerForUserDetails() {
+	async function askServerForUserDetails(userToken) {
 		// this function asks the server for user details and returns a promise
 		// if the user details are fetched successfully, the promise is resolved
 		// if the user details are not fetched, the promise is rejected
 		console.log("asking server for user details");
+		console.log("user token: ", userToken);
 		return new Promise((resolve, reject) => {
 			axios
-				.get(base_url + "/user/details", {
+				.post(base_url + "/are-user-details-filled", {
 					headers: {
-						Authorization: "Bearer " + userToken,
+						authorization: "Bearer " + userToken,
 					},
 				})
 				.then((response) => {
@@ -71,20 +83,20 @@ const Login = (props) => {
 		return new Promise((resolve, reject) => {
 			axios
 				.post(
-					base_url + "/user/add",
+					base_url + "/add-new-user",
 					{
 						email: userEmail,
 						fullName: userFullName,
 					},
 					{
 						headers: {
-							Authorization: "Bearer " + userToken,
+							Authorization: "Bearer " + localUserToken,
 						},
 					}
 				)
 				.then((response) => {
 					console.log("user added to database: ", response.data);
-					// false means that the user already exists. 
+					// false means that the user already exists.
 					if (response.data.status === false) {
 						reject(response.data.message);
 					}
@@ -109,6 +121,7 @@ const Login = (props) => {
 					const user = userCredential.user;
 					console.log("user logged in: ", user);
 					setUserToken(user.accessToken);
+					setLocalUserToken(user.accessToken);
 					console.log("user logged in successfully");
 					resolve();
 				})
@@ -125,17 +138,11 @@ const Login = (props) => {
 	const loginUserWithGoogle = () => {
 		return new Promise((resolve, reject) => {
 			signInWithPopup(auth, provider)
-				.then((result) => {
+				.then(async (result) => {
 					// This gives you a Google Access Token. You can use it to access the Google API.
-					const credential =
-						GoogleAuthProvider.credentialFromResult(result);
-					const token = credential.accessToken;
-					const user = result.user;
-					console.log("user logged in: ", user);
-					setUserFullName(user.displayName);
-					setUserEmail(user.email);
-					setUserToken(token);
-					resolve();
+					setUser(result.user);
+					console.log("user logged in: ", result.user);
+					resolve(result.user);
 				})
 				.catch((error) => {
 					console.log("error logging in: ", error);
@@ -168,9 +175,17 @@ const Login = (props) => {
 		});
 
 		login_promise
-			.then(() => {
+			.then((user) => {
+				setUserFullName(user.displayName);
+				setUserEmail(user.email);
+				setUserToken(user.accessToken);
+				setLocalUserToken(user.accessToken);
+				console.log(user.accessToken);
+				console.log("user logged in with Google: ", user);
 				// check if user details are filled
-				const user_details_promise = askServerForUserDetails();
+				const user_details_promise = askServerForUserDetails(
+					user.accessToken
+				);
 				toast.promise(user_details_promise, {
 					loading: "Fetching user details...",
 					success: "User details fetched successfully",

@@ -23,7 +23,7 @@ const Signup = (props) => {
 
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
 	const setUserToken = React.useContext(UserInfoContext).setUserToken;
-
+	const userToken = React.useContext(UserInfoContext).userToken;
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
 		"https://www.searchurcollege.com/blog/wp-content/uploads/2022/12/MIT-WPU.png",
@@ -35,6 +35,42 @@ const Signup = (props) => {
 	function redirect() {
 		props.setisNavbarPresent(true);
 		navigate("/home");
+	}
+
+	async function addUserToDatabase() {
+		// this function adds the user to the database and returns a promise
+		// if the user is added successfully, the promise is resolved
+		// if the user is not added, the promise is rejected
+		console.log("adding user to database");
+		return new Promise((resolve, reject) => {
+			axios
+				.post(
+					base_url + "/add-new-user",
+					{
+						email: email,
+						fullName: fullName,
+						phoneNumber: phoneNumber,
+						room: room,
+					},
+					{
+						headers: {
+							Authorization: "Bearer " + userToken,
+						},
+					}
+				)
+				.then((response) => {
+					console.log("user added to database: ", response.data);
+					// false means that the user already exists.
+					if (response.data.status === false) {
+						reject(response.data.message);
+					}
+					resolve();
+				})
+				.catch((error) => {
+					console.log("error adding user to database: ", error);
+					reject(error);
+				});
+		});
 	}
 
 	// signup user normally
@@ -117,6 +153,19 @@ const Signup = (props) => {
 		login_promise
 			.then(() => {
 				redirect();
+				const userPromise = addUserToDatabase();
+				toast.promise(userPromise, {
+					loading: "Adding user to database...",
+					success: "User added to database successfully",
+					error: "Error adding user to database",
+				});
+				userPromise
+					.then(() => {
+						redirect();
+					})
+					.catch((error) => {
+						console.log("error adding user to database", error);
+					});
 			})
 			.catch((error) => {
 				console.log("error logging in with Google", error);
