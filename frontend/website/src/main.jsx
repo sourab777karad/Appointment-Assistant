@@ -19,13 +19,13 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
  * Renders the root component of the application.
  */
 root.render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<BaseUrlProvider>
-				<UserInfoContextProvider>
-					<App />
-				</UserInfoContextProvider>
-			</BaseUrlProvider>
-		</BrowserRouter>
-	</React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <BaseUrlProvider>
+        <UserInfoContextProvider>
+          <App />
+        </UserInfoContextProvider>
+      </BaseUrlProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
 );
