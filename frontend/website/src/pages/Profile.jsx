@@ -43,7 +43,7 @@ const Profile = () => {
 			const formData = new FormData();
 			formData.append("image", file);
 			try {
-				const response = await axios.post(`${base_url}/update-profile-photo`, formData, {
+				const response = axios.post(`${base_url}/update-profile-photo`, formData, {
 					headers: {
 						Authorization: `Bearer ${userToken}`,
 					},
@@ -54,17 +54,18 @@ const Profile = () => {
 					success: "Profile Picture Updated",
 					error: "Error updating profile picture",
 				});
-
-				if (response.status === 200) {
-					setLocalUserDetails({
-						...localUserDetails,
-						profile_pic_url: response.data.profile_pic_url,
-					});
-					setLocalUserDetailsCopy({
-						...localUserDetailsCopy,
-						profile_pic_url: response.data.profile_pic_url,
-					});
-				}
+				response.then((response) => {
+					if (response.status === 200) {
+						setLocalUserDetails({
+							...localUserDetails,
+							profile_pic_url: response.data.profile_pic_url,
+						});
+						setLocalUserDetailsCopy({
+							...localUserDetailsCopy,
+							profile_pic_url: response.data.profile_pic_url,
+						});
+					}
+				});
 			} catch (error) {
 				toast.error("Error updating profile picture");
 			}
