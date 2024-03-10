@@ -119,9 +119,9 @@ export default class AssistantDAO {
 			}
 			if (!user.phone_number && !user.room) {
 				console.log("User details not filled");
-				return false;
+				return {status: false};
 			}
-			return true;
+			return {userDetails: user, status: true};
 		} catch (e) {
 			console.error(`Unable to check user details: ${e}`);
 			throw e;
@@ -179,22 +179,12 @@ export default class AssistantDAO {
 	}
 	static async getProfile(userId) {
 		try {
-		  // Assuming you have a collection named 'appointments' and 'users'
-		  const userAppointments = await cluster0
-			.collection("appointments")
-			.find({ appointer: userId })
-			.toArray();
-	
-		  // Additional logic to calculate statistics based on user appointments
-		  const totalAppointments = userAppointments.length;
-		  // Add more statistics calculations as needed
-	
-		  const statistics = [
-			{ name: 'Total Appointments', value: String(totalAppointments) },
-			// Add more statistics as needed
-		  ];
-	
-		  return statistics;
+			const user_Profile = await cluster0.collection("users").findOne({ firebase_id: userId });
+			if (!user_Profile) {
+				console.log("User not found");
+				return { message: "User not found" };
+			}
+			return user_Profile;
 		} catch (e) {
 		  console.error(`Unable to get profile stats: ${e}`);
 		  throw e;
@@ -244,13 +234,43 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
+
+	// method to upload profile photo url to mongodb
 	static async uploadProfilePhoto(userId, imageUri) {
 		try {
-			const result = await cluster0.collection("users").updateOne({email: userId}, { $set: { profile_photo: imageUri } });
+			const result = await cluster0.collection("users").updateOne({firebase_id: userId}, { $set: { profile_pic_url: imageUri } });
 			return result;
 	}catch(err){
 		console.error(`Unable to upload profile photo: ${err}`);
 		throw err;
 	}
 }
+	static async updateUserProfile(user_updated_details, firebaseID) {
+		try {
+			// Prepare an update object with only the fields that are not empty
+			const update = {};
+			for (const [key, value] of Object.entries(user_updated_details)) {
+				if (value && key !== '_id') {
+					update[key] = value;
+				}
+			}
+
+			// Update user details in the users collection based on the firebaseID
+			const result = await cluster0.collection("users").updateOne(
+				{ firebase_id: firebaseID },
+				{ $set: update }
+			);
+
+			if (result.matchedCount === 0) {
+				console.log(`No user found with FirebaseID: ${firebaseID}`);
+				return null;
+			}
+
+			console.log(`Updated user with FirebaseID: ${firebaseID}`);
+			return result;
+		} catch (e) {
+			console.error(`Unable to update user profile: ${e}`);
+			throw e;
+		}
+	}
 }
