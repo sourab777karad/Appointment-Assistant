@@ -24,6 +24,9 @@ export default class Authenticator{
             const decodedToken = await firebase.auth().verifyIdToken(token);
             console.log('decodedToken: ', decodedToken);
             req.user_decoded_details = decodedToken;
+            if (decodedToken.email_verified === false) {
+                return res.status(403).send({ message: "Unauthorized - Email not verified!" });
+            }
             next();
         } catch (error) {
             console.error(error);

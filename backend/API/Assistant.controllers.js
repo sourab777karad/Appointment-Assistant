@@ -25,7 +25,7 @@ export default class AssistantController {
       if (Status.message === "User not found") {
         return res.status(200).json({ filled: false, newUser: true });
       }
-      return res.status(200).json({ filled: Status, newUser: false });
+      return res.status(200).json({ filled: Status.status, userDetails: Status.userDetails ,newUser: false });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error checking user details" });
@@ -102,20 +102,17 @@ export default class AssistantController {
       // Assuming you have some authentication middleware that verifies the token
       // and attaches user information to the request object, you can use it to get the user ID.
 
-      const userId = req.user.id; // Replace with the actual property containing user ID
+      const user = req.user_decoded_details; // Replace with the actual property containing user ID
+      const userId = user.user_id;
+      
+      const profile_data = await AssistantDAO.getProfile(userId);
 
-      // If you have the user ID, proceed to get profile stats
-      const statistics = await AssistantDAO.getProfile(userId);
-
-      return res.status(200).json({
-        data: statistics,
-        message: "Profile statistics retrieved successfully",
-      });
+      return res.status(200).json({ profile_data });
     } catch (err) {
       console.error(err);
       return res
         .status(500)
-        .json({ message: "Error retrieving profile statistics" });
+        .json({ message: "Error retrieving profile" });
     }
   }
   static async deleteAppointment(req, res) {
@@ -177,6 +174,72 @@ export default class AssistantController {
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error uploading profile photo" });
+    }
+  }
+
+  static async updateProfilePhoto(req,res){
+    try{
+      const decodedToken = req.user_decoded_details;
+      const userId = decodedToken.user_id;
+      const image = req.file; // Replace with the actual property containing the image file
+      console.log(image);
+      if (!image) {
+        return res.status(400).json({ message: "No image uploaded" });
+      }
+      // first delete the old profile photo
+      const user = await AssistantDAO.getProfile(userId);
+      const oldProfilePhoto = user.profile_pic_url;
+      if(oldProfilePhoto){
+        const filename = oldProfilePhoto.split('/').pop();
+        const bucket = firebase.storage().bucket();
+        await bucket.file(`/profile-photos/${filename}`).delete();
+      }
+     
+      // upload the new profile photo
+      let bucket = firebase.storage().bucket();
+
+      let filename = req.file.originalname;
+      let fileUpload = bucket.file("/profile-photos/" + filename);
+
+      const blobStream = fileUpload.createWriteStream({
+        metadata: {
+          contentType: "image/jpeg",
+        },
+      });
+
+      blobStream.on("error", (error) => {
+        console.error(
+          "Something is wrong! Unable to upload at the moment." + error
+        );
+        return res
+          .status(500)
+          .json({ message: "Error uploading file", error: error.message });
+      });
+
+      blobStream.on("finish", async () => {
+        // The public URL can be used to directly access the file via HTTP.
+        const file = bucket.file(`/profile-photos/${filename}`);
+        const publicUrl = await file.getSignedUrl({action:'read', expires: '12-31-3000'})
+        await AssistantDAO.uploadProfilePhoto(userId, publicUrl);
+        return res.status(200).send(publicUrl);
+      });
+      blobStream.end(image.buffer);
+    }catch(err){
+      console.error(err);
+      return res.status(500).json({ message: "Error uploading profile photo" });
+    }
+  }
+
+  static async updateUserProfile(req, res){
+    try {
+      const decodedToken = req.user_decoded_details;
+      const firebase_userId = decodedToken.user_id;
+      const user_updated_details = req.body;
+      const result = await AssistantDAO.updateUserProfile(user_updated_details,firebase_userId);
+      return res.status(200).json(result);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error updating user profile" });
     }
   }
 }
