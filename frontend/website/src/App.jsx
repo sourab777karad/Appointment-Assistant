@@ -1,7 +1,18 @@
+// importing react stuff
+
 import { useState, useEffect, useContext } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+
+// importing ui and extras stuff
+
 import { Toaster } from "react-hot-toast";
+import { app } from "./firebase.js"; // to run app file.
+
+// importing components
 import NavbarWithSearch from "./components/NavbarWithSearch.jsx";
+import SideNav from "./components/SideNav.jsx";
+
+// importing pages
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
 import Home from "./pages/Home.jsx";
@@ -9,17 +20,22 @@ import Appointment from "./pages/Appointment_user";
 import Appointment_admin from "./pages/Appointment_admin";
 import Appointment_past from "./pages/Appointment_past";
 import Profile from "./pages/Profile";
-import { app } from "./firebase.js";
 import NewAppointment from "./pages/NewAppointment.jsx";
-import { useNavigate } from "react-router-dom";
+
+// importing context
 import { UserInfoContext } from "./context/UserInfoContext";
 
 function App() {
+	// hooks
 	const location = useLocation(); // Hook to get current location
 	let navigate = useNavigate();
 
+	// states
+
 	const [isNavbarPresent, setisNavbarPresent] = useState(true); // Initially set Navbar as present
 	const userToken = useContext(UserInfoContext).userToken;
+
+	// functions
 
 	// Function to check if user is authenticated
 	function isAuthenticated(userToken) {
@@ -33,6 +49,7 @@ function App() {
 		return true;
 	}
 
+	// effects
 	useEffect(() => {
 		// Array of paths where Navbar should not be present
 		const pathsWithoutNavbar = ["/", "/signup"];
@@ -66,6 +83,7 @@ function App() {
 					},
 				}}
 			/>
+			<SideNav />
 			<div className="z-1">
 				{isNavbarPresent && <NavbarWithSearch isNavbarPresent={true} />}{" "}
 				{/* Render Navbar based on state */}

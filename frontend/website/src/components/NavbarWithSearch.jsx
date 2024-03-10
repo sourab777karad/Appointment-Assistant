@@ -300,7 +300,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
 	);
 
 	return (
-		<div className="fixed top-0 w-full z-50">
+		<div className="fixed top-0 w-full z-10">
 			<Navbar className="mx-auto max-w-[95%] py-2">
 				<div className="flex flex-wrap items-center justify-between text-blue-gray-900">
 					{/* logo */}
@@ -447,14 +447,14 @@ function NavbarWithSearch({ isNavbarPresent }) {
 							variant="small"
 							color="blue-gray"
 							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
+							onClick={() => {
+								navigate("/");
+							}}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-7 w-7"
 								viewBox="0 0 24 24"
-								onClick={() => {
-									navigate("/");
-								}}
 							>
 								<g
 									fill="none"
@@ -515,6 +515,98 @@ function NavbarWithSearch({ isNavbarPresent }) {
 								</g>
 							</svg>
 						</Typography>
+						<Typography
+							as="li"
+							variant="small"
+							color="blue-gray"
+							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
+							onClick={() => {
+								document.getElementById("my-drawer").checked =
+									true;
+							}}
+							htmlFor="my-drawer"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="h-7 w-7"
+								viewBox="0 0 24 24"
+							>
+								<g
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-width="2"
+								>
+									<g>
+										<path
+											stroke-dasharray="4"
+											stroke-dashoffset="4"
+											d="M12 3V5"
+										>
+											<animate
+												fill="freeze"
+												attributeName="stroke-dashoffset"
+												dur="0.2s"
+												values="4;0"
+											/>
+										</path>
+										<path
+											fill="currentColor"
+											fill-opacity="0"
+											stroke-dasharray="28"
+											stroke-dashoffset="28"
+											d="M12 5C8.68629 5 6 7.68629 6 11L6 17C5 17 4 18 4 19H12M12 5C15.3137 5 18 7.68629 18 11L18 17C19 17 20 18 20 19H12"
+										>
+											<animate
+												fill="freeze"
+												attributeName="stroke-dashoffset"
+												begin="0.2s"
+												dur="0.4s"
+												values="28;0"
+											/>
+											<animate
+												fill="freeze"
+												attributeName="fill-opacity"
+												begin="0.8s"
+												dur="0.15s"
+												values="0;0.3"
+											/>
+										</path>
+										<animateTransform
+											attributeName="transform"
+											begin="0.8s"
+											dur="6s"
+											keyTimes="0;0.05;0.15;0.2;1"
+											repeatCount="indefinite"
+											type="rotate"
+											values="0 12 3;3 12 3;-3 12 3;0 12 3;0 12 3"
+										/>
+									</g>
+									<path
+										stroke-dasharray="8"
+										stroke-dashoffset="8"
+										d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20"
+									>
+										<animate
+											fill="freeze"
+											attributeName="stroke-dashoffset"
+											begin="0.6s"
+											dur="0.2s"
+											values="8;0"
+										/>
+										<animateTransform
+											attributeName="transform"
+											begin="1s"
+											dur="6s"
+											keyTimes="0;0.05;0.15;0.2;1"
+											repeatCount="indefinite"
+											type="rotate"
+											values="0 12 8;6 12 8;-6 12 8;0 12 8;0 12 8"
+										/>
+									</path>
+								</g>
+							</svg>
+						</Typography>
 					</div>
 				</div>
 				{openNav && <div className="lg:hidden">{navList}</div>}
@@ -524,3 +616,8 @@ function NavbarWithSearch({ isNavbarPresent }) {
 }
 
 export default NavbarWithSearch;
+
+import PropTypes from "prop-types";
+NavbarWithSearch.propTypes = {
+	isNavbarPresent: PropTypes.bool.isRequired,
+};
