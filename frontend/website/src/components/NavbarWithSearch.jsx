@@ -9,6 +9,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
 	const navigate = useNavigate();
 	const [openNav, setOpenNav] = useState(false);
 	const [showNotifications, setShowNotifications] = useState(false);
+	const [newNotifications, setNewNotifications] = useState(false);
 	const [notifications, setNotifications] = useState([
 		{ id: 1, text: "Notification 1" },
 		{ id: 2, text: "Notification 2" },
@@ -441,6 +442,238 @@ function NavbarWithSearch({ isNavbarPresent }) {
 								</g>
 							</svg>
 						</Typography>
+						{/* Notifications */}
+						<Typography
+							as="li"
+							variant="small"
+							color="blue-gray"
+							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
+							onClick={() => {
+								document.getElementById(
+									// "notif-drawer"
+									"appointment-drawer"
+								).checked = true;
+							}}
+							htmlFor="my-drawer"
+						>
+							{newNotifications ? (
+								<div>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										className="h-7 w-7 text-red-500"
+										viewBox="0 0 24 24"
+									>
+										<g
+											fill="none"
+											stroke="currentColor"
+											stroke-linecap="round"
+											stroke-width="2"
+										>
+											<g>
+												<path
+													stroke-dasharray="4"
+													stroke-dashoffset="4"
+													d="M12 3V5"
+												>
+													<animate
+														fill="freeze"
+														attributeName="stroke-dashoffset"
+														dur="0.2s"
+														values="4;0"
+													></animate>
+												</path>
+												<path
+													fill="currentColor"
+													fillOpacity="0"
+													stroke-dasharray="28"
+													stroke-dashoffset="28"
+													d="M12 5C8.68629 5 6 7.68629 6 11L6 17C5 17 4 18 4 19H12M12 5C15.3137 5 18 7.68629 18 11L18 17C19 17 20 18 20 19H12"
+												>
+													<animate
+														fill="freeze"
+														attributeName="stroke-dashoffset"
+														begin="0.2s"
+														dur="0.4s"
+														values="28;0"
+													></animate>
+													<animate
+														fill="freeze"
+														attributeName="fill-opacity"
+														begin="0.8s"
+														dur="0.15s"
+														values="0;0.3"
+													></animate>
+												</path>
+												<animateTransform
+													attributeName="transform"
+													begin="0.8s"
+													dur="6s"
+													keyTimes="0;0.05;0.15;0.2;1"
+													repeatCount="indefinite"
+													type="rotate"
+													values="0 12 3;3 12 3;-3 12 3;0 12 3;0 12 3"
+												></animateTransform>
+											</g>
+											<path
+												stroke-dasharray="8"
+												stroke-dashoffset="8"
+												d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20"
+											>
+												<animate
+													fill="freeze"
+													attributeName="stroke-dashoffset"
+													begin="0.6s"
+													dur="0.2s"
+													values="8;0"
+												></animate>
+												<animateTransform
+													attributeName="transform"
+													begin="1s"
+													dur="6s"
+													keyTimes="0;0.05;0.15;0.2;1"
+													repeatCount="indefinite"
+													type="rotate"
+													values="0 12 8;6 12 8;-6 12 8;0 12 8;0 12 8"
+												></animateTransform>
+											</path>
+											<path
+												stroke-dasharray="8"
+												stroke-dashoffset="8"
+												d="M22 6v4"
+												opacity="0"
+											>
+												<set
+													attributeName="opacity"
+													begin="1s"
+													to="1"
+												></set>
+												<animate
+													fill="freeze"
+													attributeName="stroke-dashoffset"
+													begin="1s"
+													dur="0.2s"
+													values="8;0"
+												></animate>
+												<animate
+													attributeName="stroke-width"
+													begin="1.7s"
+													dur="3s"
+													keyTimes="0;0.1;0.2;0.3;1"
+													repeatCount="indefinite"
+													values="2;3;3;2;2"
+												></animate>
+											</path>
+										</g>
+										<circle
+											cx="22"
+											cy="14"
+											r="1"
+											fill="currentColor"
+											fillOpacity="0"
+										>
+											<animate
+												fill="freeze"
+												attributeName="fill-opacity"
+												begin="1s"
+												dur="0.4s"
+												values="0;1"
+											></animate>
+											<animate
+												attributeName="r"
+												begin="2s"
+												dur="3s"
+												keyTimes="0;0.1;0.2;0.3;1"
+												repeatCount="indefinite"
+												values="1;2;2;1;1"
+											></animate>
+										</circle>
+									</svg>
+								</div>
+							) : (
+								<div>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										className="h-7 w-7"
+										viewBox="0 0 24 24"
+									>
+										<g
+											fill="none"
+											stroke="currentColor"
+											stroke-linecap="round"
+											stroke-width="2"
+										>
+											<g>
+												<path
+													stroke-dasharray="4"
+													stroke-dashoffset="4"
+													d="M12 3V5"
+												>
+													<animate
+														fill="freeze"
+														attributeName="stroke-dashoffset"
+														dur="0.2s"
+														values="4;0"
+													/>
+												</path>
+												<path
+													fill="currentColor"
+													fill-opacity="0"
+													stroke-dasharray="28"
+													stroke-dashoffset="28"
+													d="M12 5C8.68629 5 6 7.68629 6 11L6 17C5 17 4 18 4 19H12M12 5C15.3137 5 18 7.68629 18 11L18 17C19 17 20 18 20 19H12"
+												>
+													<animate
+														fill="freeze"
+														attributeName="stroke-dashoffset"
+														begin="0.2s"
+														dur="0.4s"
+														values="28;0"
+													/>
+													<animate
+														fill="freeze"
+														attributeName="fill-opacity"
+														begin="0.8s"
+														dur="0.15s"
+														values="0;0.3"
+													/>
+												</path>
+												<animateTransform
+													attributeName="transform"
+													begin="0.8s"
+													dur="6s"
+													keyTimes="0;0.05;0.15;0.2;1"
+													repeatCount="indefinite"
+													type="rotate"
+													values="0 12 3;3 12 3;-3 12 3;0 12 3;0 12 3"
+												/>
+											</g>
+											<path
+												stroke-dasharray="8"
+												stroke-dashoffset="8"
+												d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20"
+											>
+												<animate
+													fill="freeze"
+													attributeName="stroke-dashoffset"
+													begin="0.6s"
+													dur="0.2s"
+													values="8;0"
+												/>
+												<animateTransform
+													attributeName="transform"
+													begin="1s"
+													dur="6s"
+													keyTimes="0;0.05;0.15;0.2;1"
+													repeatCount="indefinite"
+													type="rotate"
+													values="0 12 8;6 12 8;-6 12 8;0 12 8;0 12 8"
+												/>
+											</path>
+										</g>
+									</svg>
+								</div>
+							)}
+						</Typography>
 						{/* Log out */}
 						<Typography
 							as="li"
@@ -511,98 +744,6 @@ function NavbarWithSearch({ isNavbarPresent }) {
 											dur="0.2s"
 											values="6;0"
 										></animate>
-									</path>
-								</g>
-							</svg>
-						</Typography>
-						<Typography
-							as="li"
-							variant="small"
-							color="blue-gray"
-							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
-							onClick={() => {
-								document.getElementById("my-drawer").checked =
-									true;
-							}}
-							htmlFor="my-drawer"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								className="h-7 w-7"
-								viewBox="0 0 24 24"
-							>
-								<g
-									fill="none"
-									stroke="currentColor"
-									stroke-linecap="round"
-									stroke-width="2"
-								>
-									<g>
-										<path
-											stroke-dasharray="4"
-											stroke-dashoffset="4"
-											d="M12 3V5"
-										>
-											<animate
-												fill="freeze"
-												attributeName="stroke-dashoffset"
-												dur="0.2s"
-												values="4;0"
-											/>
-										</path>
-										<path
-											fill="currentColor"
-											fill-opacity="0"
-											stroke-dasharray="28"
-											stroke-dashoffset="28"
-											d="M12 5C8.68629 5 6 7.68629 6 11L6 17C5 17 4 18 4 19H12M12 5C15.3137 5 18 7.68629 18 11L18 17C19 17 20 18 20 19H12"
-										>
-											<animate
-												fill="freeze"
-												attributeName="stroke-dashoffset"
-												begin="0.2s"
-												dur="0.4s"
-												values="28;0"
-											/>
-											<animate
-												fill="freeze"
-												attributeName="fill-opacity"
-												begin="0.8s"
-												dur="0.15s"
-												values="0;0.3"
-											/>
-										</path>
-										<animateTransform
-											attributeName="transform"
-											begin="0.8s"
-											dur="6s"
-											keyTimes="0;0.05;0.15;0.2;1"
-											repeatCount="indefinite"
-											type="rotate"
-											values="0 12 3;3 12 3;-3 12 3;0 12 3;0 12 3"
-										/>
-									</g>
-									<path
-										stroke-dasharray="8"
-										stroke-dashoffset="8"
-										d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20"
-									>
-										<animate
-											fill="freeze"
-											attributeName="stroke-dashoffset"
-											begin="0.6s"
-											dur="0.2s"
-											values="8;0"
-										/>
-										<animateTransform
-											attributeName="transform"
-											begin="1s"
-											dur="6s"
-											keyTimes="0;0.05;0.15;0.2;1"
-											repeatCount="indefinite"
-											type="rotate"
-											values="0 12 8;6 12 8;-6 12 8;0 12 8;0 12 8"
-										/>
 									</path>
 								</g>
 							</svg>

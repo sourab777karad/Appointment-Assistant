@@ -11,6 +11,7 @@ import { app } from "./firebase.js"; // to run app file.
 // importing components
 import NavbarWithSearch from "./components/NavbarWithSearch.jsx";
 import SideNav from "./components/SideNav.jsx";
+import AppointmentDetailsNav from "./components/AppointmentDetailsNav.jsx";
 
 // importing pages
 import Login from "./pages/Login";
@@ -84,6 +85,7 @@ function App() {
 				}}
 			/>
 			<SideNav />
+			<AppointmentDetailsNav />
 			<div className="z-1">
 				{isNavbarPresent && <NavbarWithSearch isNavbarPresent={true} />}{" "}
 				{/* Render Navbar based on state */}
