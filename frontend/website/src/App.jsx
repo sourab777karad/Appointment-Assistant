@@ -25,6 +25,7 @@ import NewAppointment from "./pages/NewAppointment.jsx";
 
 // importing context
 import { UserInfoContext } from "./context/UserInfoContext";
+import Footer from "./components/Footer.jsx";
 
 function App() {
 	// hooks
@@ -35,7 +36,7 @@ function App() {
 
 	const [isNavbarPresent, setisNavbarPresent] = useState(true); // Initially set Navbar as present
 	const userToken = useContext(UserInfoContext).userToken;
-
+	const [includeFooter, setIncludeFooter] = useState(true);
 	// functions
 
 	// Function to check if user is authenticated
@@ -63,12 +64,14 @@ function App() {
 		if (isPathWithoutNavbar) {
 			// Update isNavbarPresent based on the result
 			setisNavbarPresent(false);
+			setIncludeFooter(false);
 		} else {
 			setisNavbarPresent(true);
 			if (!isAuthenticated(userToken)) {
 				// replace this with your actual authentication check
 				// navigate("/");
 			}
+			setIncludeFooter(true);
 		}
 	}, [location.pathname, userToken, setisNavbarPresent, navigate]); // useEffect dependency changed to location
 
@@ -127,6 +130,10 @@ function App() {
 						<Route path="/profile" element={<Profile />} />
 					</Routes>
 				</div>
+				{
+					// include footer only if includeFooter is true
+					includeFooter && <Footer />
+				}
 			</div>
 		</>
 	);

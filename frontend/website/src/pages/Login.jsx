@@ -29,6 +29,7 @@ const Login = (props) => {
 	const [userEmail, setUserEmail] = useState("");
 	const [user, setUser] = useState(null);
 	const [firebaseid, setFirebaseid] = useState("");
+	const setUserDetails = useContext(UserInfoContext).setUserDetails;
 
 	useEffect(() => {
 		if (user) {
@@ -76,6 +77,7 @@ const Login = (props) => {
 				)
 				.then((response) => {
 					console.log("user details: ", response.data);
+					setUserDetails(response.data.userDetails);
 					resolve(response.data);
 				})
 				.catch((error) => {

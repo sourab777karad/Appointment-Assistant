@@ -214,6 +214,17 @@ function NavbarWithSearch({ isNavbarPresent }) {
 				as="li"
 				variant="small"
 				color="blue-gray"
+				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-green-900"
+				onClick={() => navigate("/appointment-admin")}
+			>
+				<IconCalendar className="h-7 w-7"
+				/>
+				<span className="text-green-900">Your Timetable</span>
+			</Typography>
+			<Typography
+				as="li"
+				variant="small"
+				color="blue-gray"
 				className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
 				onClick={() => navigate("/appointment-user")}
 			>
@@ -303,7 +314,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
 	return (
 		<div className="fixed top-0 w-full z-10">
 			<Navbar className="mx-auto max-w-[95%] py-2">
-				<div className="flex flex-wrap items-center justify-between text-blue-gray-900">
+				<div className="flex items-center justify-between text-blue-gray-900">
 					{/* logo */}
 					<Typography
 						as="a"
@@ -450,8 +461,8 @@ function NavbarWithSearch({ isNavbarPresent }) {
 							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
 							onClick={() => {
 								document.getElementById(
-									// "notif-drawer"
-									"appointment-drawer"
+									"notif-drawer"
+									// "appointment-drawer"
 								).checked = true;
 							}}
 							htmlFor="my-drawer"
@@ -759,6 +770,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
 export default NavbarWithSearch;
 
 import PropTypes from "prop-types";
+import { IconCalendar } from "@tabler/icons-react";
 NavbarWithSearch.propTypes = {
 	isNavbarPresent: PropTypes.bool.isRequired,
 };

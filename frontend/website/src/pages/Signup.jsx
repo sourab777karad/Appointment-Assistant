@@ -51,7 +51,7 @@ const Signup = (props) => {
 
 	function redirect() {
 		props.setisNavbarPresent(true);
-		navigate("/home");
+		navigate("/");
 	}
 
 	async function addUserToDatabase(user) {
