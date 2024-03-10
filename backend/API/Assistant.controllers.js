@@ -4,55 +4,43 @@ import AssistantDAO from "../DAO/AssistantDAO.js";
 import { FIREBASE_DATABASE_URL } from "../config/config.js";
 
 export default class AssistantController {
-  static async login(req, res) {
+  static async addNewUser(req, res) {
+    const user = req.body;
     try {
-      const idToken = req.body.idToken;
-
-      // Verify the ID token
-      const decodedToken = await firebase.auth().verifyIdToken(idToken);
-
-      // Get the user record
-      const userRecord = await firebase.auth().getUser(decodedToken.uid);
-
-      // If successful, return a success response
-      return res
-        .status(200)
-        .json({ data: userRecord, message: "Login successful" });
+      const Status = await AssistantDAO.add_new_user(user);
+      return res.status(200).json({ status: Status });
     } catch (err) {
       console.error(err);
-      return res
-        .status(500)
-        .json({ message: "Internal server error", error: err.message });
+      return res.status(500).json({ message: "Error adding new user" });
     }
   }
-  static async test(req, res) {
-    res.status(200).json({ message: "Test successful" });
-  }
 
-  static async signup(req, res) {
+  static async areUserDetailsFilled(req, res) {
     try {
-      const { email, password, name, room_address } = req.body;
-
-      // Create a new user using Firebase Authentication
-      const userRecord = await firebase.auth().createUser({
-        email,
-        password,
-        displayName: name,
-      });
-
-      // Create a custom token
-      const token = await firebase.auth().createCustomToken(userRecord.uid);
-
-      const user = await AssistantDAO.newUser(email, name, room_address);
-      // If successful, return a success response
-      return res
-        .status(201)
-        .json({ uid: userRecord.uid, token, message: "Signup successful" });
+      const user = req.user_decoded_details;
+      // only want user id from the token
+      const firebaseID = user.user_id;
+      console.log(firebaseID);
+      const Status = await AssistantDAO.areUserDetailsFilled(firebaseID);
+      if (Status.message === "User not found") {
+        return res.status(200).json({ filled: false, newUser: true });
+      }
+      return res.status(200).json({ filled: Status, newUser: false });
     } catch (err) {
       console.error(err);
-      return res
-        .status(500)
-        .json({ message: "Internal server error", error: err.message });
+      return res.status(500).json({ message: "Error checking user details" });
+    }
+  }
+
+  // update user details
+  static async updateUserDetails(req, res) {
+    try {
+      const user = req.body;
+      const result = await AssistantDAO.updateUserDetails(user);
+      return res.status(200).json(result);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error updating user details" });
     }
   }
 
@@ -61,12 +49,10 @@ export default class AssistantController {
       const Ap_date = req.body.appointer;
       const appointment = await AssistantDAO.getAppointment(Ap_date);
 
-      return res
-        .status(200)
-        .json({
-          data: appointment,
-          message: "Appointment retrieved successfully",
-        });
+      return res.status(200).json({
+        data: appointment,
+        message: "Appointment retrieved successfully",
+      });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error retrieving appointment" });
@@ -121,12 +107,10 @@ export default class AssistantController {
       // If you have the user ID, proceed to get profile stats
       const statistics = await AssistantDAO.getProfile(userId);
 
-      return res
-        .status(200)
-        .json({
-          data: statistics,
-          message: "Profile statistics retrieved successfully",
-        });
+      return res.status(200).json({
+        data: statistics,
+        message: "Profile statistics retrieved successfully",
+      });
     } catch (err) {
       console.error(err);
       return res

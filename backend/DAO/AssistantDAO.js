@@ -48,19 +48,37 @@ export default class AssistantDAO {
 	 * @returns {Promise<Object>} - A promise that resolves with the result of the user creation.
 	 */
 	//method to create new user
-	static async newUser(email, name, room_address) {
-		const user = {
-			email,
-			name,
-			room_address,
-		};
-
+	static async add_new_user(user) {
+		// user will be getting from 
 		try {
-			const result = await cluster0.collection("users").insertOne(user);
-			return result;
+			// check user exist before adding 
+			const userExist = await this.userExist(user.email);
+			if (userExist) {
+				console.log("User already exist");
+				return false;
+			}
+			// Insert the user into the 'users' collection
+			await cluster0.collection("users").insertOne(user);
+			return true;
 		} catch (e) {
 			console.error(`Unable to create new user: ${e}`);
 			return { error: e };
+		}
+	}
+
+	// function to check user exist in the database
+	static async userExist(email) {
+		try {
+			const user = await cluster0.collection("users").findOne({ email: email });
+			if (!user) {
+				console.log("User not found");
+				return false;
+			}
+			return true;
+		}
+		catch (e) {
+			console.error(`Unable to check user existence: ${e}`);
+			throw e;
 		}
 	}
 
@@ -80,6 +98,7 @@ export default class AssistantDAO {
 	static async SetAppointment(appointment) {
 		let result;
 		try {
+			// Insert the appointment into the 'appointments' collection
 			result = await cluster0.collection("appointments").insertOne(appointment);
 			appointment._id = result.insertedId; // Get the id of the inserted document
 		} catch (e) {
@@ -87,6 +106,42 @@ export default class AssistantDAO {
 			throw e;
 		}
 		return appointment; // Return the complete appointment object
+	}
+
+	
+
+	static async areUserDetailsFilled(firebaseID) {
+		try {
+			const user = await cluster0.collection("users").findOne({ firebase_id: firebaseID });
+			if (!user) {
+				console.log("User not found");
+				return { message: "User not found", status:false};
+			}
+			if (!user.phone_number && !user.room) {
+				console.log("User details not filled");
+				return false;
+			}
+			return true;
+		} catch (e) {
+			console.error(`Unable to check user details: ${e}`);
+			throw e;
+		}
+	
+	}
+
+	// update user details
+	static async updateUserDetails(user) {
+		try {
+			const result = await cluster0.collection("users").updateOne(
+				{ email: user.email },
+				{ $set: { phone_no: user.phone_no, room_address: user.room_address } }
+			);
+			return result;
+		}
+		catch (e) {
+			console.error(`Unable to update user details: ${e}`);
+			throw e;
+		}
 	}
 
 	static async getAppointment(appointerid) {

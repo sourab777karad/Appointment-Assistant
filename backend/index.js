@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Read the JSON file using fs
-const serviceAccount = JSON.parse(fs.readFileSync(`${__dirname}/config/appointment-assistant-2c9de-firebase-adminsdk-j926f-b687826473.json`, 'utf8'));
+const serviceAccount = JSON.parse(fs.readFileSync(`${__dirname}/config/banded-access-416709-firebase-adminsdk-upwr8-d27060409f.json`, 'utf8'));
 
 // Initialize Firebase
 firebase.initializeApp({ credential: firebase.credential.cert(serviceAccount),
