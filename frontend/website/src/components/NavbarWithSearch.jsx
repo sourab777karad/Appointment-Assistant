@@ -33,7 +33,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-yellow-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
         onClick={() => navigate("/appointment-past")}
       >
         <svg
@@ -142,7 +142,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-green-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
         onClick={() => navigate("/new_appointment")}
       >
         <svg
@@ -190,17 +190,17 @@ function NavbarWithSearch({ isNavbarPresent }) {
             </path>
           </g>
         </svg>
-        <span className="text-green-900">Make New Appointment</span>
+        <span className="text-blue-900">Make New Appointment</span>
       </Typography>
       <Typography
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-green-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
         onClick={() => navigate("/appointment-admin")}
       >
         <IconCalendar className="h-7 w-7" />
-        <span className="text-green-900">Your Timetable</span>
+        <span className="text-blue-900">Your Timetable</span>
       </Typography>
       <Typography
         as="li"

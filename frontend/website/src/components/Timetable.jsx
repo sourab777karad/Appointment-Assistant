@@ -12,7 +12,7 @@ const Timetable = ({ timetableData, scheduledSlots }) => {
     );
     return slot ? (
       <div
-        className="text-sm w-full h-full"
+        className="text-lg w-full h-full cursor-pointer"
         onClick={() => {
           setCurrentAppointment(slot);
           document.getElementById("appointment-drawer").checked = true;
