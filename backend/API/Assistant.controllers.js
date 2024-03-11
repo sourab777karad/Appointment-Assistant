@@ -27,6 +27,9 @@ export default class AssistantController {
       if (Status.message === "User not found") {
         return res.status(200).json({ filled: false, newUser: true });
       }
+      if (appointment_date.date.start_date === null && appointment_date.date.end_date === null) {
+        return res.status(400).json({ message: "Date range not provided" });
+      }
        // get appointments of the user with all the given and taken appointments
        const appointments = await AssistantDAO.getAppointment(user.user_id, appointment_date);
 
@@ -64,20 +67,24 @@ export default class AssistantController {
   // method to get all the appointments of the user as scheduler and appointee
   static async get_user_Appointment(req, res) {
     try {
-      const user = req.user_decoded_details;
-      const appointment_date = req.body;
+      const appointment_details = req.body;
+
+      if (appointment_details.date.start_date === null && appointment_details.date.end_date === null) {
+        return res.status(400).json({ message: "Date range not provided" });
+      }
+      console.log("appointment_details:",appointment_details)
       // get appointments of the user with all the given and taken appointments
-      const appointments = await AssistantDAO.getAppointment(user.user_id, appointment_date);
+      const appointments = await AssistantDAO.getAppointment(appointment_details.firebase_id, appointment_details);
 
       console.log(appointments)
       // now sort appointments into taken and given appointments
       const taken_appointments = [];
       const given_appointments = [];
       for (let i = 0; i < appointments.length; i++) {
-        if (appointments[i].scheduler === user.user_id) {
-          given_appointments.push(appointments[i]);
-        } else {
+        if (appointments[i].scheduler === appointment_details.firebase_id) {
           taken_appointments.push(appointments[i]);
+        } else {
+          given_appointments.push(appointments[i]);
         }
       }
       return res.status(200).json({ taken_appointments, given_appointments });
@@ -146,19 +153,14 @@ export default class AssistantController {
   // method to change the status of the appointment (confirmed, rejected, pending)
   static async changeStatus(req, res) {
     try {
-      const decodedToken = req.user_decoded_details;
 
       const status_details = req.body; // Get the appointment ID from the request body
 
       // check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
-
-      const validate = await AssistantDAO.getAppointmentById(status_details.appointmentId);
-      if (validate.scheduler !== decodedToken.user_id) {
-        return res.status(400).json({ message: "You are not authorized to change the status of this appointment" });
-      }else{
+  
         const result = await AssistantDAO.changeStatus(status_details);
         return res.status(200).json(result);
-      }
+    
     } catch (e) {
       console.error(`Unable to change status: ${e}`);
       res.status(500).json({ message: `Unable to change status: ${e}` });

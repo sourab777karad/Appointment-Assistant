@@ -5,8 +5,6 @@ import multer from 'multer'
 const upload = multer({ storage: multer.memoryStorage()})
 const router = express.Router()
 
-//rest of the routes.
-
 router.post('/are-user-details-filled',authenticator.TokenAuthenticator, assistantCtrl.areUserDetailsFilled)
 
 router.post('/add-new-user',authenticator.TokenAuthenticator, assistantCtrl.addNewUser)

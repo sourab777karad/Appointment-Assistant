@@ -222,14 +222,14 @@ export default class AssistantDAO {
 		}
 	}
 	static async changeStatus(status_details) {
-		if (!ObjectId.isValid(appointmentId)) {
-			console.log(`Invalid ID: ${appointmentId}`);
+		if (!ObjectId.isValid(status_details.appointment_id)) {
+			console.log(`Invalid ID: ${status_details.appointment_id}`);
 			return { message: "Invalid ID" };
 		}
 	
 		try {
 			const result = await cluster0.collection("appointments").updateOne(
-				{ _id: new ObjectId(status_details.appointmentId) },
+				{ _id: new ObjectId(status_details.appointment_id)},
 				{ $set: { status: status_details.status } }
 			);
 	
@@ -237,10 +237,7 @@ export default class AssistantDAO {
 				console.log("No appointment found with the given ID");
 				return { message: "No appointment found with the given ID" };
 			}
-	
-			const updatedAppointment = await cluster0.collection("appointments").findOne({ _id: new ObjectId(appointmentId) });
-	
-			return { appointment: updatedAppointment };
+			return true;
 		} catch (e) {
 			console.error(`Unable to change status: ${e}`);
 			throw e;
