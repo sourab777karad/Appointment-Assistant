@@ -17,8 +17,8 @@ import AppointmentDetailsNav from "./components/AppointmentDetailsNav.jsx";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
 import Home from "./pages/Home.jsx";
-import Appointment from "./pages/Appointment_user";
-import Appointment_admin from "./pages/Appointment_admin";
+import UpcomingAppointments from "./pages/UpcomingAppointments";
+import UserSchedule from "./pages/UserSchedule";
 import Appointment_past from "./pages/Appointment_past";
 import Profile from "./pages/Profile";
 import NewAppointment from "./pages/NewAppointment.jsx";
@@ -101,8 +101,8 @@ function App() {
               path="/signup"
               element={<Signup setisNavbarPresent={setisNavbarPresent} />}
             />
-            <Route path="/appointment-user" element={<Appointment />} />
-            <Route path="/appointment-admin" element={<Appointment_admin />} />
+            <Route path="/upcoming_appointments" element={<UpcomingAppointments />} />
+            <Route path="/user_schedule" element={<UserSchedule />} />
             <Route path="/appointment-past" element={<Appointment_past />} />
             <Route path="/new_appointment" element={<NewAppointment />} />
             <Route path="/profile" element={<Profile />} />

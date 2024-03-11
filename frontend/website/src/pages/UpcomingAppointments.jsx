@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Appointment_user = (myappointments) => {
+const UpcomingAppointments  = (myappointments) => {
   const appointments = [
     {
       title: "Appointment 1",
@@ -90,4 +90,4 @@ const Appointment_user = (myappointments) => {
     </div>
   );
 };
-export default Appointment_user;
+export default UpcomingAppointments;

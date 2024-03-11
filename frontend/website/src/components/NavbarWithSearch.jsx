@@ -197,17 +197,17 @@ function NavbarWithSearch({ isNavbarPresent }) {
         variant="small"
         color="blue-gray"
         className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
-        onClick={() => navigate("/appointment-admin")}
+        onClick={() => navigate("/user_schedule")}
       >
         <IconCalendar className="h-7 w-7" />
-        <span className="text-blue-900">Your Timetable</span>
+        <span className="text-blue-900">Your Schedule</span>
       </Typography>
       <Typography
         as="li"
         variant="small"
         color="blue-gray"
         className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
-        onClick={() => navigate("/appointment-user")}
+        onClick={() => navigate("/upcoming_appointments")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

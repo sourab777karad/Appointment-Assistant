@@ -14,18 +14,20 @@ export function ProfileCard({ userDetails, uploadProfilePicture }) {
 				floated={false}
 				className="w-2/3 outline outline-4 aspect-square outline-blue-800 cursor-pointer self-center rounded-full m-4"
 			>
-				<img
-					src={
-						userDetails?.profile_pic_url
-							? userDetails?.profile_pic_url
-							: "https://source.unsplash.com/random"
-					}
-					alt="profile-picture"
-					onClick={() => {
-						uploadProfilePicture();
-					}}
-					className="w-full h-full object-cover rounded-t-lg"
-				/>
+				<div className="tooltip" data-tip="hello">
+					<img
+						src={
+							userDetails?.profile_pic_url
+								? userDetails?.profile_pic_url
+								: "https://source.unsplash.com/random"
+						}
+						alt="profile-picture"
+						onClick={() => {
+							uploadProfilePicture();
+						}}
+						className="w-full h-full object-cover rounded-t-lg"
+					/>
+				</div>
 			</CardHeader>
 			<CardBody className="text-center">
 				<Typography variant="h4" className="text-black mb-2">
