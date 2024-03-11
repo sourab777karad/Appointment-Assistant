@@ -44,15 +44,23 @@ export default class AssistantController {
     }
   }
 
-  static async getAppointment(req, res) {
+  static async get_user_Appointment(req, res) {
     try {
-      const Ap_date = req.body.appointer;
-      const appointment = await AssistantDAO.getAppointment(Ap_date);
-
-      return res.status(200).json({
-        data: appointment,
-        message: "Appointment retrieved successfully",
-      });
+      const user = req.user_decoded_details;
+      const Ap_date = req.body;
+      // get appointments of the user with all the given and taken appointments
+      const appointments = await AssistantDAO.getAppointment(user.user_id, Ap_date);
+      // now sort appointments into taken and given appointments
+      const taken_appointments = [];
+      const given_appointments = [];
+      for (let i = 0; i < appointments.length; i++) {
+        if (appointments[i].schedular_id === user.user_id) {
+          given_appointments.push(appointments[i]);
+        } else {
+          taken_appointments.push(appointments[i]);
+        }
+      }
+      return res.status(200).json({ taken_appointments, given_appointments });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error retrieving appointment" });
@@ -60,29 +68,17 @@ export default class AssistantController {
   }
   static async setAppointment(req, res) {
     try {
-      const {
-        appointee,
-        appointer,
-        creation_date,
-        appointment_time,
-        appointment_duration,
-        appointment_purpose,
-        appointment_description,
-      } = req.body;
+      const appointment_details = req.body;
 
-      const appointment = await AssistantDAO.SetAppointment({
-        appointee,
-        appointer,
-        creation_date,
-        appointment_time,
-        appointment_duration,
-        appointment_purpose,
-        appointment_description,
-      });
+      const appointment = await AssistantDAO.SetAppointment(appointment_details);
+      // taken appointments and given appointments add appointment id to the user collection for if the user is scheduler insert the appointment id into the users taken appointment attribute array and if the user is the appointer insert the appointment id into the users given appointment attribute array.
+      // schedular , appointee are the attributes in appointment_details
+      const schedularId = appointment_details.schedular;
+      const appointeeId = appointment_details.appointee;
 
-      return res
-        .status(201)
-        .json({ data: appointment, message: "Appointment set successfully" });
+      const result = await AssistantDAO.add_appointment_to_user(schedularId, appointeeId, appointment._id); 
+
+      return res.status(200);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error setting appointment" });
@@ -128,7 +124,7 @@ export default class AssistantController {
   static async changeStatus(req, res) {
     try {
       const appointmentId = req.body.appointment_id; // Get the appointment ID from the request body
-      const status = req.body.status; // Get the status from the request body
+      const status = req.body; // Get the status from the request body
       const result = await AssistantDAO.changeStatus(appointmentId, status);
       res.status(200).json(result);
     } catch (e) {
@@ -166,7 +162,8 @@ export default class AssistantController {
 
       blobStream.on("finish", async () => {
         // The public URL can be used to directly access the file via HTTP.
-        const publicUrl = FIREBASE_DATABASE_URL + `/profile-photos/${filename}`;
+        const file = bucket.file(`/profile-photos/${filename}`);
+        const publicUrl = await file.getSignedUrl({action:'read', expires: '12-31-3000'})
         await AssistantDAO.uploadProfilePhoto(userId, publicUrl);
         return res.status(200).send(publicUrl);
       });
@@ -181,18 +178,22 @@ export default class AssistantController {
     try{
       const decodedToken = req.user_decoded_details;
       const userId = decodedToken.user_id;
-      const image = req.file; // Replace with the actual property containing the image file
+      const image = req.file; 
       console.log(image);
       if (!image) {
         return res.status(400).json({ message: "No image uploaded" });
       }
       // first delete the old profile photo
       const user = await AssistantDAO.getProfile(userId);
-      const oldProfilePhoto = user.profile_pic_url;
-      if(oldProfilePhoto){
-        const filename = oldProfilePhoto.split('/').pop();
+      const oldProfilePhotos = user.profile_pic_url;
+      console.log("old profile photos", oldProfilePhotos);
+      if(oldProfilePhotos && oldProfilePhotos.length > 0){
         const bucket = firebase.storage().bucket();
-        await bucket.file(`/profile-photos/${filename}`).delete();
+        for(let i = 0; i < oldProfilePhotos.length; i++){
+          const urlParts = oldProfilePhotos[i].split('/');
+          const filename = urlParts[urlParts.length - 1].split('?')[0];
+          await bucket.file(`/profile-photos/${filename}`).delete();
+        }
       }
      
       // upload the new profile photo

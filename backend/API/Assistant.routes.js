@@ -13,7 +13,7 @@ router.post('/add-new-user',authenticator.TokenAuthenticator, assistantCtrl.addN
 
 router.post('/update-user-details',authenticator.TokenAuthenticator, assistantCtrl.updateUserDetails)
 
-router.post('/get-appointment',authenticator.TokenAuthenticator, assistantCtrl.getAppointment)
+router.post('/get-user-appointment',authenticator.TokenAuthenticator, assistantCtrl.get_user_Appointment)
 
 router.post('/set-appointment',authenticator.TokenAuthenticator, assistantCtrl.setAppointment)
 

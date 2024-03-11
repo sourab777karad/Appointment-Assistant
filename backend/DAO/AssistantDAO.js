@@ -95,11 +95,11 @@ export default class AssistantDAO {
 	 * @returns {Promise<Object>} - A promise that resolves with the created or updated appointment.
 	 */
 	//method to setappointment
-	static async SetAppointment(appointment) {
+	static async SetAppointment(appointment_details) {
 		let result;
 		try {
-			// Insert the appointment into the 'appointments' collection
-			result = await cluster0.collection("appointments").insertOne(appointment);
+			// Insert the appointment_details into the 'appointments' collection
+			result = await cluster0.collection("appointments").insertOne(appointment_details);
 			appointment._id = result.insertedId; // Get the id of the inserted document
 		} catch (e) {
 			console.error(`Unable to set appointment: ${e}`);
@@ -144,25 +144,14 @@ export default class AssistantDAO {
 		}
 	}
 
-	static async getAppointment(appointerid) {
+	static async getAppointment(firebase_ID, datetime) {
 		try {
-			if (!appointerid) {
-				console.log("Invalid apointer ID");
-				return { message: "Invalid apointer ID" };
-			}
-	
-			console.log('Attempting to retrieve appointments with apointer ID:', appointerid);
-	
-			const appointments = await cluster0.collection("appointments").find({ appointer: appointerid }).toArray();
-			console.log('Appointments retrieved:', appointments);
-			if (!appointments || appointments.length === 0) {
-				console.log("No appointments found for the given apointer ID");
-				return { message: "No appointments found for the given apointer ID" };
-			}
-
-	
-			console.log('Appointments retrieved:', appointments);
-			return appointments;
+			 // get all appointments from the appointments collection where schedular_id or appointee_id is equal to the firebase_ID and the appointment in range of the given date and also sort them into taken appointments and given appointments
+			const appointments = await cluster0.collection("appointments").find({
+				$or: [{ schedular_id: firebase_ID }, { appointee_id: firebase_ID }],
+				appointment_time: { $gte: datetime.start, $lte: datetime.end }
+			}).toArray();
+			return appointments;	
 		} catch (e) {
 			console.error(`Unable to get appointments: ${e}`);
 			throw e;
@@ -171,7 +160,7 @@ export default class AssistantDAO {
 	static async getUsers() {
 		try {
 			const users = await cluster0.collection("users").find().toArray();
-			return users;
+			return users.firebase_id;
 		} catch (e) {
 			console.error(`Unable to get users: ${e}`);
 			throw e;
@@ -244,7 +233,7 @@ export default class AssistantDAO {
 		console.error(`Unable to upload profile photo: ${err}`);
 		throw err;
 	}
-}
+   }
 	static async updateUserProfile(user_updated_details, firebaseID) {
 		try {
 			// Prepare an update object with only the fields that are not empty
@@ -271,6 +260,24 @@ export default class AssistantDAO {
 		} catch (e) {
 			console.error(`Unable to update user profile: ${e}`);
 			throw e;
+		}
+	}
+
+	static async add_appointment_to_user(schedularId, appointeeId, appointmentId) {
+		try {
+			// Add the appointment ID if the user is the schedular to the 'taken_appointments' array and add the appointment ID if the user is the appointee to the 'given_appointments' array
+			await cluster0.collection("users").updateOne(
+				{ firebase_id: schedularId },
+				{ $push: { taken_appointments: appointmentId } }
+			);
+			await cluster0.collection("users").updateOne(
+				{ firebase_id: appointeeId },
+				{ $push: { given_appointments: appointmentId } }
+			);
+
+		}catch(err){
+			console.error(`Unable to add appointment to user: ${err}`);
+			throw err;
 		}
 	}
 }
