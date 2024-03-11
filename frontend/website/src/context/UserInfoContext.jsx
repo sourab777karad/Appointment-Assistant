@@ -89,6 +89,7 @@ export const UserInfoContextProvider = ({ children }) => {
 						start_date: get_current_week_dates()[0],
 						end_date: get_current_week_dates()[5],
 					},
+					firebase_id: userDetails.firebase_id,
 				},
 				{
 					headers: {

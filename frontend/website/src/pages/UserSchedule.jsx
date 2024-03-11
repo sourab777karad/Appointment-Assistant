@@ -6,6 +6,32 @@ const UserSchedule = () => {
 	const UserSchedule = useContext(UserInfoContext).userSchedule;
 	const setUserSchedule = useContext(UserInfoContext).setUserSchedule;
 
+	function change_status(appointment, status) {
+		const response = axios
+			.post(
+				`${base_url}/change-status`,
+				{ status: status, appointment_id: appointment._id },
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				refreshData();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Status changed successfully",
+			error: "Error changing status",
+		});
+	}
+
 	return (
 		<div className="pt-24">
 			<div>
