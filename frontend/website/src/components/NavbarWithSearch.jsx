@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Navbar, Typography } from "@material-tailwind/react";
+import { UserInfoContext } from "../context/UserInfoContext";
 
 import logo from "../assets/logo.png";
 
@@ -9,7 +10,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
   const navigate = useNavigate();
   const [openNav, setOpenNav] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [newNotifications, setNewNotifications] = useState(false);
+  const newNotifications = useContext(UserInfoContext).notifsExist;
   const [notifications, setNotifications] = useState([
     { id: 1, text: "Notification 1" },
     { id: 2, text: "Notification 2" },
@@ -33,7 +34,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
         onClick={() => navigate("/appointment-past")}
       >
         <svg
@@ -142,7 +143,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
         onClick={() => navigate("/new_appointment")}
       >
         <svg
@@ -196,18 +197,18 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
-        onClick={() => navigate("/appointment-admin")}
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
+        onClick={() => navigate("/user_schedule")}
       >
         <IconCalendar className="h-7 w-7" />
-        <span className="text-blue-900">Your Timetable</span>
+        <span className="text-blue-900">Your Schedule</span>
       </Typography>
       <Typography
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
-        onClick={() => navigate("/appointment-user")}
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
+        onClick={() => navigate("/upcoming_appointments")}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -281,7 +282,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
   );
 
   return (
-    <div className="fixed top-0 w-full z-10">
+    <div className="fixed top-0 w-full z-10 quicksand">
       <Navbar className="mx-auto max-w-[95%] py-2">
         <div className="flex items-center justify-between text-blue-gray-900">
           {/* logo */}

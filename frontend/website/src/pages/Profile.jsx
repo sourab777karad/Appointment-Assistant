@@ -14,16 +14,11 @@ const Profile = () => {
 		phone_number: "",
 		room: "",
 	});
-	var [localUserDetailsCopy, setLocalUserDetailsCopy] = useState({
-		full_name: "",
-		email: "",
-		phone_number: "",
-		room: "",
-	});
 
 	const base_url = useContext(BaseUrlContext).baseUrl;
 	const userToken = useContext(UserInfoContext).userToken;
-	const setUserDetails = useContext(UserInfoContext).setUserDetails;
+	const refreshProfile = useContext(UserInfoContext).refreshProfile;
+
 	const uploadProfilePicture = () => {
 		// open file picker for only png and jpg files and for file size less than 5mb
 		const fileInput = document.createElement("input");
@@ -60,10 +55,7 @@ const Profile = () => {
 							...localUserDetails,
 							profile_pic_url: response.data.profile_pic_url,
 						});
-						setLocalUserDetailsCopy({
-							...localUserDetailsCopy,
-							profile_pic_url: response.data.profile_pic_url,
-						});
+						refreshProfile();
 					}
 				});
 			} catch (error) {
@@ -86,10 +78,9 @@ const Profile = () => {
 				error: "Error updating profile",
 			});
 
-			if (response.status === 200) {
-				setLocalUserDetailsCopy(localUserDetails);
-				setUserDetails(localUserDetails);
-			}
+			response.then(() => {
+				refreshProfile();
+			});
 		} catch (error) {
 			toast.error("Error updating profile");
 		}
@@ -97,7 +88,6 @@ const Profile = () => {
 
 	useEffect(() => {
 		setLocalUserDetails(userDetails);
-		setLocalUserDetailsCopy(userDetails);
 	}, [userDetails]);
 
 	return (
@@ -105,7 +95,7 @@ const Profile = () => {
 			<div className="flex justify-between w-4/5 max-w-screen-xl gap-20">
 				{/* Profile Information */}
 				<ProfileCard
-					userDetails={localUserDetailsCopy}
+					userDetails={userDetails}
 					uploadProfilePicture={uploadProfilePicture}
 				/>
 
