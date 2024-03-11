@@ -1,12 +1,53 @@
 import React from "react";
 import { useState, useContext, useEffect } from "react";
 import { UserInfoContext } from "../context/UserInfoContext";
+import axios from "axios";
+import toast from "react-hot-toast";
+import PropTypes from "prop-types";
+import { BaseUrlContext } from "./../context/BaseUrlContext";
 
-const CustomContextMenu = ({ x, y, onClose }) => {
+const getCurrentTimeAsInteger = () => {
+	const currentDate = new Date();
+	const hours = String(currentDate.getHours()).padStart(2, "0");
+	const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+	const timeInteger = parseInt(hours + minutes, 10);
+	console.log(timeInteger)
+	return timeInteger;
+};
+
+const CustomContextMenu = ({ x, y, onClose, appointment }) => {
+	const base_url = React.useContext(BaseUrlContext).baseUrl;
+	const userToken = React.useContext(UserInfoContext).userToken;
+	const refreshData = React.useContext(UserInfoContext).refreshData;
 	const handleClick = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
 		onClose(); // Close custom menu
 	};
+	function change_status(appointment, status) {
+		const response = axios
+			.post(
+				`${base_url}/change-status`,
+				{ status: status, appointment_id: appointment._id },
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				refreshData();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Status changed successfully",
+			error: "Error changing status",
+		});
+	}
 
 	return (
 		<div
@@ -19,7 +60,12 @@ const CustomContextMenu = ({ x, y, onClose }) => {
 		>
 			<div className="p-2">
 				<ul className="menu bg-base-200 w-56 rounded-box">
-					<li>
+					<li
+						onClick={() => {
+							console.log(appointment, "clicked");
+							change_status(appointment, "cancelled");
+						}}
+					>
 						<a>Cancel Appointment</a>
 					</li>
 				</ul>
@@ -34,9 +80,12 @@ export default function Schedule({ userSchedule }) {
 	const allUsers = React.useContext(UserInfoContext).allUsers;
 	console.log("from schedule", allUsers);
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+	const [current_appointment, setCurrent_Appointment] = useState(null);
 	const [showMenu, setShowMenu] = useState(false);
 	const setCurrentAppointment = useContext(UserInfoContext).setCurrentAppointment;
-	const handleContextMenu = (e) => {
+	const handleContextMenu = (e, current_appointment) => {
+		setCurrent_Appointment(current_appointment);
+		console.log(e);
 		e.preventDefault(); // Prevent default right-click menu
 		const scrollX = window.scrollX || window.pageXOffset;
 		const scrollY = window.scrollY || window.pageYOffset;
@@ -173,6 +222,7 @@ export default function Schedule({ userSchedule }) {
 		<div className="p-8 ">
 			{showMenu && (
 				<CustomContextMenu
+					appointment={current_appointment}
 					x={menuPosition.x}
 					y={menuPosition.y}
 					onClose={handleCloseMenu}
@@ -183,7 +233,7 @@ export default function Schedule({ userSchedule }) {
 				<thead>
 					<tr>
 						<th></th>
-						{get_week_from_week_dates(get_current_week_dates()).map((day) => {
+						{get_week_from_week_dates(get_current_week_dates()).map((day, index) => {
 							return (
 								<th
 									key={day}
@@ -192,7 +242,7 @@ export default function Schedule({ userSchedule }) {
 										(day === "Today" ? " bg-green-100" : "")
 									}
 								>
-									{day}
+									{day} <br /> {get_current_week_dates_only()[index]}
 								</th>
 							);
 						})}
@@ -210,6 +260,12 @@ export default function Schedule({ userSchedule }) {
 										time_slot,
 										date
 									);
+									const current_appointment =
+										current_div_schedule.taken_appointment
+											? current_div_schedule.taken_appointment
+											: current_div_schedule.given_appointment
+												? current_div_schedule.given_appointment
+												: null;
 									// check if the appointment is confirmed or not
 									if (
 										current_div_schedule.taken_appointment !== null &&
@@ -243,9 +299,14 @@ export default function Schedule({ userSchedule }) {
 													: "") +
 												(current_div_schedule.given_appointment !== null
 													? "bg-blue-100 "
+													: "") +
+												(getCurrentTimeAsInteger() > time_slot.start_time && new Date() > new Date(date)
+													? "diaglines"
 													: "")
 											}
-											onContextMenu={handleContextMenu}
+											onContextMenu={(e) => {
+												handleContextMenu(e, current_appointment);
+											}}
 											onClick={() => {
 												if (
 													current_div_schedule.taken_appointment !== null
@@ -306,7 +367,6 @@ export default function Schedule({ userSchedule }) {
 		</div>
 	);
 }
-import PropTypes from "prop-types";
 //  props validation
 Schedule.propTypes = {
 	// userSchedule: PropTypes.array.isRequired,

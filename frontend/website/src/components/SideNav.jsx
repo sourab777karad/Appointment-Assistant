@@ -78,7 +78,7 @@ const SideNav = () => {
 
 	return (
 		<div>
-			<div className="drawer drawer-end z-50">
+			<div className="drawer drawer-end z-50 roboto-regular">
 				<input id="notif-drawer" type="checkbox" className="drawer-toggle hidden" />
 				<div className="drawer-side">
 					<label
@@ -119,6 +119,12 @@ const SideNav = () => {
 													{new Date(
 														appointment.appointment_date
 													).toDateString()}
+												</div>
+												<div className="p-2 flex flex-col gap-2">
+													<div className="text-lg">Agenda</div>
+													<div>{appointment.title}</div>
+													<div className="text-lg">Description</div>
+													<div>{appointment.description}</div>
 												</div>
 												<div className="flex w-full justify-between flex-row gap-4 p-2">
 													<button
