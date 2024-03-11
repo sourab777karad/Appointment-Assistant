@@ -23,7 +23,7 @@ router.post('/delete-appointment',authenticator.TokenAuthenticator, assistantCtr
 
 router.get('/get-users',authenticator.TokenAuthenticator, assistantCtrl.getUsers)
 
-router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getProfile)
+router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getProfileByUserId)
 
 router.post('/update-user-profile',authenticator.TokenAuthenticator, assistantCtrl.updateUserProfile)
 

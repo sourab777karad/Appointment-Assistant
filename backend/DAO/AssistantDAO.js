@@ -108,8 +108,6 @@ export default class AssistantDAO {
 		return appointment; // Return the complete appointment object
 	}
 
-	
-
 	static async areUserDetailsFilled(firebaseID) {
 		try {
 			const user = await cluster0.collection("users").findOne({ firebase_id: firebaseID });
@@ -148,8 +146,8 @@ export default class AssistantDAO {
 		try {
 			 // get all appointments from the appointments collection where schedular_id or appointee_id is equal to the firebase_ID and the appointment in range of the given date and also sort them into taken appointments and given appointments
 			const appointments = await cluster0.collection("appointments").find({
-				$or: [{ schedular_id: firebase_ID }, { appointee_id: firebase_ID }],
-				appointment_time: { $gte: datetime.start, $lte: datetime.end }
+				$or: [{ scheduler: firebase_ID }, { appointee: firebase_ID }],
+				appointment_date: { $gte: datetime.date.start_date, $lte: datetime.date.end_date }
 			}).toArray();
 			return appointments;	
 		} catch (e) {
@@ -157,10 +155,35 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
+
+	// method to get appointment by id
+	static async getAppointmentById(appointmentId) {
+		try {
+			const appointment = await cluster0.collection("appointments").findOne({ _id: new ObjectId(appointmentId) });
+			if (!appointment) {
+				console.log("Appointment not found");
+				return { message: "Appointment not found" };
+			}
+			return appointment;
+		} catch (e) {
+			console.error(`Unable to get appointment: ${e}`);
+			throw e;
+		}
+	}
+
 	static async getUsers() {
 		try {
-			const users = await cluster0.collection("users").find().toArray();
-			return users.firebase_id;
+			const users = await cluster0.collection("users").find({}, {
+				projection: {
+					email: 1,
+					full_name: 1,
+					firebase_id: 1,
+					room: 1,
+					phone_number: 1,
+					profile_pic_url: 1
+				}
+			}).toArray();			
+			return users;
 		} catch (e) {
 			console.error(`Unable to get users: ${e}`);
 			throw e;
@@ -198,7 +221,7 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
-	static async changeStatus(appointmentId, status) {
+	static async changeStatus(status_details) {
 		if (!ObjectId.isValid(appointmentId)) {
 			console.log(`Invalid ID: ${appointmentId}`);
 			return { message: "Invalid ID" };
@@ -206,8 +229,8 @@ export default class AssistantDAO {
 	
 		try {
 			const result = await cluster0.collection("appointments").updateOne(
-				{ _id: new ObjectId(appointmentId) },
-				{ $set: { status: status } }
+				{ _id: new ObjectId(status_details.appointmentId) },
+				{ $set: { status: status_details.status } }
 			);
 	
 			if (result.matchedCount === 0) {
