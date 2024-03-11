@@ -33,7 +33,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
         onClick={() => navigate("/appointment-past")}
       >
         <svg
@@ -142,7 +142,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
         onClick={() => navigate("/new_appointment")}
       >
         <svg
@@ -196,7 +196,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
         onClick={() => navigate("/user_schedule")}
       >
         <IconCalendar className="h-7 w-7" />
@@ -206,7 +206,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
         as="li"
         variant="small"
         color="blue-gray"
-        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900"
+        className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-4 hover:bg-gray-300 text-blue-900 quicksand text-md"
         onClick={() => navigate("/upcoming_appointments")}
       >
         <svg
@@ -281,7 +281,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
   );
 
   return (
-    <div className="fixed top-0 w-full z-10">
+    <div className="fixed top-0 w-full z-10 quicksand">
       <Navbar className="mx-auto max-w-[95%] py-2">
         <div className="flex items-center justify-between text-blue-gray-900">
           {/* logo */}

@@ -6,7 +6,12 @@ export const UserInfoContextProvider = ({ children }) => {
 	const [userToken, setUserToken] = useState(null);
 	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [userDetails, setUserDetails] = useState(null);
-	const [userSchedule, setUserSchedule] = useState(null);
+	const [userSchedule, setUserSchedule] = useState({
+		taken_appointments: [],
+		given_appointments: [],
+	});
+	const [allUsers, setAllUsers] = useState([]);
+
 	const single_appointment_duration = 15;
 	const single_appointment_start_time = 9;
 	const single_appointment_end_time = 17;
@@ -17,7 +22,8 @@ export const UserInfoContextProvider = ({ children }) => {
 		for (let i = single_appointment_start_time; i < single_appointment_end_time; i++) {
 			for (let j = 0; j < 60; j += single_appointment_duration) {
 				const start_time = i + ":" + (j === 0 ? "00" : j) + (i < 12 ? " AM" : " PM");
-				const end_time = i + ":" + (j + single_appointment_duration) + (i < 12 ? " AM" : " PM");
+				const end_time =
+					i + ":" + (j + single_appointment_duration) + (i < 12 ? " AM" : " PM");
 				const time = start_time + " - " + end_time;
 				j += break_between_appointments;
 				time_slots.push(time);
@@ -57,6 +63,8 @@ export const UserInfoContextProvider = ({ children }) => {
 				userSchedule: userSchedule,
 				setUserSchedule: setUserSchedule,
 				json_time_slots: json_time_slots,
+				allUsers: allUsers,
+				setAllUsers: setAllUsers,
 			}}
 		>
 			{children}

@@ -17,6 +17,24 @@ import {
 	sendEmailVerification,
 } from "firebase/auth";
 
+function get_previous_monday_date() {
+	// this gives you the date of the previous monday
+	var d = new Date();
+	var day = d.getDay();
+	var diff = d.getDate() - day + (day == 0 ? -6 : 1);
+	return new Date(d.setDate(diff));
+}
+
+function get_current_week_dates() {
+	var curr = get_previous_monday_date(); // get current date
+	var week = [];
+	for (var i = 0; i < 6; i++) {
+		week.push(curr.toISOString().slice(0, 10));
+		curr.setDate(curr.getDate() + 1);
+	}
+	return week;
+}
+
 const Login = (props) => {
 	const auth = getAuth(app);
 
@@ -30,6 +48,8 @@ const Login = (props) => {
 	const [user, setUser] = useState(null);
 	const [firebaseid, setFirebaseid] = useState("");
 	const setUserDetails = useContext(UserInfoContext).setUserDetails;
+	const setUserSchedule = useContext(UserInfoContext).setUserSchedule;
+	const setAllUsers = useContext(UserInfoContext).setAllUsers;
 
 	useEffect(() => {
 		if (user) {
@@ -66,8 +86,10 @@ const Login = (props) => {
 				.post(
 					base_url + "/are-user-details-filled",
 					{
-						accessToken: user.accessToken,
-						firebase_id: user.uid,
+						date: {
+							start_date: get_current_week_dates()[0],
+							end_date: get_current_week_dates()[5],
+						},
 					},
 					{
 						headers: {
@@ -140,7 +162,7 @@ const Login = (props) => {
 					setUserToken(user.accessToken);
 					setLocalUserToken(user.accessToken);
 					console.log("user logged in successfully");
-					resolve();
+					resolve(user);
 				})
 				.catch((error) => {
 					const errorCode = error.code;
@@ -223,6 +245,8 @@ const Login = (props) => {
 								});
 						}
 						if (user_details.filled) {
+							setUserSchedule(user_details.userSchedule);
+							setAllUsers(user_details.users);
 							redirect();
 						} else if (!user.filled) {
 							toast.error("User details not filled. Please fill your details.");
@@ -269,7 +293,51 @@ const Login = (props) => {
 		});
 
 		login_promise
-			.then(() => {
+			.then((resolved_user) => {
+				// check if user details are filled
+				const user_details_promise = askServerForUserDetails(resolved_user);
+				toast.promise(user_details_promise, {
+					loading: "Fetching user details...",
+					success: "User details fetched successfully",
+					error: "Error fetching user details",
+				});
+				// now if the user details are filled, redirect to home
+				// else, redirect to the user details page
+				user_details_promise
+					.then((user_details) => {
+						if (user_details.newUser) {
+							// first add the user to the database
+							const add_user_promise = addUserToDatabase(user);
+							toast.promise(add_user_promise, {
+								loading: "Adding user to database...",
+								success: "User added to database successfully",
+								error: "Could not add user to database.",
+							});
+							add_user_promise
+								.then(() => {
+									// now redirect to the user details page
+									props.setisNavbarPresent(true);
+									navigate("/profile");
+								})
+								.catch((error) => {
+									console.log("error adding user to database", error);
+								});
+						}
+						if (user_details.filled) {
+							// in case details are filled this is an old user, and we need to get his or her appointments.
+							setUserSchedule(user_details.userSchedule);
+							setAllUsers(user_details.users);
+							redirect();
+						} else if (!user.filled) {
+							toast.error("User details not filled. Please fill your details.");
+							props.setisNavbarPresent(true);
+							navigate("/profile");
+						}
+					})
+					.catch((error) => {
+						console.log("error fetching user details", error);
+					});
+
 				// check if the users' email is verified
 				const user = auth.currentUser;
 				if (user.emailVerified) {

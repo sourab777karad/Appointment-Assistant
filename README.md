@@ -57,11 +57,13 @@ Cloud Service for Maintaining Apppointments via slots for personal Meetings.
 
 4. Appointment {
   id: string,
-  creation_datetime: string,
-  appointment_datetime: string,
-  appointment_duration: number,
-  appointment_purpose: string,
-  appointment_description: string,
+  creation_date: string,
+  creation_time: int,
+  appointment_date: string,
+  appointment_time: int,
+  duration: number,
+  title: string,
+  description: string,
   status: string, // accepted, rejected, pending
   scheduler: user_id, ( user who is taking the appointment ) - user
   appointee: user_id, ( user who is giving the appointment ) - admin
