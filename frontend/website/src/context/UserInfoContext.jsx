@@ -1,8 +1,29 @@
-import { createContext, useState } from "react";
-
+import { createContext, useEffect, useState } from "react";
+import React from "react";
+import { BaseUrlContext } from "./../context/BaseUrlContext";
+import axios from "axios";
 export const UserInfoContext = createContext();
 
+function get_previous_monday_date() {
+	// this gives you the date of the previous monday
+	var d = new Date();
+	var day = d.getDay();
+	var diff = d.getDate() - day + (day == 0 ? -6 : 1);
+	return new Date(d.setDate(diff));
+}
+
+function get_current_week_dates() {
+	var curr = get_previous_monday_date(); // get current date
+	var week = [];
+	for (var i = 0; i < 6; i++) {
+		week.push(curr.toISOString().slice(0, 10));
+		curr.setDate(curr.getDate() + 1);
+	}
+	return week;
+}
+
 export const UserInfoContextProvider = ({ children }) => {
+	const base_url = React.useContext(BaseUrlContext).baseUrl;
 	const [userToken, setUserToken] = useState(null);
 	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [userDetails, setUserDetails] = useState(null);
@@ -11,7 +32,7 @@ export const UserInfoContextProvider = ({ children }) => {
 		given_appointments: [],
 	});
 	const [allUsers, setAllUsers] = useState([]);
-
+	const [notifsExist, setNotifsExist] = useState(false);
 	const single_appointment_duration = 15;
 	const single_appointment_start_time = 9;
 	const single_appointment_end_time = 17;
@@ -48,6 +69,63 @@ export const UserInfoContextProvider = ({ children }) => {
 		return time_slots;
 	}
 
+	function calculate_notifs_exist() {
+		const given_appointments = userSchedule.given_appointments;
+		const notifs_exist = given_appointments.some(
+			(appointment) => appointment.status === "pending"
+		);
+		setNotifsExist(notifs_exist);
+	}
+
+	function refreshData() {
+		// this function will refresh the userSchedule and allUsers
+		// it will be called after every change in the userSchedule
+		// it will be called after every change in the allUsers
+		axios
+			.post(
+				`${base_url}/get-user-appointment`,
+				{
+					date: {
+						start_date: get_current_week_dates()[0],
+						end_date: get_current_week_dates()[5],
+					},
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				let userSchedule = {
+					taken_appointments: response.data.taken_appointments,
+					given_appointments: response.data.given_appointments,
+				};
+				setUserSchedule(userSchedule);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	function refreshProfile() {
+		axios
+			.get(`${base_url}/get-profile`, {
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+				},
+			})
+			.then((response) => {
+				setUserDetails(response.data.profile_data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
+
+	useEffect(() => {
+		calculate_notifs_exist();
+	}, [userSchedule]);
 	const time_slots = calculate_time_slots();
 	const json_time_slots = calculate_json_time_slots();
 	return (
@@ -65,6 +143,10 @@ export const UserInfoContextProvider = ({ children }) => {
 				json_time_slots: json_time_slots,
 				allUsers: allUsers,
 				setAllUsers: setAllUsers,
+				notifsExist: notifsExist,
+				setNotifsExist: setNotifsExist,
+				refreshData: refreshData,
+				refreshProfile: refreshProfile,
 			}}
 		>
 			{children}

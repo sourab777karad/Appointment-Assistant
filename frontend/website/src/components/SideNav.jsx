@@ -1,9 +1,11 @@
 // this is the drawer. it contains cart. This is present always, and is activated by javascript.
 
-import { useNavigate } from "react-router-dom";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { UserInfoContext } from "../context/UserInfoContext";
+import { BaseUrlContext } from "./../context/BaseUrlContext";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const integerToTime = (integer) => {
 	// Convert integer to string and pad with leading zeros if necessary
@@ -29,11 +31,11 @@ const integerToTime = (integer) => {
 };
 
 const SideNav = () => {
-	const navigate = useNavigate();
 	const given_appointments = React.useContext(UserInfoContext).userSchedule?.given_appointments;
 	const allUsers = React.useContext(UserInfoContext).allUsers;
-	const userDetails = React.useContext(UserInfoContext).userDetails;
-	const user_id = userDetails?.firebase_id;
+	const base_url = React.useContext(BaseUrlContext).baseUrl;
+	const userToken = React.useContext(UserInfoContext).userToken;
+	const refreshData = React.useContext(UserInfoContext).refreshData;
 
 	function get_name_from_appointment(appointment) {
 		if (appointment === null) {
@@ -42,6 +44,36 @@ const SideNav = () => {
 		// iterate through the allUsers array to find the user with the given firebase_id as appointment.scheduler
 		const scheduler = allUsers.find((user) => user.firebase_id === appointment.scheduler);
 		return scheduler;
+	}
+
+	useEffect(() => {
+		console.log(given_appointments);
+	}, [given_appointments]);
+
+	function change_status(appointment, status) {
+		const response = axios
+			.post(
+				`${base_url}/change-status`,
+				{ status: status, appointment_id: appointment._id },
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				refreshData();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Status changed successfully",
+			error: "Error changing status",
+		});
 	}
 
 	return (
@@ -54,7 +86,7 @@ const SideNav = () => {
 						aria-label="close sidebar"
 						className="drawer-overlay"
 					></label>
-					<div className="w-[23vw] min-h-full bg-gray-100 text-base-content drawer-content border-l-2 border-black">
+					<div className="w-[23vw] min-h-full bg-gray-100 text-base-content drawer-content  border-black">
 						<div className="bg-gray-200 m-4 rounded-lg outline-2 mr-6">
 							<div className="w-full flex justify-between p-4">
 								<div className="text-xl">Notifications</div>
@@ -89,10 +121,20 @@ const SideNav = () => {
 													).toDateString()}
 												</div>
 												<div className="flex w-full justify-between flex-row gap-4 p-2">
-													<button className="btn bg-green-300 hover:bg-green-400 hover:scale-105 flex-1 text-lg">
+													<button
+														className="btn bg-green-300 hover:bg-green-400 hover:scale-105 flex-1 text-lg"
+														onClick={() => {
+															change_status(appointment, "confirmed");
+														}}
+													>
 														<IconCheck className="w-6 h-6" />
 													</button>
-													<button className="btn bg-red-300 hover:bg-red-400 hover:scale-105 flex-1 text-lg">
+													<button
+														className="btn bg-red-300 hover:bg-red-400 hover:scale-105 flex-1 text-lg"
+														onClick={() => {
+															change_status(appointment, "rejected");
+														}}
+													>
 														<IconX className="w-6 h-6" />
 													</button>
 												</div>

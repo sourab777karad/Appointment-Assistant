@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Navbar, Typography } from "@material-tailwind/react";
+import { UserInfoContext } from "../context/UserInfoContext";
 
 import logo from "../assets/logo.png";
 
@@ -9,7 +10,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
   const navigate = useNavigate();
   const [openNav, setOpenNav] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [newNotifications, setNewNotifications] = useState(false);
+  const newNotifications = useContext(UserInfoContext).notifsExist;
   const [notifications, setNotifications] = useState([
     { id: 1, text: "Notification 1" },
     { id: 2, text: "Notification 2" },
