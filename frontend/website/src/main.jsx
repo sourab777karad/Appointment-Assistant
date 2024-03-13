@@ -12,7 +12,7 @@ import "./index.css";
 import App from "./App";
 import { BaseUrlProvider } from "./context/BaseUrlContext";
 import { BrowserRouter } from "react-router-dom";
-
+import { UserInfoContextProvider } from "./context/UserInfoContext.jsx";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 /**
@@ -22,7 +22,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <BaseUrlProvider>
-        <App />
+        <UserInfoContextProvider>
+          <App />
+        </UserInfoContextProvider>
       </BaseUrlProvider>
     </BrowserRouter>
   </React.StrictMode>,

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { UserInfoContext } from "../context/UserInfoContext";
 import "../index.css";
-import { NavLink } from "react-router-dom";
 import mit_logo_image from "../assets/mitwpu logo.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -14,16 +13,55 @@ import {
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	GoogleAuthProvider,
+	sendPasswordResetEmail,
+	sendEmailVerification,
 } from "firebase/auth";
+
+function get_previous_monday_date() {
+	// this gives you the date of the previous monday
+	var d = new Date();
+	var day = d.getDay();
+	var diff = d.getDate() - day + (day == 0 ? -6 : 1);
+	return new Date(d.setDate(diff));
+}
+
+function get_current_week_dates() {
+	var curr = get_previous_monday_date(); // get current date
+	var week = [];
+	for (var i = 0; i < 6; i++) {
+		week.push(curr.toISOString().slice(0, 10));
+		curr.setDate(curr.getDate() + 1);
+	}
+	return week;
+}
 
 const Login = (props) => {
 	const auth = getAuth(app);
 
-	const base_url = React.useContext(BaseUrlContext).baseUrl;
-	const setUserToken = React.useContext(UserInfoContext).setUserToken;
-
+	const base_url = useContext(BaseUrlContext).baseUrl;
+	const setUserToken = useContext(UserInfoContext).setUserToken;
+	const [localUserToken, setLocalUserToken] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [userFullName, setUserFullName] = useState("");
+	const [userEmail, setUserEmail] = useState("");
+	const [user, setUser] = useState(null);
+	const [firebaseid, setFirebaseid] = useState("");
+	const setUserDetails = useContext(UserInfoContext).setUserDetails;
+	const setUserSchedule = useContext(UserInfoContext).setUserSchedule;
+	const setAllUsers = useContext(UserInfoContext).setAllUsers;
+
+	useEffect(() => {
+		if (user) {
+			setUserFullName(user.displayName);
+			setUserEmail(user.email);
+			setUserToken(user.accessToken);
+			setLocalUserToken(user.accessToken);
+			setFirebaseid(user.uid);
+
+			console.log("inside use effect", user.accessToken);
+		}
+	}, [user, setUserFullName, setUserEmail, setUserToken, setLocalUserToken]);
 
 	const mit_wpu_images = [
 		"https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",
@@ -35,6 +73,79 @@ const Login = (props) => {
 	function redirect() {
 		props.setisNavbarPresent(true);
 		navigate("/home");
+	}
+
+	async function askServerForUserDetails(user) {
+		// this function asks the server for user details and returns a promise
+		// if the user details are fetched successfully, the promise is resolved
+		// if the user details are not fetched, the promise is rejected
+		console.log("asking server for user details");
+		console.log("user token: ", user.accessToken);
+		return new Promise((resolve, reject) => {
+			axios
+				.post(
+					base_url + "/are-user-details-filled",
+					{
+						date: {
+							start_date: get_current_week_dates()[0],
+							end_date: get_current_week_dates()[5],
+						},
+					},
+					{
+						headers: {
+							authorization: "Bearer " + user.accessToken,
+						},
+					}
+				)
+				.then((response) => {
+					console.log("user details: ", response.data);
+					setUserDetails(response.data.userDetails);
+					resolve(response.data);
+				})
+				.catch((error) => {
+					console.log("error fetching user details: ", error);
+					reject(error);
+				});
+		});
+	}
+
+	async function addUserToDatabase(user) {
+		// this function adds the user to the database and returns a promise
+		// if the user is added successfully, the promise is resolved
+		// if the user is not added, the promise is rejected
+		console.log("adding user to database");
+		console.log("local user token: ", user.accessToken);
+		return new Promise((resolve, reject) => {
+			axios
+				.post(
+					base_url + "/add-new-user",
+					{
+						email: user.email,
+						full_name: user.displayName,
+						firebase_id: user.uid,
+						profile_pic_url: "",
+						room: "",
+						phone_number: user.phoneNumber ? user.phoneNumber : "",
+					},
+					{
+						headers: {
+							authorization: "Bearer " + user.accessToken,
+						},
+					}
+				)
+				.then((response) => {
+					console.log("user added to database: ", response.data);
+					// false means that the user already exists.
+					if (response.data.status === false) {
+						reject(response.data.message);
+					}
+					resolve();
+				})
+				.catch((error) => {
+					console.log("error adding user to database: ", error);
+					reject(error);
+				});
+		});
 	}
 
 	async function loginUser() {
@@ -49,8 +160,9 @@ const Login = (props) => {
 					const user = userCredential.user;
 					console.log("user logged in: ", user);
 					setUserToken(user.accessToken);
+					setLocalUserToken(user.accessToken);
 					console.log("user logged in successfully");
-					resolve();
+					resolve(user);
 				})
 				.catch((error) => {
 					const errorCode = error.code;
@@ -65,15 +177,11 @@ const Login = (props) => {
 	const loginUserWithGoogle = () => {
 		return new Promise((resolve, reject) => {
 			signInWithPopup(auth, provider)
-				.then((result) => {
+				.then(async (result) => {
 					// This gives you a Google Access Token. You can use it to access the Google API.
-					const credential =
-						GoogleAuthProvider.credentialFromResult(result);
-					const token = credential.accessToken;
-					const user = result.user;
-					console.log("user logged in: ", user);
-					setUserToken(token);
-					resolve();
+					setUser(result.user);
+					console.log("user logged in: ", result.user);
+					resolve(result.user);
 				})
 				.catch((error) => {
 					console.log("error logging in: ", error);
@@ -83,15 +191,8 @@ const Login = (props) => {
 					// The email of the user's account used.
 					const email = error.email;
 					// The AuthCredential type that was used.
-					const credential =
-						GoogleAuthProvider.credentialFromError(error);
-					console.log(
-						"error logging in: ",
-						errorMessage,
-						errorCode,
-						email,
-						credential
-					);
+					const credential = GoogleAuthProvider.credentialFromError(error);
+					console.log("error logging in: ", errorMessage, errorCode, email, credential);
 					reject(error);
 				});
 		});
@@ -106,8 +207,56 @@ const Login = (props) => {
 		});
 
 		login_promise
-			.then(() => {
-				redirect();
+			.then((user) => {
+				setUserFullName(user.displayName);
+				setUserEmail(user.email);
+				setUserToken(user.accessToken);
+				setLocalUserToken(user.accessToken);
+				setFirebaseid(user.uid);
+				console.log(user.accessToken);
+				console.log("user logged in with Google: ", user);
+				// check if user details are filled
+				const user_details_promise = askServerForUserDetails(user);
+				toast.promise(user_details_promise, {
+					loading: "Fetching user details...",
+					success: "User details fetched successfully",
+					error: "Error fetching user details",
+				});
+				// now if the user details are filled, redirect to home
+				// else, redirect to the user details page
+				user_details_promise
+					.then((user_details) => {
+						if (user_details.newUser) {
+							// first add the user to the database
+							const add_user_promise = addUserToDatabase(user);
+							toast.promise(add_user_promise, {
+								loading: "Adding user to database...",
+								success: "User added to database successfully",
+								error: "Could not add user to database.",
+							});
+							add_user_promise
+								.then(() => {
+									// now redirect to the user details page
+									props.setisNavbarPresent(true);
+									navigate("/profile");
+								})
+								.catch((error) => {
+									console.log("error adding user to database", error);
+								});
+						}
+						if (user_details.filled) {
+							setUserSchedule(user_details.userSchedule);
+							setAllUsers(user_details.users);
+							redirect();
+						} else if (!user.filled) {
+							toast.error("User details not filled. Please fill your details.");
+							props.setisNavbarPresent(true);
+							navigate("/profile");
+						}
+					})
+					.catch((error) => {
+						console.log("error fetching user details", error);
+					});
 			})
 			.catch((error) => {
 				console.log("error logging in with Google", error);
@@ -115,14 +264,13 @@ const Login = (props) => {
 	};
 
 	const validateEmail = (email) => {
-		// regex check for email
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return emailRegex.test(email);
+		// regex check for domain
+		const domainRegex = /^[\w-]+(\.[\w-]+)*@mitwpu\.edu\.in$/;
+		return domainRegex.test(email);
 	};
 
 	const validatePassword = (password) => {
-		const re =
-			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+		const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 		return re.test(password);
 	};
 
@@ -132,12 +280,10 @@ const Login = (props) => {
 			toast.error("Please enter a valid email address");
 			return;
 		}
-		// if (!validatePassword(password)) {
-		// 	toast.error(
-		// 		"Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character"
-		// 	);
-		// 	return;
-		// }
+		if (!validatePassword(password)) {
+			toast.error("Password Invalid. Does not satisfy requirements.");
+			return;
+		}
 
 		const login_promise = loginUser();
 		toast.promise(login_promise, {
@@ -147,11 +293,90 @@ const Login = (props) => {
 		});
 
 		login_promise
-			.then(() => {
+			.then((resolved_user) => {
+				// check if user details are filled
+				const user_details_promise = askServerForUserDetails(resolved_user);
+				toast.promise(user_details_promise, {
+					loading: "Fetching user details...",
+					success: "User details fetched successfully",
+					error: "Error fetching user details",
+				});
+				// now if the user details are filled, redirect to home
+				// else, redirect to the user details page
+				user_details_promise
+					.then((user_details) => {
+						if (user_details.newUser) {
+							// first add the user to the database
+							const add_user_promise = addUserToDatabase(user);
+							toast.promise(add_user_promise, {
+								loading: "Adding user to database...",
+								success: "User added to database successfully",
+								error: "Could not add user to database.",
+							});
+							add_user_promise
+								.then(() => {
+									// now redirect to the user details page
+									props.setisNavbarPresent(true);
+									navigate("/profile");
+								})
+								.catch((error) => {
+									console.log("error adding user to database", error);
+								});
+						}
+						if (user_details.filled) {
+							// in case details are filled this is an old user, and we need to get his or her appointments.
+							setUserSchedule(user_details.userSchedule);
+							setAllUsers(user_details.users);
+							redirect();
+						} else if (!user.filled) {
+							toast.error("User details not filled. Please fill your details.");
+							props.setisNavbarPresent(true);
+							navigate("/profile");
+						}
+					})
+					.catch((error) => {
+						console.log("error fetching user details", error);
+					});
+
+				// check if the users' email is verified
+				const user = auth.currentUser;
+				if (user.emailVerified) {
+					console.log("user email verified");
+				} else {
+					console.log("user email not verified");
+					toast.error("Please verify your email address");
+					// send email verification link
+					sendEmailVerification(user)
+						.then(() => {
+							toast.success("Email verification link sent successfully");
+						})
+						.catch((error) => {
+							console.log("error sending email verification link", error);
+							toast.error("Error sending email verification link");
+						});
+					return;
+				}
 				redirect();
 			})
 			.catch((error) => {
 				console.log("error logging in", error);
+			});
+	};
+
+	const handleForgotPassword = () => {
+		// make sure email is valid
+		if (!validateEmail(email)) {
+			toast.error("Please enter a valid email address");
+			return;
+		}
+		// send password reset email
+		sendPasswordResetEmail(auth, email)
+			.then(() => {
+				toast.success("Password reset email sent successfully");
+			})
+			.catch((error) => {
+				console.log("error sending password reset email", error);
+				toast.error("Error sending password reset email");
 			});
 	};
 
@@ -179,36 +404,28 @@ const Login = (props) => {
 								/>
 							</div>
 							<h1 className="text-xl md:text-2xl font-bold leading-tight">
-								Log in to your account
+								Log in to Appointment Assistant
 							</h1>
 							<form className="mt-6" action="#" method="POST">
 								<div>
-									<label className="block text-gray-700">
-										Email Address
-									</label>
+									<label className="block text-gray-700">Email Address</label>
 									<input
 										type="email"
-										placeholder="Enter Email Address"
+										placeholder="example@mitwpu.edu.in"
 										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
 										autoFocus={true}
-										onChange={(e) =>
-											setEmail(e.target.value)
-										}
+										onChange={(e) => setEmail(e.target.value)}
 										value={email}
 										autoComplete="on"
 										required={true}
 									/>
 								</div>
 								<div className="mt-4">
-									<label className="block text-gray-700">
-										Password
-									</label>
+									<label className="block text-gray-700">Password</label>
 									<input
 										type="password"
 										placeholder="Enter Password"
-										onChange={(e) =>
-											setPassword(e.target.value)
-										}
+										onChange={(e) => setPassword(e.target.value)}
 										value={password}
 										minLength={8}
 										className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
@@ -216,7 +433,7 @@ const Login = (props) => {
 										required={true}
 									/>
 								</div>
-								<div className="text-right mt-2">
+								<div className="text-right mt-2" onClick={handleForgotPassword}>
 									<a
 										href="#"
 										className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"
@@ -255,10 +472,7 @@ const Login = (props) => {
 											/>
 										</defs>
 										<clipPath id="b">
-											<use
-												xlinkHref="#a"
-												overflow="visible"
-											/>
+											<use xlinkHref="#a" overflow="visible" />
 										</clipPath>
 										<path
 											clipPath="url(#b)"
@@ -281,9 +495,7 @@ const Login = (props) => {
 											d="M48 48L17 24l-4-3 35-10z"
 										/>
 									</svg>
-									<span className="ml-4">
-										Log in / Sign Up with Google
-									</span>
+									<span className="ml-4">Log in / Sign Up with Google</span>
 								</div>
 							</button>
 							<p className="mt-8 w-full text-center">
@@ -292,7 +504,7 @@ const Login = (props) => {
 									onClick={() => {
 										navigate("/signup");
 									}}
-									className="text-blue-500 hover:text-blue-700 font-semibold"
+									className="text-blue-500 hover:text-blue-700 font-semibold hover:cursor-pointer"
 								>
 									Create an account
 								</a>
@@ -306,3 +518,10 @@ const Login = (props) => {
 };
 
 export default Login;
+
+import PropTypes from "prop-types";
+
+Login.propTypes = {
+	props: PropTypes.object,
+	setisNavbarPresent: PropTypes.func,
+};

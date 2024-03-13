@@ -51,19 +51,22 @@ Cloud Service for Maintaining Apppointments via slots for personal Meetings.
     salt: string,
     room_address: string,
     user_image_link: "" // string link for s3 url
-    appointments : [ appointment_id, appointment_id, ... ]
+    taken_appointments : [ appointment_id, appointment_id, ... ]
+    given_appointments : [ appointment_id, appointment_id, ... ]
 }
 
 4. Appointment {
   id: string,
-  creation_time: string,
-  appointment_time: string,
-  appointment_duration: number,
-  appointment_purpose: string,
-  appointment_description: string,
+  creation_date: string,
+  creation_time: int,
+  appointment_date: string,
+  appointment_time: int,
+  duration: number,
+  title: string,
+  description: string,
   status: string, // accepted, rejected, pending
-  appointee: user_id, ( user who is taking the appointment ) - user
-  appointer: user_id, ( user who is giving the appointment ) - admin
+  scheduler: user_id, ( user who is taking the appointment ) - user
+  appointee: user_id, ( user who is giving the appointment ) - admin
 }
 
 # routes
@@ -134,6 +137,7 @@ res: {
 req {
     appointment_id : string
     status: string (pending, accepted or rejected)
+    scheduler_email_id: string
 }
 
 response: 

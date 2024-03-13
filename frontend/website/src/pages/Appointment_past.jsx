@@ -55,15 +55,16 @@ const Appointment_past = () => {
     if (!selectedYear || !selectedMonth) return []; // If year or month not selected, return empty array
     const filteredAppointments = pastAppointments.filter(
       (appointment) =>
-        appointment.year === selectedYear && appointment.month === selectedMonth
+        appointment.year === selectedYear &&
+        appointment.month === selectedMonth,
     );
     console.log("Filtered Appointments:", filteredAppointments);
     return filteredAppointments;
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-24">
-      <h1 className="text-3xl font-bold mb-8 text-center">Past Appointments</h1>
+    <div className="mx-auto px-4 pt-24">
+      <h1 className="text-3xl font-semibold my-4 text-center text-blue-700">Past Appointments</h1>
       <YearScroll onSelectYear={handleYearSelect} />
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
@@ -98,7 +99,7 @@ const Appointment_past = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {getAppointmentsForSelectedMonth().map((appointment, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md p-4">
+              <div key={index} className="bg-gray-200 rounded-lg shadow-md p-4">
                 <h2 className="text-lg font-bold mb-2">{appointment.title}</h2>
                 <p className="text-gray-600">
                   {appointment.date} {appointment.month}, {appointment.year}
