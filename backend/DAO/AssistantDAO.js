@@ -187,16 +187,7 @@ export default class AssistantDAO {
 
 	static async getUsers() {
 		try {
-			const users = await cluster0.collection("users").find({}, {
-				projection: {
-					email: 1,
-					full_name: 1,
-					firebase_id: 1,
-					room: 1,
-					phone_number: 1,
-					profile_pic_url: 1
-				}
-			}).toArray();			
+			const users = await cluster0.collection("users").find().toArray();
 			return users;
 		} catch (e) {
 			console.error(`Unable to get users: ${e}`);

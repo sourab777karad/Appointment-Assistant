@@ -51,10 +51,9 @@ export default function Schedule({
 	user_time_slots,
 	json_time_slots,
 }) {
-
 	// from the context
 	const allUsers = React.useContext(UserInfoContext).allUsers;
-	
+
 	// for the right click menu
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 	const [currentAppointmentRightClick, setCurrentAppointmentForRightClick] = useState(null);
@@ -126,7 +125,6 @@ export default function Schedule({
 		return week;
 	}
 
-
 	function make_week_from_start_date(start_date) {
 		// this will take the start_date and end_date and return an array of dates from start_date to end_date
 		const monday = new Date(start_date);
@@ -183,7 +181,7 @@ export default function Schedule({
 	}
 
 	useEffect(() => {
-		console.log(currentWeek)
+		console.log(currentWeek);
 		const handleScroll = () => {
 			if (showMenu) {
 				setShowMenu(false); // Close menu when scrolling
@@ -208,6 +206,25 @@ export default function Schedule({
 					change_status={change_status}
 				/>
 			)}
+			{/* <div className="flex justify-between items-center">
+				<button
+					onClick={handlePreviousWeekChanged}
+					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+				>
+					Previous Week
+				</button>
+				<h1 className="text-3xl font-semibold text-center mt-4 text-blue-800">
+					{currentWeek.start_date.toLocaleDateString()} -{" "}
+					{currentWeek.end_date.toLocaleDateString()}
+				</h1>
+				<button
+					onClick={handleNextWeekChanged}
+					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+				>
+					Next Week
+				</button>
+			</div> */}
+
 			<table className="table border-2 bg-white">
 				{/* head */}
 				<thead>
@@ -275,7 +292,7 @@ export default function Schedule({
 										<td
 											key={date}
 											className={
-												"border-2 p-2 " +
+												"hover:bg-gray-300 border-2 p-2 " +
 												(current_div_schedule.taken_appointment !== null
 													? "bg-red-100 "
 													: "") +
