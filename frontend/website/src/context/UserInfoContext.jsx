@@ -3,6 +3,7 @@ import React from "react";
 import { BaseUrlContext } from "./../context/BaseUrlContext";
 import axios from "axios";
 export const UserInfoContext = createContext();
+import { addMinutes, format } from "date-fns";
 
 function get_previous_monday_date() {
 	// this gives you the date of the previous monday
@@ -16,11 +17,15 @@ function get_current_week_dates() {
 	var curr = get_previous_monday_date(); // get current date
 	var week = [];
 	for (var i = 0; i < 6; i++) {
-		week.push(curr);
+		week.push(new Date(curr));
 		curr.setDate(curr.getDate() + 1);
 	}
+	console.log(week);
 	return week;
 }
+
+const this_week_start = get_current_week_dates()[0];
+const this_week_end = get_current_week_dates()[5];
 
 export const UserInfoContextProvider = ({ children }) => {
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
@@ -28,8 +33,8 @@ export const UserInfoContextProvider = ({ children }) => {
 	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [userDetails, setUserDetails] = useState(null);
 	const [currentWeek, setCurrentWeek] = useState({
-		start_date: get_current_week_dates()[0],
-		end_date: get_current_week_dates()[5],
+		start_date: this_week_start,
+		end_date: this_week_end,
 	});
 	const [userSchedule, setUserSchedule] = useState({
 		taken_appointments: [],
@@ -44,38 +49,49 @@ export const UserInfoContextProvider = ({ children }) => {
 		single_appointment_duration = 30,
 		break_between_appointments = 5
 	) {
+		let startTime = new Date().setHours(single_appointment_start_time, 0, 0);
+		let endTime = new Date().setHours(single_appointment_end_time, 0, 0);
+
 		const time_slots = [];
-		for (let i = single_appointment_start_time; i < single_appointment_end_time; i++) {
-			for (let j = 0; j < 60; j += single_appointment_duration) {
-				const start_time = i + ":" + (j === 0 ? "00" : j) + (i < 12 ? " AM" : " PM");
-				const end_time =
-					i + ":" + (j + single_appointment_duration) + (i < 12 ? " AM" : " PM");
-				const time = start_time + " - " + end_time;
-				j += break_between_appointments;
-				time_slots.push(time);
+
+		while (startTime < endTime) {
+			let appointmentEnd = addMinutes(startTime, single_appointment_duration);
+			if (appointmentEnd > endTime) {
+				break;
 			}
+
+			time_slots.push(format(startTime, "h:mm a") + " - " + format(appointmentEnd, "h:mm a"));
+
+			startTime = addMinutes(appointmentEnd, break_between_appointments);
 		}
+
 		return time_slots;
 	}
-
 	function calculate_json_time_slots(
 		single_appointment_start_time = 9,
 		single_appointment_end_time = 17,
 		single_appointment_duration = 30,
 		break_between_appointments = 5
 	) {
-		// here time_slots is an array of objects
-		// each object contains a start_time and an end_time
-		// start_time and end_time are integers written in 24 hour format like 1020 or 1345
+		let startTime = new Date().setHours(single_appointment_start_time, 0, 0);
+		let endTime = new Date().setHours(single_appointment_end_time, 0, 0);
+
 		const time_slots = [];
-		for (let i = single_appointment_start_time; i < single_appointment_end_time; i++) {
-			for (let j = 0; j < 60; j += single_appointment_duration) {
-				const start_time = i * 100 + j;
-				const end_time = i * 100 + j + single_appointment_duration;
-				time_slots.push({ start_time: start_time, end_time: end_time });
-				j += break_between_appointments;
+
+		while (startTime < endTime) {
+			let appointmentEnd = addMinutes(startTime, single_appointment_duration);
+			if (appointmentEnd > endTime) {
+				break;
 			}
+
+			time_slots.push({
+				start_time: format(startTime, "Hmm"),
+				end_time: format(appointmentEnd, "Hmm"),
+			});
+
+			startTime = addMinutes(appointmentEnd, break_between_appointments);
 		}
+
 		return time_slots;
 	}
 

@@ -191,7 +191,7 @@ function NavbarWithSearch({ isNavbarPresent }) {
             </path>
           </g>
         </svg>
-        <span className="text-blue-900">Make New Appointment</span>
+        <span className="text-blue-900">Book New Appointment</span>
       </Typography>
       <Typography
         as="li"

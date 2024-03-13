@@ -263,8 +263,8 @@ export default class AssistantController {
 					action: "read",
 					expires: "12-31-3000",
 				});
-				await AssistantDAO.uploadProfilePhoto(userId, publicUrl);
-				return res.status(200).send(publicUrl);
+				await AssistantDAO.uploadProfilePhoto(userId, publicUrl[0]);
+				return res.status(200).send(publicUrl[0]);
 			});
 			blobStream.end(image.buffer);
 		} catch (err) {
