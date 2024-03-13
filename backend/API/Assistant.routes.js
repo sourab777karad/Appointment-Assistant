@@ -32,4 +32,6 @@ router.post('/update-profile-photo',authenticator.TokenAuthenticator, upload.sin
 router.post('/uploadProfilePhoto',authenticator.TokenAuthenticator,upload.single('image'), assistantCtrl.uploadProfilePhoto)
 
 router.post('/acceptAppointment',authenticator.TokenAuthenticator, assistantCtrl.acceptAppointment)
+
+router.post('/declineAppointment',authenticator.TokenAuthenticator, assistantCtrl.declineAppointment)
 export default router
