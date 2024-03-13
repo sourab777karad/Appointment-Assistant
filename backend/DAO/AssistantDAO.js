@@ -57,6 +57,14 @@ export default class AssistantDAO {
 				console.log("User already exist");
 				return false;
 			}
+			// append the user details to the user object
+			user.single_appointment_duration = 15;
+			user.single_appointment_start_time = 9;
+			user.single_appointment_end_time = 17;
+			user.break_between_appointments = 5;
+			user.student_meeting_start_time = 16
+            user.student_meeting_end_time = 17
+			
 			// Insert the user into the 'users' collection
 			await cluster0.collection("users").insertOne(user);
 			return true;
@@ -95,11 +103,14 @@ export default class AssistantDAO {
 	 * @returns {Promise<Object>} - A promise that resolves with the created or updated appointment.
 	 */
 	//method to setappointment
-	static async SetAppointment(appointment) {
+	static async SetAppointment(appointment_details) {
 		let result;
 		try {
-			// Insert the appointment into the 'appointments' collection
-			result = await cluster0.collection("appointments").insertOne(appointment);
+
+			// add attribute cancellation_message to the appointment_details object
+			appointment_details.cancellation_message = "";
+			// Insert the appointment_details into the 'appointments' collection
+			result = await cluster0.collection("appointments").insertOne(appointment_details);
 			appointment._id = result.insertedId; // Get the id of the inserted document
 		} catch (e) {
 			console.error(`Unable to set appointment: ${e}`);
@@ -107,8 +118,6 @@ export default class AssistantDAO {
 		}
 		return appointment; // Return the complete appointment object
 	}
-
-	
 
 	static async areUserDetailsFilled(firebaseID) {
 		try {
@@ -119,9 +128,9 @@ export default class AssistantDAO {
 			}
 			if (!user.phone_number && !user.room) {
 				console.log("User details not filled");
-				return false;
+				return {status: false};
 			}
-			return true;
+			return {userDetails: user, status: true};
 		} catch (e) {
 			console.error(`Unable to check user details: ${e}`);
 			throw e;
@@ -134,7 +143,10 @@ export default class AssistantDAO {
 		try {
 			const result = await cluster0.collection("users").updateOne(
 				{ email: user.email },
-				{ $set: { phone_no: user.phone_no, room_address: user.room_address } }
+				{ $set: { phone_no: user.phone_no, room_address: user.room_address, single_appointment_duration: user.single_appointment_duration, single_appointment_start_time: user.single_appointment_start_time, single_appointment_end_time: user.single_appointment_end_time,
+				break_between_appointments: user.break_between_appointments,
+				student_meeting_start_time: user.student_meeting_start_time,
+				student_meeting_end_time: user.student_meeting_end_time} }
 			);
 			return result;
 		}
@@ -144,33 +156,47 @@ export default class AssistantDAO {
 		}
 	}
 
-	static async getAppointment(appointerid) {
+	static async getAppointment(firebase_ID, datetime) {
 		try {
-			if (!appointerid) {
-				console.log("Invalid apointer ID");
-				return { message: "Invalid apointer ID" };
-			}
-	
-			console.log('Attempting to retrieve appointments with apointer ID:', appointerid);
-	
-			const appointments = await cluster0.collection("appointments").find({ appointer: appointerid }).toArray();
-			console.log('Appointments retrieved:', appointments);
-			if (!appointments || appointments.length === 0) {
-				console.log("No appointments found for the given apointer ID");
-				return { message: "No appointments found for the given apointer ID" };
-			}
-
-	
-			console.log('Appointments retrieved:', appointments);
-			return appointments;
+			 // get all appointments from the appointments collection where schedular_id or appointee_id is equal to the firebase_ID and the appointment in range of the given date and also sort them into taken appointments and given appointments
+			const appointments = await cluster0.collection("appointments").find({
+				$or: [{ scheduler: firebase_ID }, { appointee: firebase_ID }],
+				appointment_date: { $gte: datetime.date.start_date, $lte: datetime.date.end_date }
+			}).toArray();
+			return appointments;	
 		} catch (e) {
 			console.error(`Unable to get appointments: ${e}`);
 			throw e;
 		}
 	}
+
+	// method to get appointment by id
+	static async getAppointmentById(appointmentId) {
+		try {
+			const appointment = await cluster0.collection("appointments").findOne({ _id: new ObjectId(appointmentId) });
+			if (!appointment) {
+				console.log("Appointment not found");
+				return { message: "Appointment not found" };
+			}
+			return appointment;
+		} catch (e) {
+			console.error(`Unable to get appointment: ${e}`);
+			throw e;
+		}
+	}
+
 	static async getUsers() {
 		try {
-			const users = await cluster0.collection("users").find().toArray();
+			const users = await cluster0.collection("users").find({}, {
+				projection: {
+					email: 1,
+					full_name: 1,
+					firebase_id: 1,
+					room: 1,
+					phone_number: 1,
+					profile_pic_url: 1
+				}
+			}).toArray();			
 			return users;
 		} catch (e) {
 			console.error(`Unable to get users: ${e}`);
@@ -179,28 +205,19 @@ export default class AssistantDAO {
 	}
 	static async getProfile(userId) {
 		try {
-		  // Assuming you have a collection named 'appointments' and 'users'
-		  const userAppointments = await cluster0
-			.collection("appointments")
-			.find({ appointer: userId })
-			.toArray();
-	
-		  // Additional logic to calculate statistics based on user appointments
-		  const totalAppointments = userAppointments.length;
-		  // Add more statistics calculations as needed
-	
-		  const statistics = [
-			{ name: 'Total Appointments', value: String(totalAppointments) },
-			// Add more statistics as needed
-		  ];
-	
-		  return statistics;
+			const user_Profile = await cluster0.collection("users").findOne({ firebase_id: userId });
+			if (!user_Profile) {
+				console.log("User not found");
+				return { message: "User not found" };
+			}
+			return user_Profile;
 		} catch (e) {
 		  console.error(`Unable to get profile stats: ${e}`);
 		  throw e;
 		}
-	  }
-	  static async deleteAppointment(appointmentId) {
+	}
+
+	static async deleteAppointment(appointmentId) {
 		try {
 			const result = await cluster0.collection("appointments").deleteOne(
 				{ _id: new ObjectId(appointmentId) }
@@ -219,38 +236,98 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
-	static async changeStatus(appointmentId, status) {
-		if (!ObjectId.isValid(appointmentId)) {
-			console.log(`Invalid ID: ${appointmentId}`);
+
+	static async changeStatus(status_details) {
+		if (!ObjectId.isValid(status_details.appointment_id)) {
+			console.log(`Invalid ID: ${status_details.appointment_id}`);
 			return { message: "Invalid ID" };
 		}
 	
 		try {
 			const result = await cluster0.collection("appointments").updateOne(
-				{ _id: new ObjectId(appointmentId) },
-				{ $set: { status: status } }
+				{ _id: new ObjectId(status_details.appointment_id)},
+				{ $set: { status: status_details.status } }
 			);
 	
 			if (result.matchedCount === 0) {
 				console.log("No appointment found with the given ID");
 				return { message: "No appointment found with the given ID" };
 			}
-	
-			const updatedAppointment = await cluster0.collection("appointments").findOne({ _id: new ObjectId(appointmentId) });
-	
-			return { appointment: updatedAppointment };
+			return true;
 		} catch (e) {
 			console.error(`Unable to change status: ${e}`);
 			throw e;
 		}
 	}
+
+	// method to upload profile photo url to mongodb
 	static async uploadProfilePhoto(userId, imageUri) {
 		try {
-			const result = await cluster0.collection("users").updateOne({email: userId}, { $set: { profile_photo: imageUri } });
+			const result = await cluster0.collection("users").updateOne({firebase_id: userId}, { $set: { profile_pic_url: imageUri } });
 			return result;
 	}catch(err){
 		console.error(`Unable to upload profile photo: ${err}`);
 		throw err;
 	}
-}
+    }
+	static async updateUserProfile(user_updated_details, firebaseID) {
+		try {
+			// Prepare an update object with only the fields that are not empty
+			const update = {};
+			for (const [key, value] of Object.entries(user_updated_details)) {
+				if (value && key !== '_id') {
+					update[key] = value;
+				}
+			}
+
+			// Update user details in the users collection based on the firebaseID
+			const result = await cluster0.collection("users").updateOne(
+				{ firebase_id: firebaseID },
+				{ $set: update }
+			);
+
+			if (result.matchedCount === 0) {
+				console.log(`No user found with FirebaseID: ${firebaseID}`);
+				return null;
+			}
+
+			console.log(`Updated user with FirebaseID: ${firebaseID}`);
+			return result;
+		} catch (e) {
+			console.error(`Unable to update user profile: ${e}`);
+			throw e;
+		}
+	}
+
+	static async add_appointment_to_user(schedularId, appointeeId, appointmentId) {
+		try {
+			// Add the appointment ID if the user is the schedular to the 'taken_appointments' array and add the appointment ID if the user is the appointee to the 'given_appointments' array
+			await cluster0.collection("users").updateOne(
+				{ firebase_id: schedularId },
+				{ $push: { taken_appointments: appointmentId } }
+			);
+			await cluster0.collection("users").updateOne(
+				{ firebase_id: appointeeId },
+				{ $push: { given_appointments: appointmentId } }
+			);
+
+		}catch(err){
+			console.error(`Unable to add appointment to user: ${err}`);
+			throw err;
+		}
+	}
+
+	// method to get pending and cancelled appointments from the given FirebaseID
+	static async getPendingCancelledAppointments(firebaseID) {
+		try {
+			const appointments = await cluster0.collection("appointments").find({
+				$or: [{ scheduler: firebaseID }, { appointee: firebaseID }],
+				status: { $in: ["pending", "cancelled"] }
+			}).toArray();
+			return appointments;
+		} catch (e) {
+			console.error(`Unable to get pending/cancelled appointments: ${e}`);
+			throw e;
+		}
+	}
 }
