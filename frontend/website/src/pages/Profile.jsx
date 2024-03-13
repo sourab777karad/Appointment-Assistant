@@ -92,7 +92,7 @@ const Profile = () => {
 
 	return (
 		<div className="min-h-screen flex mt-16 items-center justify-center">
-			<div className="flex justify-between w-4/5 max-w-screen-xl gap-20">
+			<div className="flex justify-between w-4/5 max-w-screen-xl gap-20 p-20">
 				{/* Profile Information */}
 				<ProfileCard
 					userDetails={userDetails}
@@ -100,7 +100,7 @@ const Profile = () => {
 				/>
 
 				{/* Placeholder Div */}
-				<div className="w-3/5 bg-gradient-to-br from-gray-300 to-white  p-10 rounded-lg shadow-lg border border-gray-300">
+				<div className="w-3/5 bg-gradient-to-br from-blue-50 to-white  p-10 rounded-lg shadow-lg border border-gray-300 h-[60vh] overflow-y-auto">
 					<div className="flex h-full w-full flex-col gap-4 justify-between">
 						<div>
 							<h2 className="text-2xl font-bold">Your Profile Details</h2>
@@ -160,10 +160,122 @@ const Profile = () => {
 									placeholder="DR203"
 								/>
 							</label>
+							<div>
+								<h3 className="text-lg font-semibold">Appointment Duration</h3>
+							</div>
+							<label className="input input-bordered flex items-center gap-2 w-full">
+								<IconArmchair />
+								<input
+									type="text"
+									value={localUserDetails?.single_appointment_duration}
+									onChange={(e) => {
+										setLocalUserDetails({
+											...localUserDetails,
+											single_appointment_duration: e.target.value,
+										});
+									}}
+									className="grow w-full"
+									placeholder="Duration in Minutes (Default: 15)"
+								/>
+							</label>
+							<div>
+								<h3 className="text-lg font-semibold">Appointments Start Time</h3>
+							</div>
+							<label className="input input-bordered flex items-center gap-2 w-full">
+								<IconArmchair />
+								<input
+									type="text"
+									value={localUserDetails?.single_appointment_start_time}
+									onChange={(e) => {
+										setLocalUserDetails({
+											...localUserDetails,
+											single_appointment_start_time: e.target.value,
+										});
+									}}
+									className="grow w-full"
+									placeholder="Start Time Hours in 24 Hour Format (Default: 9)"
+								/>
+							</label>
+							<div>
+								<h3 className="text-lg font-semibold">Appointments End time</h3>
+							</div>
+							<label className="input input-bordered flex items-center gap-2 w-full">
+								<IconArmchair />
+								<input
+									type="text"
+									value={localUserDetails?.single_appointment_end_time}
+									onChange={(e) => {
+										setLocalUserDetails({
+											...localUserDetails,
+											single_appointment_end_time: e.target.value,
+										});
+									}}
+									className="grow w-full"
+									placeholder="End Time Hours in 24 Hour Format (Default: 17)"
+								/>
+							</label>
+							<div>
+								<h3 className="text-lg font-semibold">
+									Break between Appointments
+								</h3>
+							</div>
+							<label className="input input-bordered flex items-center gap-2 w-full">
+								<IconArmchair />
+								<input
+									type="text"
+									value={localUserDetails?.break_between_appointments}
+									onChange={(e) => {
+										setLocalUserDetails({
+											...localUserDetails,
+											break_between_appointments: e.target.value,
+										});
+									}}
+									className="grow w-full"
+									placeholder="In Minutes (Default: 5)"
+								/>
+							</label>
+							<div>
+								<h3 className="text-lg font-semibold">
+									Students Meeting Start Time
+								</h3>
+							</div>
+							<label className="input input-bordered flex items-center gap-2 w-full">
+								<IconArmchair />
+								<input
+									type="text"
+									value={localUserDetails?.student_meeting_start_time}
+									onChange={(e) => {
+										setLocalUserDetails({
+											...localUserDetails,
+											student_meeting_start_time: e.target.value,
+										});
+									}}
+									className="grow w-full"
+									placeholder="In 24 Hours (Default: 9)"
+								/>
+							</label>
+							<div>
+								<h3 className="text-lg font-semibold">Students Meeting End Time</h3>
+							</div>
+							<label className="input input-bordered flex items-center gap-2 w-full">
+								<IconArmchair />
+								<input
+									type="text"
+									value={localUserDetails?.student_meeting_end_time}
+									onChange={(e) => {
+										setLocalUserDetails({
+											...localUserDetails,
+											student_meeting_end_time: e.target.value,
+										});
+									}}
+									className="grow w-full"
+									placeholder="In 24 Hours (Default: 17)"
+								/>
+							</label>
 						</div>
 						<div className="w-full">
 							<button
-								className="btn hover:bg-blue-900 bg-blue-800 text-white w-full"
+								className="btn hover:bg-blue-900 bg-blue-800 text-white w-full mb-10"
 								onClick={() => {
 									uploadUserDetails();
 								}}

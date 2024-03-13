@@ -9,7 +9,7 @@ import {
 
 export function ProfileCard({ userDetails, uploadProfilePicture }) {
 	return (
-		<Card className="w-96 p-4 bg-gradient-to-br from-gray-300 to-white">
+		<Card className="w-96 p-4 bg-gradient-to-br from-blue-50 to-white h-[60vh]">
 			<CardHeader
 				floated={false}
 				className="w-2/3 outline outline-4 aspect-square outline-blue-800 cursor-pointer self-center rounded-full m-4"

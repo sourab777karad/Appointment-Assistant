@@ -31,13 +31,15 @@ const integerToTime = (integer) => {
 };
 
 const SideNav = () => {
-	const given_appointments = React.useContext(UserInfoContext).userSchedule?.given_appointments;
+	const userSchedule = React.useContext(UserInfoContext).userSchedule;
 	const allUsers = React.useContext(UserInfoContext).allUsers;
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
 	const userToken = React.useContext(UserInfoContext).userToken;
-	const refreshData = React.useContext(UserInfoContext).refreshData;
+	const [notifAppointments, setNotifAppointments] = React.useState([]);
+	const refreshUserScheduleForDisplayedWeek =
+		React.useContext(UserInfoContext).refreshUserScheduleForDisplayedWeek;
 
-	function get_name_from_appointment(appointment) {
+	function get_scheduler_from_appointment(appointment) {
 		if (appointment === null) {
 			return null;
 		}
@@ -46,15 +48,36 @@ const SideNav = () => {
 		return scheduler;
 	}
 
+	function get_notification_appointments() {
+		const notifs = [];
+		const given_appointment = userSchedule.given_appointments.filter(
+			(appointment) =>
+				(appointment.status === "pending") | (appointment.status === "cancelled")
+		);
+
+		const taken_appointments = userSchedule.taken_appointments.filter(
+			(appointment) => appointment.status === "cancelled"
+		);
+
+		notifs.push(...given_appointment);
+		notifs.push(...taken_appointments);
+		setNotifAppointments(notifs);
+	}
+
 	useEffect(() => {
-		console.log(given_appointments);
-	}, [given_appointments]);
+		get_notification_appointments();
+	}, [userSchedule]);
 
 	function change_status(appointment, status) {
+		const scheduler_email_id = get_scheduler_from_appointment(appointment).email;
 		const response = axios
 			.post(
 				`${base_url}/change-status`,
-				{ status: status, appointment_id: appointment._id },
+				{
+					status: status,
+					appointment_id: appointment._id,
+					scheduler_email_id: scheduler_email_id,
+				},
 				{
 					headers: {
 						Authorization: `Bearer ${userToken}`,
@@ -63,7 +86,13 @@ const SideNav = () => {
 			)
 			.then((response) => {
 				console.log(response.data);
-				refreshData();
+				if (response.data.sendmail_status === true) {
+					toast.success(`Mail sent to ${scheduler_email_id} successfully`);
+				}
+				if (response.data.sendmail_status === false) {
+					toast.success(`Could not send confirmation mail to ${scheduler_email_id}`);
+				}
+				refreshUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -101,7 +130,7 @@ const SideNav = () => {
 						<div className="flex justify-center"></div>
 
 						<div>
-							{given_appointments?.map((appointment, index) => {
+							{notifAppointments?.map((appointment, index) => {
 								return (
 									<div
 										key={index}
@@ -111,7 +140,7 @@ const SideNav = () => {
 											<div className="flex flex-col gap-2 bg-gray-300 p-2 rounded-lg">
 												<div className="p-2">
 													{
-														get_name_from_appointment(appointment)
+														get_scheduler_from_appointment(appointment)
 															.full_name
 													}{" "}
 													has requested an appointment at{" "}
