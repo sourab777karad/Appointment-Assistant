@@ -57,6 +57,14 @@ export default class AssistantDAO {
 				console.log("User already exist");
 				return false;
 			}
+			// append the user details to the user object
+			user.single_appointment_duration = 15;
+			user.single_appointment_start_time = 9;
+			user.single_appointment_end_time = 17;
+			user.break_between_appointments = 5;
+			user.student_meeting_start_time = 16
+            user.student_meeting_end_time = 17
+			
 			// Insert the user into the 'users' collection
 			await cluster0.collection("users").insertOne(user);
 			return true;
@@ -98,6 +106,9 @@ export default class AssistantDAO {
 	static async SetAppointment(appointment_details) {
 		let result;
 		try {
+
+			// add attribute cancellation_message to the appointment_details object
+			appointment_details.cancellation_message = "";
 			// Insert the appointment_details into the 'appointments' collection
 			result = await cluster0.collection("appointments").insertOne(appointment_details);
 			appointment._id = result.insertedId; // Get the id of the inserted document
@@ -132,7 +143,10 @@ export default class AssistantDAO {
 		try {
 			const result = await cluster0.collection("users").updateOne(
 				{ email: user.email },
-				{ $set: { phone_no: user.phone_no, room_address: user.room_address } }
+				{ $set: { phone_no: user.phone_no, room_address: user.room_address, single_appointment_duration: user.single_appointment_duration, single_appointment_start_time: user.single_appointment_start_time, single_appointment_end_time: user.single_appointment_end_time,
+				break_between_appointments: user.break_between_appointments,
+				student_meeting_start_time: user.student_meeting_start_time,
+				student_meeting_end_time: user.student_meeting_end_time} }
 			);
 			return result;
 		}
@@ -201,8 +215,9 @@ export default class AssistantDAO {
 		  console.error(`Unable to get profile stats: ${e}`);
 		  throw e;
 		}
-	  }
-	  static async deleteAppointment(appointmentId) {
+	}
+
+	static async deleteAppointment(appointmentId) {
 		try {
 			const result = await cluster0.collection("appointments").deleteOne(
 				{ _id: new ObjectId(appointmentId) }
@@ -221,6 +236,7 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
+
 	static async changeStatus(status_details) {
 		if (!ObjectId.isValid(status_details.appointment_id)) {
 			console.log(`Invalid ID: ${status_details.appointment_id}`);
@@ -253,7 +269,7 @@ export default class AssistantDAO {
 		console.error(`Unable to upload profile photo: ${err}`);
 		throw err;
 	}
-   }
+    }
 	static async updateUserProfile(user_updated_details, firebaseID) {
 		try {
 			// Prepare an update object with only the fields that are not empty
@@ -298,6 +314,20 @@ export default class AssistantDAO {
 		}catch(err){
 			console.error(`Unable to add appointment to user: ${err}`);
 			throw err;
+		}
+	}
+
+	// method to get pending and cancelled appointments from the given FirebaseID
+	static async getPendingCancelledAppointments(firebaseID) {
+		try {
+			const appointments = await cluster0.collection("appointments").find({
+				$or: [{ scheduler: firebaseID }, { appointee: firebaseID }],
+				status: { $in: ["pending", "cancelled"] }
+			}).toArray();
+			return appointments;
+		} catch (e) {
+			console.error(`Unable to get pending/cancelled appointments: ${e}`);
+			throw e;
 		}
 	}
 }

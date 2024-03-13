@@ -25,7 +25,8 @@ router.get('/get-profile',authenticator.TokenAuthenticator, assistantCtrl.getPro
 
 router.post('/update-user-profile',authenticator.TokenAuthenticator, assistantCtrl.updateUserProfile)
 
+router.post('/get-pending-cancelled-appointments',authenticator.TokenAuthenticator, assistantCtrl.getPendingCancelledAppointments)
+
 router.post('/update-profile-photo',authenticator.TokenAuthenticator, upload.single('image'),assistantCtrl.updateProfilePhoto)
 
-router.post('/uploadProfilePhoto',authenticator.TokenAuthenticator,upload.single('image'), assistantCtrl.uploadProfilePhoto)
 export default router

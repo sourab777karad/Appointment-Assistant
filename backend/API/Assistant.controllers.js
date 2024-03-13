@@ -166,47 +166,6 @@ export default class AssistantController {
       res.status(500).json({ message: `Unable to change status: ${e}` });
     }
   }
-  // method to upload profile photo
-  static async uploadProfilePhoto(req, res) {
-    try {
-      const userId = req.body.uid; // Replace with the actual property containing user ID
-      const image = req.file; // Replace with the actual property containing the image file
-      if (!image) {
-        return res.status(400).json({ message: "No image uploaded" });
-      }
-      let bucket = firebase.storage().bucket();
-
-      let filename = uuidv4() + "-" + Date.now() + ".jpg";
-      let fileUpload = bucket.file("/profile-photos/" + filename);
-
-      const blobStream = fileUpload.createWriteStream({
-        metadata: {
-          contentType: "image/jpeg",
-        },
-      });
-
-      blobStream.on("error", (error) => {
-        console.error(
-          "Something is wrong! Unable to upload at the moment." + error
-        );
-        return res
-          .status(500)
-          .json({ message: "Error uploading file", error: error.message });
-      });
-
-      blobStream.on("finish", async () => {
-        // The public URL can be used to directly access the file via HTTP.
-        const file = bucket.file(`/profile-photos/${filename}`);
-        const publicUrl = await file.getSignedUrl({action:'read', expires: '12-31-3000'})
-        await AssistantDAO.uploadProfilePhoto(userId, publicUrl);
-        return res.status(200).send(publicUrl);
-      });
-      blobStream.end(image.buffer);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ message: "Error uploading profile photo" });
-    }
-  }
   // method to update profile photo
   static async updateProfilePhoto(req,res){
     try{
@@ -226,7 +185,9 @@ export default class AssistantController {
         for(let i = 0; i < oldProfilePhotos.length; i++){
           const urlParts = oldProfilePhotos[i].split('/');
           const filename = urlParts[urlParts.length - 1].split('?')[0];
-          await bucket.file(`/profile-photos/${filename}`).delete();
+          if(filename) {
+            await bucket.file(`/profile-photos/${filename}`).delete();
+          }
         }
       }
      
@@ -277,4 +238,28 @@ export default class AssistantController {
       return res.status(500).json({ message: "Error updating user profile" });
     }
   }
+  // method to get pending and cancelled appointments for that firebaseID
+  static async getPendingCancelledAppointments(req, res){
+    try {
+      const decodedToken = req.user_decoded_details;
+      const firebase_userId = decodedToken.user_id;
+      const appointments = await AssistantDAO.getPendingCancelledAppointments(firebase_userId);
+      
+      // sort them into taken and given appointments
+      const taken_appointments = [];
+      const given_appointments = [];
+      for (let i = 0; i < appointments.length; i++) {
+        if (appointments[i].scheduler === firebase_userId) {
+          taken_appointments.push(appointments[i]);
+        } else {
+          given_appointments.push(appointments[i]);
+        }
+      }
+      return res.status(200).json(taken_appointments, given_appointments);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error getting pending and cancelled appointments" });
+    }
+  }
+  
 }
