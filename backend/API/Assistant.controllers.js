@@ -212,18 +212,24 @@ export default class AssistantController {
 			const oldProfilePhoto = user.profile_pic_url;
 			console.log("old profile photos", oldProfilePhoto);
 
-			// if it exists.
-			if (oldProfilePhoto && oldProfilePhoto.length > 0) {
-				// parse the url
-				const url = new URL(oldProfilePhoto);
-				// get the filename
-				let filePath = url.pathname.split("/");
-				// get the last 2 elements of this array
-				filePath = filePath.slice(-2).join("/");
-				console.log("file path", filePath);
+			try {
 
-				// delete this file
-				await bucket.file('/' + filePath).delete();
+				// if it exists.
+				if (oldProfilePhoto && oldProfilePhoto.length > 0) {
+					// parse the url
+					const url = new URL(oldProfilePhoto);
+					// get the filename
+					let filePath = url.pathname.split("/");
+					// get the last 2 elements of this array
+					filePath = filePath.slice(-2).join("/");
+					console.log("file path", filePath);
+					
+					// delete this file
+					await bucket.file('/' + filePath).delete();
+				}
+			}
+			catch (err) {
+				console.log("Errrrrrrrrrrror deleting old profile photo", err);
 			}
 
 			// upload the new profile photo
