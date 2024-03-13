@@ -29,9 +29,5 @@ router.post('/get-pending-cancelled-appointments',authenticator.TokenAuthenticat
 
 router.post('/update-profile-photo',authenticator.TokenAuthenticator, upload.single('image'),assistantCtrl.updateProfilePhoto)
 
-router.post('/uploadProfilePhoto',authenticator.TokenAuthenticator,upload.single('image'), assistantCtrl.uploadProfilePhoto)
 
-router.post('/acceptAppointment',authenticator.TokenAuthenticator, assistantCtrl.acceptAppointment)
-
-router.post('/declineAppointment',authenticator.TokenAuthenticator, assistantCtrl.declineAppointment)
 export default router

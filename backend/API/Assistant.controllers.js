@@ -1,6 +1,7 @@
 // import AssistantDAO from "../DAO/AssistantDAO";
 import firebase from "firebase-admin";
 import AssistantDAO from "../DAO/AssistantDAO.js";
+import MailController from "../Services/Mail.service.js"
 
 // class to handle all the assistant related operations
 export default class AssistantController {
@@ -159,7 +160,12 @@ export default class AssistantController {
       // check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
   
         const result = await AssistantDAO.changeStatus(status_details);
-        return res.status(200).json(result);
+        // Checking status is confrimed or cacelled
+        
+          const mailController = new MailController()
+          const sendmail_status = await mailController.sendMail(status_details.scheduler_email_id, status_details.status)
+
+        return res.status(200).json(result, sendmail_status);
     
     } catch (e) {
       console.error(`Unable to change status: ${e}`);
@@ -263,3 +269,4 @@ export default class AssistantController {
   }
   
 }
+

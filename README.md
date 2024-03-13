@@ -134,6 +134,7 @@ res: {
 req {
     appointment_id : string
     status: string (pending, accepted or rejected)
+    scheduler_email_id: string
 }
 
 response: 
