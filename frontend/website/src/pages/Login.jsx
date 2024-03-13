@@ -123,7 +123,7 @@ const Login = (props) => {
 						email: user.email,
 						full_name: user.displayName,
 						firebase_id: user.uid,
-						profile_pic_url: user.photoURL,
+						profile_pic_url: "",
 						room: "",
 						phone_number: user.phoneNumber ? user.phoneNumber : "",
 					},
