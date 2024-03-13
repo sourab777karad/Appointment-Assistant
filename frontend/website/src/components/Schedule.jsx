@@ -8,7 +8,6 @@ const getCurrentTimeAsInteger = () => {
 	const hours = String(currentDate.getHours()).padStart(2, "0");
 	const minutes = String(currentDate.getMinutes()).padStart(2, "0");
 	const timeInteger = parseInt(hours + minutes, 10);
-	console.log(timeInteger);
 	return timeInteger;
 };
 
@@ -112,40 +111,29 @@ export default function Schedule({
 		return { taken_appointment, given_appointment };
 	}
 
-	function get_previous_monday_date() {
-		// this gives you the date of the previous monday
-		var d = new Date();
-		var day = d.getDay();
-		var diff = d.getDate() - day + (day == 0 ? -6 : 1);
-		return new Date(d.setDate(diff));
-	}
-
-	function get_current_week_dates() {
-		var curr = get_previous_monday_date(); // get current date
+	function get_week_dates_from_start_date() {
+		// this will return an array of dates from the currentWeek.start_date to currentWeek.end_date in the format "dd-mm-yyyy"
 		var week = [];
 		for (var i = 0; i < 6; i++) {
-			week.push(new Date(curr));
-			curr.setDate(curr.getDate() + 1);
+			week.push(
+				new Date(
+					currentWeek.start_date.getFullYear(),
+					currentWeek.start_date.getMonth(),
+					currentWeek.start_date.getDate() + i
+				).toLocaleDateString()
+			);
 		}
 		return week;
 	}
 
-	function get_current_week_dates_only() {
-		var curr = get_previous_monday_date(); // get current date
-		var week = [];
-		for (var i = 0; i < 6; i++) {
-			week.push(new Date(curr).toISOString().slice(0, 10));
-			curr.setDate(curr.getDate() + 1);
-		}
-		return week;
-	}
 
 	function make_week_from_start_date(start_date) {
 		// this will take the start_date and end_date and return an array of dates from start_date to end_date
+		const monday = new Date(start_date);
 		var week = [];
 		for (var i = 0; i < 6; i++) {
-			week.push(new Date(start_date));
-			start_date.setDate(start_date.getDate() + 1);
+			week.push(new Date(monday));
+			monday.setDate(monday.getDate() + 1);
 		}
 		return week;
 	}
@@ -195,6 +183,7 @@ export default function Schedule({
 	}
 
 	useEffect(() => {
+		console.log(currentWeek)
 		const handleScroll = () => {
 			if (showMenu) {
 				setShowMenu(false); // Close menu when scrolling
@@ -235,7 +224,7 @@ export default function Schedule({
 										(day === "Today" ? " bg-green-100" : "")
 									}
 								>
-									{day} <br /> {get_current_week_dates_only()[index]}
+									{day} <br /> {get_week_dates_from_start_date()[index]}
 								</th>
 							);
 						})}
@@ -248,7 +237,7 @@ export default function Schedule({
 								<td className="border-2 p-2 text-xl text-center ">
 									{user_time_slots[index]}
 								</td>
-								{get_current_week_dates_only().map((date) => {
+								{get_week_dates_from_start_date().map((date) => {
 									const current_div_schedule = checkDivInSchedule(
 										time_slot,
 										date

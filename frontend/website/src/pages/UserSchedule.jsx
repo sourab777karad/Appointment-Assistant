@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserInfoContext } from "../context/UserInfoContext";
 import Schedule from "../components/Schedule";
 import axios from "axios";
@@ -19,18 +19,22 @@ const UserSchedule = () => {
 	} = useContext(UserInfoContext);
 	const base_url = useContext(BaseUrlContext).baseUrl;
 	const user_time_slots = calculate_time_slots(
-		userDetails.start_time,
-		userDetails.end_time,
-		userDetails.appointment_duration,
-		userDetails.break_time
+		userDetails.single_appointment_start_time,
+		userDetails.single_appointment_end_time,
+		userDetails.single_appointment_duration,
+		userDetails.break_between_appointments
 	);
 
 	const json_time_slots = calculate_json_time_slots(
-		userDetails.start_time,
-		userDetails.end_time,
-		userDetails.appointment_duration,
-		userDetails.break_time
+		userDetails.single_appointment_start_time,
+		userDetails.single_appointment_end_time,
+		userDetails.single_appointment_duration,
+		userDetails.break_between_appointments
 	);
+
+	useEffect(() => {
+		console.log("current week in user schedule", currentWeek);
+	}, [currentWeek]);
 
 	function change_status(appointment, status) {
 		const response = axios

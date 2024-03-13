@@ -13,18 +13,6 @@ export default function NewAppointment() {
 		end_date: new Date().toISOString().slice(0, 10),
 	});
 
-	const handleNextWeekChanged = () => {
-		// this function will change the currentWeek to the next week
-		const nextWeek = {
-			start_date: new Date(currentWeek.start_date).setDate(
-				new Date(currentWeek.start_date).getDate() + 7
-			),
-			end_date: new Date(currentWeek.end_date).setDate(
-				new Date(currentWeek.end_date).getDate() + 7
-			),
-		};
-		setCurrentWeek(nextWeek);
-	}
 
 	return (
 		<div className="pt-24">
