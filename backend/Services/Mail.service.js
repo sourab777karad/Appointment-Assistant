@@ -1,26 +1,21 @@
-import nodemailer from 'nodemailer';
-
+import { transporter } from '../index.js';  // Import the transporter
+import {EMAIL_ID} from '../config/config.js';  // Import the email id
 class MailController {
   // constructor 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'maihoonkon30@gmail.com',
-        pass: 'Maihihoon30'
-      }
-    });
+    this.transporter = transporter;  // Use the imported transporter
   }
   
   async sendMail(scheduler_email_id, status) {
     try {
+      let text;
       if(status === "confirmed"){
         text ="Your appointment has been confirmed"
       } else {
         text = "Your appointment has been declined"
       }
-     await transporter.sendMail({
-      from: '"Appointment System" <maihoonkon30@gmail.com>',
+     await this.transporter.sendMail({
+      from: `"Appointment Assistant Admin" <${EMAIL_ID}>`,
       to: scheduler_email_id,
       subject: "Appointment Confirmation",
       text: text,

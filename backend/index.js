@@ -8,6 +8,7 @@ import firebase from 'firebase-admin';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -21,15 +22,46 @@ const serviceAccount = JSON.parse(fs.readFileSync(`${__dirname}/config/banded-ac
 firebase.initializeApp({ credential: firebase.credential.cert(serviceAccount),
     storageBucket: process.env.FIREBASE_DATABASE_URL});
 
-mongodb.MongoClient.connect(process.env.MONGO_URI).catch(err => {
-    console.error(err.stack);
-    process.exit(1);
-}).then(async client => {
-    await AssistantDAO.InjectDB(client);
-    app.listen(process.env.PORT || 3000, () => {
-        console.log(`Server is listening on port ${process.env.PORT}` );
+// create and verify the connection
+const transporter = nodemailer.createTransport({
+    service: 'Outlook',
+    auth: {
+      user: process.env.EMAIL_ID,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  });
+
+  const verifyTransporter = () => {
+    return new Promise((resolve, reject) => {
+      transporter.verify((error, success) => {
+        if (error) {
+          reject(error);
+        } else {
+          console.log('Mail server is ready to send mail');
+          resolve(success);
+        }
+      });
     });
-});
+  };
+  
+  verifyTransporter()
+    .then(() => {
+      mongodb.MongoClient.connect(process.env.MONGO_URI).catch(err => {
+        console.error(err.stack);
+        process.exit(1);
+      }).then(async client => {
+        console.log('Connected to MongoDB');
+        await AssistantDAO.InjectDB(client);
+        app.listen(process.env.PORT || 3000, () => {
+          console.log(`Server is listening on port ${process.env.PORT}`);
+        });
+      });
+    })
+    .catch((error) => {
+      console.error('Failed to verify Mail', error);
+    });
+  
+  export { transporter };
 
 
 

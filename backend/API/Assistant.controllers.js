@@ -159,13 +159,12 @@ export default class AssistantController {
 
       // check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
   
-        const result = await AssistantDAO.changeStatus(status_details);
-        // Checking status is confrimed or cacelled
-        
-          const mailController = new MailController()
-          const sendmail_status = await mailController.sendMail(status_details.scheduler_email_id, status_details.status)
+        // const result = await AssistantDAO.changeStatus(status_details);
+        const mailController = new MailController()
+        const sendmail_status = await mailController.sendMail(status_details.scheduler_email_id, status_details.status)
 
-        return res.status(200).json(result, sendmail_status);
+        // return res.status(200).json({result, sendmail_status});
+        return res.status(200).json({sendmail_status});
     
     } catch (e) {
       console.error(`Unable to change status: ${e}`);
