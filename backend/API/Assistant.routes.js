@@ -33,5 +33,7 @@ router.post('/get-pending-cancelled-appointments', assistantCtrl.getPendingCance
 
 router.post('/update-profile-photo', upload.single('image'),assistantCtrl.updateProfilePhoto)
 
+router.post('/update-blocked-appointments', assistantCtrl.updateBlockedAppointments)
+
 
 export default router

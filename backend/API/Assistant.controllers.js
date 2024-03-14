@@ -315,4 +315,21 @@ export default class AssistantController {
 				.json({ message: "Error getting pending and cancelled appointments" });
 		}
 	}
+
+	// method to update blocked appointments
+	static async updateBlockedAppointments(req, res) {
+		try {
+			const decodedToken = req.user_decoded_details;
+			const firebase_userId = decodedToken.user_id;
+			const blocked_appointments = req.body;
+			const result = await AssistantDAO.updateBlockedAppointments(
+				firebase_userId,
+				blocked_appointments
+			);
+			return res.status(200);
+		} catch (err) {
+			console.error(err);
+			return res.status(500);
+		}
+	}
 }

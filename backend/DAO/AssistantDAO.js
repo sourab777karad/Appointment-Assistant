@@ -64,6 +64,7 @@ export default class AssistantDAO {
 			user.break_between_appointments = 5;
 			user.student_meeting_start_time = 16
             user.student_meeting_end_time = 17
+			user.blocked_appointments = [];
 			
 			// Insert the user into the 'users' collection
 			await cluster0.collection("users").insertOne(user);
@@ -319,6 +320,30 @@ export default class AssistantDAO {
 		} catch (e) {
 			console.error(`Unable to get pending/cancelled appointments: ${e}`);
 			throw e;
+		}
+	}
+
+	// method to update blocked appointments
+	static async updateBlockedAppointments(firebaseID, blockedAppointments) {
+		try {
+			// check if the blcoked appointments already exist if it exists then update the blocked appointments else insert the blocked appointments into the users collection
+			const blockedAppointmentsExist = await cluster0.collection("users").findOne({ firebase_id: firebaseID, blocked_appointments: { $exists: true } });
+			if (blockedAppointmentsExist) {
+				await cluster0.collection("users").updateOne(
+					{ firebase_id: firebaseID },
+					{ $set: { blocked_appointments: blockedAppointments } }
+				);
+			}
+			else {
+				await cluster0.collection("users").updateOne(
+					{ firebase_id: firebaseID },
+					{ $push: { blocked_appointments: blockedAppointments } }
+				);
+			}
+			return true;
+		} catch (e) {
+			console.error(`Unable to update blocked appointments: ${e}`);
+			return false
 		}
 	}
 }
