@@ -67,11 +67,20 @@ const AppointmentDetailsNav = () => {
 							{/* profile pic and name */}
 							<div className="flex w-full justify-between flex-row bg-gray-200 outline-2 rounded-lg my-3 p-4">
 								<div className="flex justify-center items-center w-24">
-									<img
-										src={currentAppointment?.person.profile_pic_url}
-										alt="profile"
-										className="w-20 h-20 self-center aspect-square rounded-full outline object-cover object-center"
-									/>
+									{currentAppointment?.person.profile_pic_url.length !== 0 ? (
+										<img
+											src={currentAppointment?.person.profile_pic_url}
+											alt="profile"
+											className="w-20 h-20 self-center aspect-square rounded-full outline object-cover object-center"
+										/>
+									) : (
+										<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
+											{currentAppointment?.person.full_name
+												?.split(" ")
+												.map((name) => name[0])
+												.join("")}
+										</div>
+									)}
 								</div>
 								<div>
 									<div className="text-lg">

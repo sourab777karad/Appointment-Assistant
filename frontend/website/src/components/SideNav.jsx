@@ -137,23 +137,76 @@ const SideNav = () => {
 										className="flex justify-center items-center gap-5 p-4 flex-col"
 									>
 										{appointment.status === "pending" ? (
-											<div className="flex flex-col gap-2 bg-gray-300 p-2 rounded-lg">
-												<div className="p-2">
+											<div className="flex flex-col gap-2 bg-gray-300 p-2 rounded-lg w-full">
+												<div className="flex flex-row-reverse justify-between px-4 py-4 bg-gray-100 rounded-lg m-2">
 													{
+														// if the profile_pic_url is not empty, display the image, else display the initials
 														get_scheduler_from_appointment(appointment)
-															.full_name
-													}{" "}
-													has requested an appointment at{" "}
-													{integerToTime(appointment.appointment_time)} on{" "}
-													{new Date(
-														appointment.appointment_date
-													).toDateString()}
+															.profile_pic_url.length !== 0 ? (
+															<img
+																src={
+																	get_scheduler_from_appointment(
+																		appointment
+																	).profile_pic_url
+																}
+																alt="scheduler"
+																className="w-20 h-20 rounded-full object-cover outline outline-blue-700"
+															/>
+														) : (
+															<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
+																{get_scheduler_from_appointment(
+																	appointment
+																)
+																	.full_name?.split(" ")
+																	.map((name) => name[0])
+																	.join("")}
+															</div>
+														)
+													}
+													<div>
+														<div className="text-blue-900 text-lg pt-1">
+															{
+																get_scheduler_from_appointment(
+																	appointment
+																).full_name
+															}
+														</div>
+														<div className="text-blue-900 text-sm pt-1">
+															+91{" "}
+															{
+																get_scheduler_from_appointment(
+																	appointment
+																).phone_number
+															}
+														</div>
+													</div>
+												</div>
+												<div className="p-2">
+													Has requested an appointment with you.
 												</div>
 												<div className="p-2 flex flex-col gap-2">
 													<div className="text-lg">Agenda</div>
 													<div>{appointment.title}</div>
 													<div className="text-lg">Description</div>
 													<div>{appointment.description}</div>
+													<div className="text-lg">Asked at</div>
+													<div>
+														{integerToTime(appointment.creation_time)}{" "}
+														on{" "}
+														{new Date(
+															appointment.creation_date
+														).toDateString()}
+													</div>
+													<div className="text-lg">
+														Requested Your Time Slot at
+													</div>
+													<div>
+														{integerToTime(appointment.creation_time)}{" "}
+														on{" "}
+														{new Date(
+															appointment.appointment_date
+														).toDateString()}
+													</div>
 												</div>
 												<div className="flex w-full justify-between flex-row gap-4 p-2">
 													<button

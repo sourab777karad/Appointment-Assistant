@@ -1,46 +1,15 @@
+// importing libraries
 import React from "react";
 import { useState, useContext, useEffect } from "react";
-import { UserInfoContext } from "../context/UserInfoContext";
 import PropTypes from "prop-types";
+import { parse, set, isAfter } from "date-fns";
 
-const getCurrentTimeAsInteger = () => {
-	const currentDate = new Date();
-	const hours = String(currentDate.getHours()).padStart(2, "0");
-	const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-	const timeInteger = parseInt(hours + minutes, 10);
-	return timeInteger;
-};
+// importing context
+import { UserInfoContext } from "../context/UserInfoContext";
 
-const CustomContextMenu = ({ x, y, onClose, appointment, change_status }) => {
-	const handleClick = (e) => {
-		e.preventDefault(); // Prevent default right-click menu
-		onClose(); // Close custom menu
-	};
+// importong components
+import AppointmentContextMenu from "./context_menus/AppointmentContextMenu";
 
-	return (
-		<div
-			className="custom-menu absolute z-50"
-			style={{
-				top: y,
-				left: x,
-			}}
-			onClick={handleClick}
-		>
-			<div className="p-2">
-				<ul className="menu bg-base-200 w-56 rounded-box">
-					<li
-						onClick={() => {
-							console.log(appointment, "clicked");
-							change_status(appointment, "cancelled");
-						}}
-					>
-						<a>Cancel Appointment</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	);
-};
 
 export default function Schedule({
 	userSchedule,
@@ -57,22 +26,54 @@ export default function Schedule({
 	// for the right click menu
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 	const [currentAppointmentRightClick, setCurrentAppointmentForRightClick] = useState(null);
-	const [showMenu, setShowMenu] = useState(false);
+	const [showAppointmentMenu, setShowAppointmentMenu] = useState(false);
+	const [showBlockMenu, setShowBlockMenu] = useState(false);
 	const setCurrentAppointmentForPanel = useContext(UserInfoContext).setCurrentAppointment;
 
+	const handleContextMenuDisabled = (e) => {
+		e.preventDefault(); // Prevent default right-click menu
+	};
 	// functions for the menu
-	const handleContextMenu = (e, current_appointment) => {
+	const handleAppointmentContextMenu = (e, current_appointment) => {
 		setCurrentAppointmentForRightClick(current_appointment);
 		console.log(e);
 		e.preventDefault(); // Prevent default right-click menu
 		const scrollX = window.scrollX || window.pageXOffset;
 		const scrollY = window.scrollY || window.pageYOffset;
 		setMenuPosition({ x: e.clientX + scrollX, y: e.clientY + scrollY });
-		setShowMenu(true);
+		setShowAppointmentMenu(true);
 	};
 
 	const handleCloseMenu = () => {
-		setShowMenu(false);
+		setShowAppointmentMenu(false);
+	};
+
+	// function to check time and date. if the time and date are in the past, then return false, else return true
+	const compare_time_and_date = (start_time, date1, date2) => {
+		console.log(start_time);
+		// Parse date1 from "dd/mm/yyyy" format to a Date object
+		const parsedDate1 = parse(date1, "dd/MM/yyyy", new Date());
+
+		// Parse start_time from "Hmm" format to a Date object
+		const parsedStartTime = parse(start_time, "h:mm a", new Date());
+
+		// Combine date1 and start_time into a single Date object
+		const dateTime1 = set(parsedDate1, {
+			hours: parsedStartTime.getHours(),
+			minutes: parsedStartTime.getMinutes(),
+		});
+		console.log(
+			"parsedDate1",
+			parsedDate1,
+			"parsedStartTime",
+			parsedStartTime,
+			"dateTime1",
+			dateTime1,
+			"date2",
+			date2
+		);
+		// Compare dateTime1 and date2
+		return isAfter(dateTime1, date2);
 	};
 
 	// check if the current date and time are present in the userschedule
@@ -110,6 +111,7 @@ export default function Schedule({
 		return { taken_appointment, given_appointment };
 	}
 
+	// function to get the week dates from the start date
 	function get_week_dates_from_start_date() {
 		// this will return an array of dates from the currentWeek.start_date to currentWeek.end_date in the format "dd-mm-yyyy"
 		var week = [];
@@ -125,6 +127,7 @@ export default function Schedule({
 		return week;
 	}
 
+	// function to make a week from the start date and return the whole week
 	function make_week_from_start_date(start_date) {
 		// this will take the start_date and end_date and return an array of dates from start_date to end_date
 		const monday = new Date(start_date);
@@ -136,6 +139,7 @@ export default function Schedule({
 		return week;
 	}
 
+	// function to get the week from week dates return a list of weekdays as string. if the date is of today, it will return "Today"
 	function get_week_from_week_dates(week) {
 		// this will take an array of week dates. from that, it will return an array that contains "Monday", or "Tuesday", but if the date is of today, it will return "Today"
 		var week_days = [];
@@ -150,6 +154,7 @@ export default function Schedule({
 		return week_days;
 	}
 
+	// function to user information from appointment. 
 	function get_names_from_appointment(appointment) {
 		if (appointment === null) {
 			return null;
@@ -180,11 +185,12 @@ export default function Schedule({
 		};
 	}
 
+	// hooks
 	useEffect(() => {
 		console.log(currentWeek);
 		const handleScroll = () => {
-			if (showMenu) {
-				setShowMenu(false); // Close menu when scrolling
+			if (showAppointmentMenu) {
+				setShowAppointmentMenu(false); // Close menu when scrolling
 			}
 		};
 
@@ -193,12 +199,12 @@ export default function Schedule({
 		return () => {
 			window.removeEventListener("scroll", handleScroll);
 		};
-	}, [showMenu]);
+	}, [showAppointmentMenu]);
 
 	return (
 		<div className="p-8 ">
-			{showMenu && (
-				<CustomContextMenu
+			{showAppointmentMenu && (
+				<AppointmentContextMenu
 					appointment={currentAppointmentRightClick}
 					x={menuPosition.x}
 					y={menuPosition.y}
@@ -251,7 +257,12 @@ export default function Schedule({
 					{json_time_slots.map((time_slot, index) => {
 						return (
 							<tr key={user_time_slots[index]}>
-								<td className="border-2 p-2 text-xl text-center ">
+								<td
+									className="border-2 p-2 text-xl text-center "
+									onContextMenu={(e) => {
+										handleAppointmentContextMenu(e, null);
+									}}
+								>
 									{user_time_slots[index]}
 								</td>
 								{get_week_dates_from_start_date().map((date) => {
@@ -292,20 +303,36 @@ export default function Schedule({
 										<td
 											key={date}
 											className={
-												"hover:bg-gray-300 border-2 p-2 " +
+												"border-2 p-2 " +
 												(current_div_schedule.taken_appointment !== null
-													? "bg-red-100 "
+													? " bg-red-100 "
 													: "") +
 												(current_div_schedule.given_appointment !== null
-													? "bg-blue-100 "
+													? " bg-blue-100 "
 													: "") +
-												(getCurrentTimeAsInteger() > time_slot.start_time &&
-												new Date() > new Date(date)
+												(!compare_time_and_date(
+													time_slot.start_time,
+													date,
+													new Date()
+												)
 													? "diaglines"
-													: "")
+													: "hover:bg-gray-300")
 											}
 											onContextMenu={(e) => {
-												handleContextMenu(e, current_appointment);
+												if (
+													!compare_time_and_date(
+														time_slot.start_time,
+														date,
+														new Date()
+													)
+												) {
+													handleContextMenuDisabled(e);
+													return;
+												}
+												handleAppointmentContextMenu(
+													e,
+													current_appointment
+												);
 											}}
 											onClick={() => {
 												if (
@@ -367,6 +394,7 @@ export default function Schedule({
 		</div>
 	);
 }
+
 //  props validation
 Schedule.propTypes = {
 	userSchedule: PropTypes.object.isRequired,
@@ -374,9 +402,11 @@ Schedule.propTypes = {
 	handleNextWeekChanged: PropTypes.func.isRequired,
 	handlePreviousWeekChanged: PropTypes.func.isRequired,
 	change_status: PropTypes.func.isRequired,
+	user_time_slots: PropTypes.array.isRequired,
+	json_time_slots: PropTypes.array.isRequired,
 };
 
-CustomContextMenu.propTypes = {
+AppointmentContextMenu.propTypes = {
 	x: PropTypes.number.isRequired,
 	y: PropTypes.number.isRequired,
 	onClose: PropTypes.func.isRequired,

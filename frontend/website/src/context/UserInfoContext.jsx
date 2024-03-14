@@ -85,13 +85,13 @@ export const UserInfoContextProvider = ({ children }) => {
 			}
 
 			time_slots.push({
-				start_time: format(startTime, "Hmm"),
-				end_time: format(appointmentEnd, "Hmm"),
+				start_time: format(startTime, "h:mm a"),
+				end_time: format(appointmentEnd, "h:mm a"),
 			});
 
 			startTime = addMinutes(appointmentEnd, break_between_appointments);
 		}
-
+		console.log("json time slots bro", time_slots);
 		return time_slots;
 	}
 
