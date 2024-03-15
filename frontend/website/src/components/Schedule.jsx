@@ -10,6 +10,7 @@ import { UserInfoContext } from "../context/UserInfoContext";
 // importong components
 import AppointmentContextMenu from "./context_menus/AppointmentContextMenu";
 import BlockContextMenu from "./context_menus/BlockContextMenu";
+import { useNavigate } from "react-router-dom";
 
 export default function Schedule({
 	userSchedule,
@@ -21,9 +22,11 @@ export default function Schedule({
 	user_time_slots,
 	json_time_slots,
 }) {
+	const navigate = useNavigate();
 	// from the context
 	const allUsers = React.useContext(UserInfoContext).allUsers;
 	const userDetails = React.useContext(UserInfoContext).userDetails;
+
 	// for the right click menu
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 	const [blockPrivileges, setBlockPrivileges] = useState(false);
@@ -287,7 +290,18 @@ export default function Schedule({
 										handleBlockContextMenu(e, day);
 									}}
 									onClick={() => {
-										console.log("clicked");
+										console.log("clicked day");
+										if (blockPrivileges) {
+											console.log("block privileges exist");
+											navigate("/day-details", {
+												state: {
+													date: get_week_dates_from_start_date()[index],
+													json_time_slots: json_time_slots,
+													user_time_slots: user_time_slots,
+													day: day,
+												},
+											});
+										}
 										handleCloseMenu();
 									}}
 								>

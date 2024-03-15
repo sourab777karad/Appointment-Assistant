@@ -9,6 +9,7 @@ import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import NavbarWithSearch from "./components/NavbarWithSearch";
 import Footer from "./components/Footer";
+import DayDetails from "./pages/DayDetails";
 
 function ProtectedRoutes({ path }) {
 	const { userToken } = useContext(UserInfoContext);
@@ -39,8 +40,10 @@ function ProtectedRoutes({ path }) {
 			return isAuthenticated() ? <NewAppointment /> : element;
 		} else if (path === "/profile") {
 			return isAuthenticated() ? <Profile /> : element;
-		} else {
+		} else if (path === "/home") {
 			return isAuthenticated() ? <Home /> : element;
+		} else if (path === "/day-details") {
+			return isAuthenticated() ? <DayDetails /> : element;
 		}
 	}
 

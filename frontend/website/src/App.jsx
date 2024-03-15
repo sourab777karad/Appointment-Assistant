@@ -39,12 +39,24 @@ function App() {
 					<Route path="/signup" element={<Signup />} />
 					<Route path="*" element={<NotFound />} />
 					<Route path="/home" element={<ProtectedRoutes path="/home" />} />
-					<Route path="/upcoming_appointments" element={<ProtectedRoutes path="/upcoming_appointments" />} />
-					<Route path="/user_schedule" element={<ProtectedRoutes path="/user_schedule" />} />
-					<Route path="/appointment-past" element={<ProtectedRoutes path="/appointment-past" />} />
-					<Route path="/new_appointment" element={<ProtectedRoutes path="/new_appointment" />} />
+					<Route
+						path="/upcoming_appointments"
+						element={<ProtectedRoutes path="/upcoming_appointments" />}
+					/>
+					<Route
+						path="/user_schedule"
+						element={<ProtectedRoutes path="/user_schedule" />}
+					/>
+					<Route
+						path="/appointment-past"
+						element={<ProtectedRoutes path="/appointment-past" />}
+					/>
+					<Route
+						path="/new_appointment"
+						element={<ProtectedRoutes path="/new_appointment" />}
+					/>
 					<Route path="/profile" element={<ProtectedRoutes path="/profile" />} />
-					
+					<Route path="/day-details" element={<ProtectedRoutes path="/day-details" />} />
 				</Routes>
 			</div>
 		</>
