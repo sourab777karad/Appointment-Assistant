@@ -23,14 +23,15 @@ const AppointmentContextMenu = ({
 		>
 			<div className="p-2">
 				<ul className="menu bg-base-200 w-56 rounded-box">
-					<li
-						onClick={() => {
-							console.log(appointment, "clicked");
-							change_status(appointment, "cancelled");
-						}}
-					>
-						<a>Cancel Appointment</a>
-					</li>
+					{appointment ? (
+						<li
+							onClick={() => {
+								change_status(appointment.start_time, "confirmed");
+							}}
+						>
+							<a>Cancel Appointment</a>
+						</li>
+					) : null}
 					{blockPrivileges && (
 						<li
 							onClick={() => {
@@ -39,6 +40,11 @@ const AppointmentContextMenu = ({
 							}}
 						>
 							<a>Block Time Slot</a>
+						</li>
+					)}
+					{!blockPrivileges && (
+						<li>
+							<a>Book Appointment</a>
 						</li>
 					)}
 				</ul>

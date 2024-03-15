@@ -193,7 +193,7 @@ export default function NewAppointment() {
 						<option value="">Select Faculty</option>
 						{allUsers
 							.filter((user) => user.firebase_id !== userDetails.firebase_id)
-							// .filter((user) => user.is_faculty === true)
+							.filter((user) => user.is_faculty === true)
 							.map((user) => (
 								<option key={user.firebase_id} value={user.firebase_id}>
 									<div className="flex flex-row justify-between h-14">
@@ -215,6 +215,7 @@ export default function NewAppointment() {
 					currentWeek={currentWeek}
 					handleNextWeekChanged={handleNextWeekChanged}
 					handlePreviousWeekChanged={handlePreviousWeekChanged}
+					block_appointment={null}
 					change_status={change_status}
 					user_time_slots={user_time_slots}
 					json_time_slots={json_time_slots}

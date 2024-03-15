@@ -260,9 +260,9 @@ export const UserInfoContextProvider = ({ children }) => {
 			localStorage.setItem("allUsers", JSON.stringify(allUsers));
 		}
 
-		if (userSchedule === null) {
+		if (userSchedule.taken_appointments.length === 0 && userSchedule.given_appointments.length === 0) {
 			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
-			if (schedule !== null) {
+			if (schedule.taken_appointments.length > 0 && schedule.given_appointments.length > 0) {
 				setUserSchedule(schedule);
 			}
 		} else {

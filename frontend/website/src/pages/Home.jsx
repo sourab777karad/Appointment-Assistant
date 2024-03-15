@@ -5,13 +5,6 @@ import Homesvg from "../assets/home.svg";
 import "../pages/style.css";
 
 const Home = () => {
-	const appointments = [
-		{ time: "9:00 AM", appointee: "John Doe" },
-		{ time: "10:00 AM", appointee: "Jane Smith" },
-		{ time: "11:00 AM", appointee: "Michael Johnson" },
-		{ time: "12:00 PM", appointee: "Emily Davis" },
-	];
-
 	return (
 		<div className="mt-24 flex flex-col gap-4">
 			{/* first row */}
@@ -39,7 +32,7 @@ const Home = () => {
 						<h2 className="text-5xl font-semibold text-blue-700 text-center mt-16">
 							Your Upcoming Appointments
 						</h2>
-          </div>
+					</div>
 				</div>
 			</div>
 			{/* <div className="flex w-full p-auto m-auto h-[100vh] justify-center items-center">

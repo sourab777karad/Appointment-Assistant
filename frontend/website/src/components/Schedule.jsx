@@ -41,7 +41,7 @@ export default function Schedule({
 		setShowBlockMenu(false);
 	};
 
-	const handleAppointmentContextMenu = (e) => {
+	const handleAppointmentContextMenu = (e, current_appointment) => {
 		e.preventDefault(); // Prevent default right-click menu
 		// if x is too close to the edge of the window, then move the menu to the left
 		if (window.innerWidth - e.pageX < 300) {
@@ -50,6 +50,9 @@ export default function Schedule({
 			setMenuPosition({ x: e.pageX, y: e.pageY });
 		}
 		setShowAppointmentMenu(true);
+		if (current_appointment) {
+			setCurrentAppointmentForRightClick(current_appointment);
+		}
 	};
 
 	const handleBlockContextMenu = (e) => {

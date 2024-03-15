@@ -74,7 +74,7 @@ const UserSchedule = () => {
 	function block_appointment(start_time) {
 		const response = axios
 			.post(
-				`${base_url}/block-appointment`,
+				`${base_url}/update-blocked-appointments`,
 				{ start_time: start_time, firebase_id: userDetails.firebase_id },
 				{
 					headers: {
