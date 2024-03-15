@@ -10,7 +10,6 @@ import { UserInfoContext } from "../context/UserInfoContext";
 // importong components
 import AppointmentContextMenu from "./context_menus/AppointmentContextMenu";
 
-
 export default function Schedule({
 	userSchedule,
 	currentWeek,
@@ -154,7 +153,7 @@ export default function Schedule({
 		return week_days;
 	}
 
-	// function to user information from appointment. 
+	// function to user information from appointment.
 	function get_names_from_appointment(appointment) {
 		if (appointment === null) {
 			return null;
