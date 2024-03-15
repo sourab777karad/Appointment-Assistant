@@ -41,6 +41,7 @@ function ProtectedRoutes({ path }) {
 		} else if (path === "/profile") {
 			return isAuthenticated() ? <Profile /> : element;
 		} else if (path === "/home") {
+			console.log("your asking for home")
 			return isAuthenticated() ? <Home /> : element;
 		} else if (path === "/day-details") {
 			return isAuthenticated() ? <DayDetails /> : element;

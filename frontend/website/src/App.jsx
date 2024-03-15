@@ -37,7 +37,6 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
-					<Route path="*" element={<NotFound />} />
 					<Route path="/home" element={<ProtectedRoutes path="/home" />} />
 					<Route
 						path="/upcoming_appointments"
@@ -57,6 +56,7 @@ function App() {
 					/>
 					<Route path="/profile" element={<ProtectedRoutes path="/profile" />} />
 					<Route path="/day-details" element={<ProtectedRoutes path="/day-details" />} />
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</div>
 		</>
