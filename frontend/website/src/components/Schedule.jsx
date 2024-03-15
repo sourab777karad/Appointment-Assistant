@@ -9,6 +9,7 @@ import { UserInfoContext } from "../context/UserInfoContext";
 
 // importong components
 import AppointmentContextMenu from "./context_menus/AppointmentContextMenu";
+import BlockContextMenu from "./context_menus/BlockContextMenu";
 
 export default function Schedule({
 	userSchedule,
@@ -16,14 +17,16 @@ export default function Schedule({
 	handleNextWeekChanged,
 	handlePreviousWeekChanged,
 	change_status,
+	block_appointment,
 	user_time_slots,
 	json_time_slots,
 }) {
 	// from the context
 	const allUsers = React.useContext(UserInfoContext).allUsers;
-
+	const userDetails = React.useContext(UserInfoContext).userDetails;
 	// for the right click menu
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+	const [blockPrivileges, setBlockPrivileges] = useState(false);
 	const [currentAppointmentRightClick, setCurrentAppointmentForRightClick] = useState(null);
 	const [showAppointmentMenu, setShowAppointmentMenu] = useState(false);
 	const [showBlockMenu, setShowBlockMenu] = useState(false);
@@ -32,24 +35,40 @@ export default function Schedule({
 	const handleContextMenuDisabled = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
 	};
-	// functions for the menu
-	const handleAppointmentContextMenu = (e, current_appointment) => {
-		setCurrentAppointmentForRightClick(current_appointment);
-		console.log(e);
-		e.preventDefault(); // Prevent default right-click menu
-		const scrollX = window.scrollX || window.pageXOffset;
-		const scrollY = window.scrollY || window.pageYOffset;
-		setMenuPosition({ x: e.clientX + scrollX, y: e.clientY + scrollY });
-		setShowAppointmentMenu(true);
-	};
 
 	const handleCloseMenu = () => {
 		setShowAppointmentMenu(false);
+		setShowBlockMenu(false);
+	};
+
+	const handleAppointmentContextMenu = (e) => {
+		e.preventDefault(); // Prevent default right-click menu
+		// if x is too close to the edge of the window, then move the menu to the left
+		if (window.innerWidth - e.pageX < 300) {
+			setMenuPosition({ x: e.pageX - 200, y: e.pageY });
+		} else {
+			setMenuPosition({ x: e.pageX, y: e.pageY });
+		}
+		setShowAppointmentMenu(true);
+	};
+
+	const handleBlockContextMenu = (e) => {
+		// if the id in userdetails doenst match the id the the userschedule.givenappointments.scheduler, then return
+		if (!blockPrivileges) {
+			return;
+		}
+		e.preventDefault(); // Prevent default right-click menu
+		// if x is too close to the edge of the window, then move the menu to the left
+		if (window.innerWidth - e.pageX < 300) {
+			setMenuPosition({ x: e.pageX - 200, y: e.pageY });
+		} else {
+			setMenuPosition({ x: e.pageX, y: e.pageY });
+		}
+		setShowBlockMenu(true);
 	};
 
 	// function to check time and date. if the time and date are in the past, then return false, else return true
 	const compare_time_and_date = (start_time, date1, date2) => {
-		console.log(start_time);
 		// Parse date1 from "dd/mm/yyyy" format to a Date object
 		const parsedDate1 = parse(date1, "dd/MM/yyyy", new Date());
 
@@ -61,16 +80,7 @@ export default function Schedule({
 			hours: parsedStartTime.getHours(),
 			minutes: parsedStartTime.getMinutes(),
 		});
-		console.log(
-			"parsedDate1",
-			parsedDate1,
-			"parsedStartTime",
-			parsedStartTime,
-			"dateTime1",
-			dateTime1,
-			"date2",
-			date2
-		);
+
 		// Compare dateTime1 and date2
 		return isAfter(dateTime1, date2);
 	};
@@ -185,11 +195,25 @@ export default function Schedule({
 	}
 
 	// hooks
+
+	useEffect(() => {
+		// check block privileges
+		console.log("block privileges", userSchedule, userDetails);
+		if (userSchedule.given_appointments.length > 0) {
+			if (userSchedule.given_appointments[0].appointee === userDetails.firebase_id) {
+				setBlockPrivileges(true);
+			} else {
+				setBlockPrivileges(false);
+			}
+		}
+	}, [userSchedule, userDetails]);
+
 	useEffect(() => {
 		console.log(currentWeek);
 		const handleScroll = () => {
 			if (showAppointmentMenu) {
 				setShowAppointmentMenu(false); // Close menu when scrolling
+				setShowBlockMenu(false);
 			}
 		};
 
@@ -198,13 +222,23 @@ export default function Schedule({
 		return () => {
 			window.removeEventListener("scroll", handleScroll);
 		};
-	}, [showAppointmentMenu]);
+	}, [showAppointmentMenu, setShowBlockMenu]);
 
 	return (
 		<div className="p-8 ">
 			{showAppointmentMenu && (
 				<AppointmentContextMenu
 					appointment={currentAppointmentRightClick}
+					x={menuPosition.x}
+					y={menuPosition.y}
+					onClose={handleCloseMenu}
+					change_status={change_status}
+					block_appointment={block_appointment}
+					blockPrivileges={blockPrivileges}
+				/>
+			)}
+			{showBlockMenu && (
+				<BlockContextMenu
 					x={menuPosition.x}
 					y={menuPosition.y}
 					onClose={handleCloseMenu}
@@ -230,8 +264,9 @@ export default function Schedule({
 				</button>
 			</div> */}
 
+			{/* the table with the schedule */}
 			<table className="table border-2 bg-white">
-				{/* head */}
+				{/* header with day and date */}
 				<thead>
 					<tr>
 						<th></th>
@@ -242,9 +277,16 @@ export default function Schedule({
 								<th
 									key={day}
 									className={
-										"border w-[13vw] p-2 text-xl text-center" +
+										"hover:bg-blue-50 border w-[13vw] p-2 text-xl text-center" +
 										(day === "Today" ? " bg-green-100" : "")
 									}
+									onContextMenu={(e) => {
+										handleBlockContextMenu(e, day);
+									}}
+									onClick={() => {
+										console.log("clicked");
+										handleCloseMenu();
+									}}
 								>
 									{day} <br /> {get_week_dates_from_start_date()[index]}
 								</th>
@@ -252,18 +294,28 @@ export default function Schedule({
 						})}
 					</tr>
 				</thead>
+
+				{/* body with time slots */}
 				<tbody>
 					{json_time_slots.map((time_slot, index) => {
 						return (
 							<tr key={user_time_slots[index]}>
+								{/* first column will be the time slot */}
 								<td
-									className="border-2 p-2 text-xl text-center "
+									className="border-2 p-2 text-xl text-center hover:bg-blue-50"
 									onContextMenu={(e) => {
-										handleAppointmentContextMenu(e, null);
+										handleBlockContextMenu(e, time_slot);
+									}}
+									onClick={() => {
+										console.log("clicked");
+										handleCloseMenu();
 									}}
 								>
 									{user_time_slots[index]}
 								</td>
+
+								{/* rest of the columns are mapped to the slots */}
+
 								{get_week_dates_from_start_date().map((date) => {
 									const current_div_schedule = checkDivInSchedule(
 										time_slot,

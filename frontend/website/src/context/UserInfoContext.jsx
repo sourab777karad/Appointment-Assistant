@@ -28,10 +28,14 @@ const this_week_start = get_current_week_dates()[0];
 const this_week_end = get_current_week_dates()[5];
 
 export const UserInfoContextProvider = ({ children }) => {
+	// important variables
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
 	const [userToken, setUserToken] = useState(null);
-	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [userDetails, setUserDetails] = useState(null);
+	const [allUsers, setAllUsers] = useState([]);
+
+	// non important variables
+	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [currentWeek, setCurrentWeek] = useState({
 		start_date: this_week_start,
 		end_date: this_week_end,
@@ -40,7 +44,6 @@ export const UserInfoContextProvider = ({ children }) => {
 		taken_appointments: [],
 		given_appointments: [],
 	});
-	const [allUsers, setAllUsers] = useState([]);
 	const [notifsExist, setNotifsExist] = useState(false);
 
 	function calculate_time_slots(
@@ -67,6 +70,7 @@ export const UserInfoContextProvider = ({ children }) => {
 
 		return time_slots;
 	}
+
 	function calculate_json_time_slots(
 		single_appointment_start_time = 9,
 		single_appointment_end_time = 17,
@@ -218,8 +222,53 @@ export const UserInfoContextProvider = ({ children }) => {
 	}
 
 	useEffect(() => {
-		calculate_notifs_exist();
-	}, [userSchedule]);
+		if (userSchedule.given_appointments.length > 0) {
+			calculate_notifs_exist();
+		}
+	}, [userSchedule, calculate_notifs_exist]);
+
+	useEffect(() => {
+		// if our states are null, we start looking in local storage
+		// if local storage is null, we dont do anything, else we set the states to the local storage values
+		// if our states are not null, we check if local storage is null, if it is, we set the local storage to the state values
+		// else, we do nothing
+
+		if (userToken === null) {
+			const token = localStorage.getItem("userToken");
+			if (token !== null) {
+				setUserToken(token);
+			}
+		} else {
+			localStorage.setItem("userToken", userToken);
+		}
+
+		if (userDetails === null) {
+			const details = JSON.parse(localStorage.getItem("userDetails"));
+			if (details !== null) {
+				setUserDetails(details);
+			}
+		} else {
+			localStorage.setItem("userDetails", JSON.stringify(userDetails));
+		}
+
+		if (allUsers.length === 0) {
+			const users = JSON.parse(localStorage.getItem("allUsers"));
+			if (users.length > 0) {
+				setAllUsers(users);
+			}
+		} else {
+			localStorage.setItem("allUsers", JSON.stringify(allUsers));
+		}
+
+		if (userSchedule === null) {
+			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
+			if (schedule !== null) {
+				setUserSchedule(schedule);
+			}
+		} else {
+			localStorage.setItem("userSchedule", JSON.stringify(userSchedule));
+		}
+	}, [userSchedule, allUsers, userToken, userDetails]);
 
 	return (
 		<UserInfoContext.Provider

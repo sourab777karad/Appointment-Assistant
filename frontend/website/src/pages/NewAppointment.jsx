@@ -36,6 +36,7 @@ export default function NewAppointment() {
 		calculate_json_time_slots,
 		calculate_time_slots,
 		allUsers,
+		userDetails,
 	} = useContext(UserInfoContext);
 
 	const base_url = useContext(BaseUrlContext).baseUrl;
@@ -144,7 +145,7 @@ export default function NewAppointment() {
 
 	const handleUserSelected = (firebase_id) => {
 		const user_details = allUsers.find((user) => user.firebase_id === firebase_id);
-		console.log("user details", user_details)
+		console.log("user details", user_details);
 		setSelectedUserDetails(user_details);
 		getUserDetails(user_details.firebase_id);
 		getUserSchedule(user_details.firebase_id);
@@ -190,20 +191,21 @@ export default function NewAppointment() {
 						className="block w-1/2 mx-auto my-4 mt-4 p-2 rounded-md border border-gray-300"
 					>
 						<option value="">Select Faculty</option>
-						{allUsers.map((user) => (
-							<option key={user.firebase_id} value={user.firebase_id}>
-								<div className="flex flex-row justify-between h-14">
-									<img
-										src={user.profile_pic_url}
-										alt="user"
-										className="w-10 h-10 rounded-full"
-									/>
-									<div>
-										{user.full_name}
+						{allUsers
+							.filter((user) => user.firebase_id !== userDetails.firebase_id)
+							// .filter((user) => user.is_faculty === true)
+							.map((user) => (
+								<option key={user.firebase_id} value={user.firebase_id}>
+									<div className="flex flex-row justify-between h-14">
+										<img
+											src={user.profile_pic_url}
+											alt="user"
+											className="w-10 h-10 rounded-full"
+										/>
+										<div>{user.full_name}</div>
 									</div>
-								</div>
-							</option>
-						))}
+								</option>
+							))}
 					</select>
 				</div>
 			</div>

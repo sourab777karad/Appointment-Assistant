@@ -1,4 +1,12 @@
-const AppointmentContextMenu = ({ x, y, onClose, appointment, change_status }) => {
+const AppointmentContextMenu = ({
+	x,
+	y,
+	onClose,
+	appointment,
+	change_status,
+	block_appointment,
+	blockPrivileges,
+}) => {
 	const handleClick = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
 		onClose(); // Close custom menu
@@ -23,6 +31,16 @@ const AppointmentContextMenu = ({ x, y, onClose, appointment, change_status }) =
 					>
 						<a>Cancel Appointment</a>
 					</li>
+					{blockPrivileges && (
+						<li
+							onClick={() => {
+								console.log(appointment, "clicked");
+								block_appointment(appointment.start_time);
+							}}
+						>
+							<a>Block Time Slot</a>
+						</li>
+					)}
 				</ul>
 			</div>
 		</div>

@@ -2,7 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserInfoContext } from "../context/UserInfoContext";
 import axios from "axios";
 import { BaseUrlContext } from "../context/BaseUrlContext";
-import { IconArmchair, IconCheckbox, IconPhone, IconUserEdit } from "@tabler/icons-react";
+import {
+	IconArmchair,
+	IconCheckbox,
+	IconPhone,
+	IconUserEdit,
+	IconCalendar,
+} from "@tabler/icons-react";
 import { toast } from "react-hot-toast";
 import { ProfileCard } from "../components/ProfileCard";
 
@@ -91,7 +97,7 @@ const Profile = () => {
 	}, [userDetails]);
 
 	return (
-		<div className="min-h-screen flex mt-16 items-center justify-center">
+		<div className="min-h-screen flex flex-col mt-16 items-center justify-center">
 			<div className="flex justify-between w-4/5 max-w-screen-xl gap-20 p-20">
 				{/* Profile Information */}
 				<ProfileCard
@@ -285,6 +291,65 @@ const Profile = () => {
 							</button>
 						</div>
 					</div>
+				</div>
+			</div>
+
+			{/* Report Generation */}
+			<div className="flex flex-col w-[80vw] gap-4">
+				<div>
+					<h1 className="text-3xl font-semibold text-center mt-4 text-blue-800">
+						Report Generation
+					</h1>
+				</div>
+
+				{/* ask a few inputs about generating the report */}
+				<div className="flex flex-row flex-wrap w-full px-8 my-2 rounded-lg p-4">
+					<div className="flex flex-1 flex-col gap-4 justify-center items-center">
+						<div>
+							<h3 className="text-lg font-semibold">Start Date</h3>
+						</div>
+						<label className="input input-bordered flex items-center gap-2 w-fit">
+							<IconCalendar />
+							<input
+								type="date"
+								className="grow w-full"
+								defaultValue={new Date().toISOString().slice(0, 10)}
+							/>
+						</label>
+						<div>
+							<h3 className="text-lg font-semibold">End Date</h3>
+						</div>
+						<label className="input input-bordered flex items-center gap-2 w-fit">
+							<IconCalendar />
+							<input
+								type="date"
+								className="grow w-full"
+								defaultValue={new Date().toISOString().slice(0, 10)}
+							/>
+						</label>
+					</div>
+					{/* second div to ask about details.  */}
+					<div className="flex flex-1 flex-col gap-4 justify-center items-center">
+						<div className="flex gap-4 justify-start items-center w-64">
+							<input type="checkbox" className="checkbox checkbox-primary" />
+							<h3 className="text-lg font-semibold">Include Appointments</h3>
+						</div>
+						<div className="flex gap-4 justify-start items-center w-64">
+							<input type="checkbox" className="checkbox checkbox-primary" />
+							<h3 className="text-lg font-semibold">Include Meetings</h3>
+						</div>
+						<div className="flex gap-4 justify-start items-center w-64">
+							<input type="checkbox" className="checkbox checkbox-primary" />
+							<h3 className="text-lg font-semibold">Include Breaks</h3>
+						</div>
+					</div>
+				</div>
+				{/* button to generate and download report as pdf. */}
+				<div className="w-full flex justify-center items-center my-2">
+					<button className="btn hover:bg-blue-900 bg-blue-800 text-white w-1/4 self-center">
+						<IconCheckbox size={24} stroke={2} />
+						Generate Report
+					</button>
 				</div>
 			</div>
 		</div>
