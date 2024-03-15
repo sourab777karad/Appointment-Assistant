@@ -18,6 +18,12 @@ export default class AssistantController {
 				// make it an empty string
 				user.profile_pic_url = "";
 			}
+			// if the user's email includes only numbers, then we make a new attribtue called is_faculty, and set it to false.
+			if (user.email.match(/^[0-9]+$/) !== null) {
+				user.is_faculty = false;
+			} else {
+				user.is_faculty = true;
+			}
 			const status = await AssistantDAO.add_new_user(user);
 			return res.status(200).json({ status: status });
 		} catch (err) {
@@ -60,15 +66,13 @@ export default class AssistantController {
 			// get all users from the users collection and return the name, firebase id, email, phone number, room.
 			const users = await AssistantDAO.getUsers();
 			console.log(users);
-			return res
-				.status(200)
-				.json({
-					filled: Status.status,
-					userDetails: Status.userDetails,
-					newUser: false,
-					userSchedule: { taken_appointments, given_appointments },
-					users: users,
-				});
+			return res.status(200).json({
+				filled: Status.status,
+				userDetails: Status.userDetails,
+				newUser: false,
+				userSchedule: { taken_appointments, given_appointments },
+				users: users,
+			});
 		} catch (err) {
 			console.error(err);
 			return res.status(500).json({ message: "Error checking user details" });
@@ -213,7 +217,6 @@ export default class AssistantController {
 			console.log("old profile photos", oldProfilePhoto);
 
 			try {
-
 				// if it exists.
 				if (oldProfilePhoto && oldProfilePhoto.length > 0) {
 					// parse the url
@@ -223,12 +226,11 @@ export default class AssistantController {
 					// get the last 2 elements of this array
 					filePath = filePath.slice(-2).join("/");
 					console.log("file path", filePath);
-					
+
 					// delete this file
-					await bucket.file('/' + filePath).delete();
+					await bucket.file("/" + filePath).delete();
 				}
-			}
-			catch (err) {
+			} catch (err) {
 				console.log("Errrrrrrrrrrror deleting old profile photo", err);
 			}
 
@@ -243,11 +245,11 @@ export default class AssistantController {
 
 			let fileUpload = bucket.file("/profile-photos/" + new_filename);
 
-      const blobStream = fileUpload.createWriteStream({
-        metadata: {
-          contentType: image.mimetype,
-        },
-      });
+			const blobStream = fileUpload.createWriteStream({
+				metadata: {
+					contentType: image.mimetype,
+				},
+			});
 
 			blobStream.on("error", (error) => {
 				console.error("Something is wrong! Unable to upload at the moment." + error);

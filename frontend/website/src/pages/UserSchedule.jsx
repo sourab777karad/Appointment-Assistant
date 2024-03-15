@@ -18,23 +18,32 @@ const UserSchedule = () => {
 		calculate_time_slots,
 	} = useContext(UserInfoContext);
 	const base_url = useContext(BaseUrlContext).baseUrl;
-	const user_time_slots = calculate_time_slots(
-		userDetails.single_appointment_start_time,
-		userDetails.single_appointment_end_time,
-		userDetails.single_appointment_duration,
-		userDetails.break_between_appointments
-	);
 
-	const json_time_slots = calculate_json_time_slots(
-		userDetails.single_appointment_start_time,
-		userDetails.single_appointment_end_time,
-		userDetails.single_appointment_duration,
-		userDetails.break_between_appointments
-	);
+	const [user_time_slots, setUser_time_slots] = useState([]);
+	const [json_time_slots, setJson_time_slots] = useState([]);
 
 	useEffect(() => {
+		if (userDetails === null) {
+			return;
+		}
 		console.log("current week in user schedule", currentWeek);
-	}, [currentWeek]);
+		console.log(userDetails, userSchedule);
+		const user_time_slots = calculate_time_slots(
+			userDetails.single_appointment_start_time,
+			userDetails.single_appointment_end_time,
+			userDetails.single_appointment_duration,
+			userDetails.break_between_appointments
+		);
+		setUser_time_slots(user_time_slots);
+
+		const json_time_slots = calculate_json_time_slots(
+			userDetails.single_appointment_start_time,
+			userDetails.single_appointment_end_time,
+			userDetails.single_appointment_duration,
+			userDetails.break_between_appointments
+		);
+		setJson_time_slots(json_time_slots);
+	}, [currentWeek, userDetails]);
 
 	function change_status(appointment, status) {
 		const response = axios
@@ -59,6 +68,32 @@ const UserSchedule = () => {
 			loading: "Loading",
 			success: "Status changed successfully",
 			error: "Error changing status",
+		});
+	}
+
+	function block_appointment(start_time) {
+		const response = axios
+			.post(
+				`${base_url}/block-appointment`,
+				{ start_time: start_time, firebase_id: userDetails.firebase_id },
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				refreshUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Time slot blocked successfully",
+			error: "Error blocking time slot",
 		});
 	}
 
@@ -107,6 +142,7 @@ const UserSchedule = () => {
 				handleNextWeekChanged={handleNextWeekChanged}
 				handlePreviousWeekChanged={handlePreviousWeekChanged}
 				change_status={change_status}
+				block_appointment={block_appointment}
 				user_time_slots={user_time_slots}
 				json_time_slots={json_time_slots}
 			/>
