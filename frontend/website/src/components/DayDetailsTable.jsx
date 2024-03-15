@@ -11,7 +11,6 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 				{/* header with day and date */}
 				<thead>
 					<tr>
-						<th></th>
 						<th>Sr No</th>
 						<th>Scheduler</th>
 						<th>Agenda</th>
@@ -33,10 +32,21 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 									<td>{appointment.agenda}</td>
 									<td>{appointment.details}</td>
 									<td>{appointment.time_slot}</td>
-									<td>{appointment.minutes}</td>
-									<td>{appointment.minutes}</td>
+									<td className="flex justify-center items-center min-w-40">
+										<textarea
+											className="textarea textarea-bordered textarea-sm text-sm w-full"
+											placeholder="Minutes of This Meeting"
+										></textarea>
+									</td>
 									<td>
-										<input type="checkbox" />
+										<button
+											className="btn btn-sm text-white px-4 py-2 rounded-md bg-green-300"
+											onClick={() => {
+												console.log("Mark as Done");
+											}}
+										>
+											Mark as Done
+										</button>
 									</td>
 								</tr>
 							);

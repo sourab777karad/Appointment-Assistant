@@ -12,21 +12,24 @@ export default function DayDetails() {
 	const given_date = location.state.date;
 	const given_day = location.state.day;
 	const [appointments, setAppointments] = useState({});
-	const { userDetails } = useContext(UserInfoContext);
+	const { userSchedule } = useContext(UserInfoContext);
 
 	function getAppointments() {
 		// iterate through the the given and taken appointments in userdetails to get appointments matching the given date
 		const appointments = [];
-		for (let i = 0; i < userDetails?.taken_appointments?.length; i++) {
-			if (userDetails.taken_appointments[i].appointment_date === given_date) {
-				appointments.push(userDetails.appointments[i]);
+		console.log(userSchedule, given_date)
+		for (let i = 0; i < userSchedule?.taken_appointments?.length; i++) {
+			if (userSchedule.taken_appointments[i].appointment_date.replace("-", "/") === given_date) {
+				appointments.push(userSchedule.appointments[i]);
 			}
 
-			if (userDetails.given_appointments[i].appointment_date === given_date) {
-				appointments.push(userDetails.appointments[i]);
+			if (
+				userSchedule.given_appointments[i].appointment_date.replace("-", "/") === given_date
+			) {
+				appointments.push(userSchedule.appointments[i]);
 			}
 		}
-
+		console.log(appointments)
 		return [1, 2, 3];
 	}
 
