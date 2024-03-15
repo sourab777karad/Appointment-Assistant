@@ -283,7 +283,7 @@ export default function Schedule({
 								<th
 									key={day}
 									className={
-										"hover:bg-blue-50 border w-[13vw] p-2 text-xl text-center" +
+										"hover:bg-blue-50 hover:cursor-pointer border w-[13vw] p-2 text-xl text-center" +
 										(day === "Today" ? " bg-green-100" : "")
 									}
 									onContextMenu={(e) => {

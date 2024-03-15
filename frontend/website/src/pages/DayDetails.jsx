@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import DayDetailsTable from "../components/DayDetailsTable";
 import { UserInfoContext } from "../context/UserInfoContext";
+import { parse, format, isValid } from "date-fns";
 
 export default function DayDetails() {
 	const location = useLocation();
@@ -15,24 +16,54 @@ export default function DayDetails() {
 	const { userSchedule } = useContext(UserInfoContext);
 
 	function getAppointments() {
-		// iterate through the the given and taken appointments in userdetails to get appointments matching the given date
 		const appointments = [];
-		console.log(userSchedule, given_date)
-		for (let i = 0; i < userSchedule?.taken_appointments?.length; i++) {
-			if (userSchedule.taken_appointments[i].appointment_date.replace("-", "/") === given_date) {
-				appointments.push(userSchedule.appointments[i]);
-			}
+		console.log(userSchedule, given_date);
 
-			if (
-				userSchedule.given_appointments[i].appointment_date.replace("-", "/") === given_date
-			) {
-				appointments.push(userSchedule.appointments[i]);
+		// for taken appointments
+		for (let i = 0; i < userSchedule?.taken_appointments?.length; i++) {
+			const appointmentDate = userSchedule.taken_appointments[i].appointment_date;
+			const parsedGivenDate = parse(given_date, "dd/MM/yyyy", new Date());
+			const parsedAppointmentDate = parse(appointmentDate, "yyyy-MM-dd", new Date());
+
+			if (isValid(parsedGivenDate) && isValid(parsedAppointmentDate)) {
+				const givenDateFormatted = format(parsedGivenDate, "yyyy-MM-dd");
+				const appointmentDateFormatted = format(parsedAppointmentDate, "yyyy-MM-dd");
+
+				console.log(appointmentDate);
+				console.log(given_date);
+				console.log("proper given", givenDateFormatted);
+				console.log("proper app", appointmentDateFormatted);
+
+				if (appointmentDateFormatted === givenDateFormatted) {
+					appointments.push(userSchedule.taken_appointments[i]);
+				}
 			}
 		}
-		console.log(appointments)
-		return [1, 2, 3];
-	}
 
+		// now same for given apppointments
+		for (let i = 0; i < userSchedule?.given_appointments?.length; i++) {
+			const appointmentDate = userSchedule.given_appointments[i].appointment_date;
+			const parsedGivenDate = parse(given_date, "dd/MM/yyyy", new Date());
+			const parsedAppointmentDate = parse(appointmentDate, "yyyy-MM-dd", new Date());
+
+			if (isValid(parsedGivenDate) && isValid(parsedAppointmentDate)) {
+				const givenDateFormatted = format(parsedGivenDate, "yyyy-MM-dd");
+				const appointmentDateFormatted = format(parsedAppointmentDate, "yyyy-MM-dd");
+
+				console.log(appointmentDate);
+				console.log(given_date);
+				console.log("proper given", givenDateFormatted);
+				console.log("proper app", appointmentDateFormatted);
+
+				if (appointmentDateFormatted === givenDateFormatted) {
+					appointments.push(userSchedule.given_appointments[i]);
+				}
+			}
+		}
+
+		console.log(appointments);
+		return appointments;
+	}
 	useEffect(() => {
 		const appointments = getAppointments();
 		setAppointments(appointments);

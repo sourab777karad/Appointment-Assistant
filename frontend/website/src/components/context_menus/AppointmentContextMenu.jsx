@@ -43,7 +43,16 @@ const AppointmentContextMenu = ({
 						</li>
 					)}
 					{!blockPrivileges && (
-						<li>
+						<li
+							onClick={() => {
+								console.log(appointment, "clicked");
+								// open the book appointment nav
+								document.getElementById(
+									"book-drawer"
+									// "appointment-drawer"
+								).checked = true;
+							}}
+						>
 							<a>Book Appointment</a>
 						</li>
 					)}

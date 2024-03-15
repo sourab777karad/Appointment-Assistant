@@ -17,6 +17,7 @@ import Signup from "./pages/Signup.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 import ProtectedRoutes from "./ProtectedRoutes";
+import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 
 function App() {
 	return (
@@ -33,6 +34,7 @@ function App() {
 			/>
 			<SideNav />
 			<AppointmentDetailsNav />
+			<BookAppointmentNav />
 			<div className="z-1">
 				<Routes>
 					<Route path="/" element={<Login />} />

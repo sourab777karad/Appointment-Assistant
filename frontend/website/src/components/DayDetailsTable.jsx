@@ -1,9 +1,29 @@
-import React, { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { UserInfoContext } from "../context/UserInfoContext";
 
 export default function DayDetailsTable({ json_time_slots, user_time_slots, appointments }) {
+	const { allUsers } = useContext(UserInfoContext);
 	useEffect(() => {
 		console.log(appointments);
 	}, [appointments]);
+
+	function get_names_from_appointment(appointment) {
+		if (appointment === null) {
+			return null;
+		}
+		// find the user.firebase_id in allUsers matching with appointment.scheduler and apppointment.appointee
+		let appointee = {};
+		allUsers.forEach((user) => {
+			if (user.firebase_id === appointment.appointee) {
+				appointee.full_name = user.full_name;
+				appointee.email = user.email;
+				appointee.room = user.room;
+				appointee.profile_pic_url = user.profile_pic_url;
+				appointee.phone_number = user.phone_number;
+			}
+		});
+		return appointee;
+	}
 
 	return (
 		<div>
@@ -12,7 +32,7 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 				<thead>
 					<tr>
 						<th>Sr No</th>
-						<th>Scheduler</th>
+						<th>Meeting with</th>
 						<th>Agenda</th>
 						<th>Details</th>
 						<th>Time Slot</th>
@@ -28,10 +48,13 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 							return (
 								<tr key={index}>
 									<td>{index + 1}</td>
-									<td>{appointment.scheduler}</td>
-									<td>{appointment.agenda}</td>
-									<td>{appointment.details}</td>
-									<td>{appointment.time_slot}</td>
+									<td>{get_names_from_appointment(appointment).full_name}</td>
+									<td>{appointment.title}</td>
+									<td>{appointment.description}</td>
+									<td>
+										{appointment.appointment_time} -{" "}
+										{appointment.appointment_time + appointment.duration}
+									</td>
 									<td className="flex justify-center items-center min-w-40">
 										<textarea
 											className="textarea textarea-bordered textarea-sm text-sm w-full"
