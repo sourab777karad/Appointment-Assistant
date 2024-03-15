@@ -1,7 +1,6 @@
 // importing react stuff
 
-import { useState, useEffect } from "react";
-import { Route, Routes, Router, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 // importing ui and extras stuff
 
@@ -40,6 +39,12 @@ function App() {
 					<Route path="/signup" element={<Signup />} />
 					<Route path="*" element={<NotFound />} />
 					<Route path="/home" element={<ProtectedRoutes path="/home" />} />
+					<Route path="/upcoming_appointments" element={<ProtectedRoutes path="/upcoming_appointments" />} />
+					<Route path="/user_schedule" element={<ProtectedRoutes path="/user_schedule" />} />
+					<Route path="/appointment-past" element={<ProtectedRoutes path="/appointment-past" />} />
+					<Route path="/new_appointment" element={<ProtectedRoutes path="/new_appointment" />} />
+					<Route path="/profile" element={<ProtectedRoutes path="/profile" />} />
+					
 				</Routes>
 			</div>
 		</>

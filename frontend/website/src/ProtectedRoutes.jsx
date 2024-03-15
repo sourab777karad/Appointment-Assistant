@@ -1,4 +1,3 @@
-import { useRoutes } from "react-router-dom";
 import { useContext } from "react";
 import { UserInfoContext } from "./context/UserInfoContext";
 import UpcomingAppointments from "./pages/UpcomingAppointments";
@@ -8,10 +7,8 @@ import Profile from "./pages/Profile";
 import NewAppointment from "./pages/NewAppointment.jsx";
 import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
-import { Routes, Route } from "react-router-dom";
 import NavbarWithSearch from "./components/NavbarWithSearch";
 import Footer from "./components/Footer";
-import NotFound from "./pages/NotFound";
 
 function ProtectedRoutes({ path }) {
 	const { userToken } = useContext(UserInfoContext);
@@ -57,3 +54,9 @@ function ProtectedRoutes({ path }) {
 }
 
 export default ProtectedRoutes;
+
+import PropTypes from "prop-types";
+
+ProtectedRoutes.propTypes = {
+	path: PropTypes.string.isRequired,
+};
