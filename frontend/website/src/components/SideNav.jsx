@@ -142,12 +142,12 @@ const SideNav = () => {
 													{
 														// if the profile_pic_url is not empty, display the image, else display the initials
 														get_scheduler_from_appointment(appointment)
-															.profile_pic_url.length !== 0 ? (
+															?.profile_pic_url.length !== 0 ? (
 															<img
 																src={
 																	get_scheduler_from_appointment(
 																		appointment
-																	).profile_pic_url
+																	)?.profile_pic_url
 																}
 																alt="scheduler"
 																className="w-20 h-20 rounded-full object-cover outline outline-blue-700"
@@ -156,8 +156,7 @@ const SideNav = () => {
 															<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
 																{get_scheduler_from_appointment(
 																	appointment
-																)
-																	.full_name?.split(" ")
+																)?.full_name?.split(" ")
 																	.map((name) => name[0])
 																	.join("")}
 															</div>
@@ -168,7 +167,7 @@ const SideNav = () => {
 															{
 																get_scheduler_from_appointment(
 																	appointment
-																).full_name
+																)?.full_name
 															}
 														</div>
 														<div className="text-blue-900 text-sm pt-1">
@@ -176,7 +175,7 @@ const SideNav = () => {
 															{
 																get_scheduler_from_appointment(
 																	appointment
-																).phone_number
+																)?.phone_number
 															}
 														</div>
 													</div>

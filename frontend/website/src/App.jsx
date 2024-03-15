@@ -15,6 +15,7 @@ import AppointmentDetailsNav from "./components/AppointmentDetailsNav.jsx";
 // importing pages
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 import ProtectedRoutes from "./ProtectedRoutes";
 
@@ -37,8 +38,9 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
+					<Route path="*" element={<NotFound />} />
+					<Route path="/home" element={<ProtectedRoutes path="/home" />} />
 				</Routes>
-				{<ProtectedRoutes />}
 			</div>
 		</>
 	);

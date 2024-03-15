@@ -13,7 +13,7 @@ import NavbarWithSearch from "./components/NavbarWithSearch";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
 
-function ProtectedRoutes() {
+function ProtectedRoutes({ path }) {
 	const { userToken } = useContext(UserInfoContext);
 
 	// Function to check if user is authenticated
@@ -26,35 +26,31 @@ function ProtectedRoutes() {
 			return false;
 		}
 		// if it is present, return true
-		return false;
+		return true;
 	}
 
 	const element = <Login />;
 
+	function getElement() {
+		if (path === "/upcoming_appointments") {
+			return isAuthenticated() ? <UpcomingAppointments /> : element;
+		} else if (path === "/user_schedule") {
+			return isAuthenticated() ? <UserSchedule /> : element;
+		} else if (path === "/appointment-past") {
+			return isAuthenticated() ? <Appointment_past /> : element;
+		} else if (path === "/new_appointment") {
+			return isAuthenticated() ? <NewAppointment /> : element;
+		} else if (path === "/profile") {
+			return isAuthenticated() ? <Profile /> : element;
+		} else {
+			return isAuthenticated() ? <Home /> : element;
+		}
+	}
+
 	return (
 		<div>
 			{isAuthenticated() ? <NavbarWithSearch /> : null}
-			<Routes>
-				<Route path="*" element={<NotFound />} />
-				<Route
-					path="/upcoming_appointments"
-					element={isAuthenticated() ? <UpcomingAppointments /> : element}
-				/>
-				<Route
-					path="/user_schedule"
-					element={isAuthenticated() ? <UserSchedule /> : element}
-				/>
-				<Route
-					path="/appointment-past"
-					element={isAuthenticated() ? <Appointment_past /> : element}
-				/>
-				<Route
-					path="/new_appointment"
-					element={isAuthenticated() ? <NewAppointment /> : element}
-				/>
-				<Route path="/home" element={isAuthenticated() ? <Home /> : element} />
-				<Route path="/profile" element={isAuthenticated() ? <Profile /> : element} />,
-			</Routes>
+			{getElement()}
 			{isAuthenticated() ? <Footer /> : null}
 		</div>
 	);

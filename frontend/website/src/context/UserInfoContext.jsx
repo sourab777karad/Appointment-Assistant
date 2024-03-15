@@ -221,6 +221,28 @@ export const UserInfoContextProvider = ({ children }) => {
 			});
 	}
 
+	function logout() {
+		localStorage.removeItem("userToken");
+		localStorage.removeItem("userDetails");
+		localStorage.removeItem("allUsers");
+		localStorage.removeItem("userSchedule");
+		setUserToken(null);
+		setUserDetails(null);
+		setUserSchedule({
+			taken_appointments: [],
+			given_appointments: [],
+		});
+
+		setAllUsers([]);
+		setCurrentAppointment(null);
+		setCurrentWeek({
+			start_date: this_week_start,
+			end_date: this_week_end,
+		});
+
+		setNotifsExist(false);
+	}
+
 	useEffect(() => {
 		if (userSchedule.given_appointments.length > 0) {
 			calculate_notifs_exist();
@@ -253,16 +275,19 @@ export const UserInfoContextProvider = ({ children }) => {
 
 		if (allUsers.length === 0) {
 			const users = JSON.parse(localStorage.getItem("allUsers"));
-			if (users.length > 0) {
+			if (users?.length > 0) {
 				setAllUsers(users);
 			}
 		} else {
 			localStorage.setItem("allUsers", JSON.stringify(allUsers));
 		}
 
-		if (userSchedule.taken_appointments.length === 0 && userSchedule.given_appointments.length === 0) {
+		if (
+			userSchedule.taken_appointments.length === 0 &&
+			userSchedule.given_appointments.length === 0
+		) {
 			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
-			if (schedule.taken_appointments.length > 0 && schedule.given_appointments.length > 0) {
+			if (schedule?.taken_appointments.length > 0 && schedule?.given_appointments.length > 0) {
 				setUserSchedule(schedule);
 			}
 		} else {
@@ -293,6 +318,7 @@ export const UserInfoContextProvider = ({ children }) => {
 				refreshNotifications: refreshNotifications,
 				calculate_json_time_slots: calculate_json_time_slots,
 				calculate_time_slots: calculate_time_slots,
+				logout: logout,
 			}}
 		>
 			{children}

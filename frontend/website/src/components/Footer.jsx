@@ -1,8 +1,10 @@
 import React from "react";
 import logo from "../assets/logo.png";
 import { IconBrandWhatsapp, IconMail, IconPhoneCall, IconUserCode } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
+	const navigate = useNavigate();
 	return (
 		<footer className="footer p-10 bg-gray-300 mt-16">
 			<aside>
@@ -16,7 +18,12 @@ export default function Footer() {
 			<nav>
 				<h6 className="footer-title text-gray-800">Social</h6>
 				<div className="flex gap-4 my-4">
-					<IconBrandWhatsapp className="w-6 h-6" />
+					<IconBrandWhatsapp
+						className="w-6 h-6"
+						onClick={() => {
+							navigate("/home");
+						}}
+					/>
 					<IconMail className="w-6 h-6" />
 				</div>
 			</nav>

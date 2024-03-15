@@ -72,7 +72,7 @@ const Login = (props) => {
 
 	function redirect() {
 		props.setisNavbarPresent(true);
-		navigate("/home");
+		window.location.href = "/home";
 	}
 
 	async function askServerForUserDetails(user) {
