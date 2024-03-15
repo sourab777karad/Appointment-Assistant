@@ -1,6 +1,3 @@
-import { Link } from "react-router-dom";
-import TeacherList from "../components/TeacherList";
-import { Button, Input } from "@material-tailwind/react";
 import Homesvg from "../assets/home.svg";
 import "../pages/style.css";
 
