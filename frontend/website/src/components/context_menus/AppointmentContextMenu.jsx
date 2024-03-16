@@ -36,7 +36,7 @@ const AppointmentContextMenu = ({
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
-								block_appointment(appointment.start_time);
+								block_appointment(appointment);
 							}}
 						>
 							<a>Block Time Slot</a>

@@ -24,8 +24,7 @@ export default function Schedule({
 }) {
 	const navigate = useNavigate();
 	// from the context
-	const allUsers = React.useContext(UserInfoContext).allUsers;
-	const userDetails = React.useContext(UserInfoContext).userDetails;
+	const { allUsers, userDetails } = React.useContext(UserInfoContext);
 
 	// for the right click menu
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -93,6 +92,8 @@ export default function Schedule({
 
 	// check if the current date and time are present in the userschedule
 	function checkDivInSchedule(time_slot, date) {
+		console.log(date, "date")
+		console.log(userSchedule, "userSchedule");
 		// this function will check if the time_slot and date are present in the userSchedule
 		// if yes, then it will return the details of the appointment
 		// if no, then it will return null
@@ -123,7 +124,21 @@ export default function Schedule({
 				}
 			}
 		});
-		return { taken_appointment, given_appointment };
+
+		// look through the userSchedule.blocked_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		let blocked_appointments = [];
+		userSchedule.blocked_appointments?.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
+				if (
+					appointment.start_time >= time_slot.start_time &&
+					appointment.start_time <= time_slot.end_time
+				) {
+					blocked_appointments.push(appointment);
+				}
+			}
+		});
+		return { taken_appointment, given_appointment, blocked_appointments };
 	}
 
 	// function to get the week dates from the start date
@@ -338,12 +353,19 @@ export default function Schedule({
 										time_slot,
 										date
 									);
+									console.log(current_div_schedule, "current_div_schedule");
 									const current_appointment =
 										current_div_schedule.taken_appointment
 											? current_div_schedule.taken_appointment
 											: current_div_schedule.given_appointment
 												? current_div_schedule.given_appointment
-												: null;
+												: [
+														{
+															start_time: time_slot.start_time,
+															end_time: time_slot.end_time,
+															appointment_date: date,
+														},
+													];
 									// check if the appointment is confirmed or not
 									if (
 										current_div_schedule.taken_appointment !== null &&
@@ -361,6 +383,13 @@ export default function Schedule({
 										current_div_schedule.given_appointment = null;
 									}
 
+									if (
+										current_div_schedule.blocked_appointments !== null &&
+										current_div_schedule.blocked_appointments.length === 0
+									) {
+										current_div_schedule.blocked_appointments = null;
+									}
+
 									const taken_person_info = get_names_from_appointment(
 										current_div_schedule?.taken_appointment
 									);
@@ -372,8 +401,11 @@ export default function Schedule({
 											key={date}
 											className={
 												"border-2 p-2 " +
-												(current_div_schedule.taken_appointment !== null
+												(current_div_schedule.blocked_appointments !== null
 													? " bg-red-100 "
+													: "") +
+												(current_div_schedule.taken_appointment !== null
+													? " bg-green-100 "
 													: "") +
 												(current_div_schedule.given_appointment !== null
 													? " bg-blue-100 "

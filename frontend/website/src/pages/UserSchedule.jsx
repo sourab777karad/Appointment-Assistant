@@ -9,13 +9,13 @@ const UserSchedule = () => {
 	const {
 		userSchedule,
 		userToken,
-		refreshUserScheduleForDisplayedWeek,
+		refreshLoggedInUserScheduleForDisplayedWeek,
 		userDetails,
-		updateUserSchedule,
 		currentWeek,
 		setCurrentWeek,
 		calculate_json_time_slots,
 		calculate_time_slots,
+		refreshProfile,
 	} = useContext(UserInfoContext);
 	const base_url = useContext(BaseUrlContext).baseUrl;
 
@@ -58,7 +58,7 @@ const UserSchedule = () => {
 			)
 			.then((response) => {
 				console.log(response.data);
-				refreshUserScheduleForDisplayedWeek();
+				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -71,11 +71,14 @@ const UserSchedule = () => {
 		});
 	}
 
-	function block_appointment(start_time) {
+	function block_appointment(appointment_details_list) {
 		const response = axios
 			.post(
 				`${base_url}/update-blocked-appointments`,
-				{ start_time: start_time, firebase_id: userDetails.firebase_id },
+				{
+					blocked_appointments: appointment_details_list,
+					firebase_id: userDetails.firebase_id,
+				},
 				{
 					headers: {
 						Authorization: `Bearer ${userToken}`,
@@ -84,7 +87,7 @@ const UserSchedule = () => {
 			)
 			.then((response) => {
 				console.log(response.data);
-				refreshUserScheduleForDisplayedWeek();
+				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -109,7 +112,7 @@ const UserSchedule = () => {
 		};
 		setCurrentWeek(nextWeek);
 		// now update the userSchedule
-		updateUserSchedule(nextWeek.start_date, nextWeek.end_date, userDetails.firebase_id);
+		refreshLoggedInUserScheduleForDisplayedWeek();
 	};
 
 	const handlePreviousWeekChanged = () => {
@@ -124,7 +127,7 @@ const UserSchedule = () => {
 		};
 		setCurrentWeek(previousWeek);
 		// now update the userSchedule
-		updateUserSchedule(previousWeek.start_date, previousWeek.end_date, userDetails.firebase_id);
+		refreshLoggedInUserScheduleForDisplayedWeek();
 	};
 
 	return (
