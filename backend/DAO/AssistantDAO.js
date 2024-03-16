@@ -34,7 +34,7 @@ export default class AssistantDAO {
 		} catch (e) {
 			// Log any errors that occur during connection
 			console.error(
-				`Unable to establish a collection handle in LuxuriantDAO: ${e}`
+				`Unable to establish a collection handle in Appointment-Assistant: ${e}`
 			);
 		}
 	}
@@ -290,7 +290,7 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
-
+	// method to add appointment to user
 	static async add_appointment_to_user(schedularId, appointeeId, appointmentId) {
 		try {
 			// Add the appointment ID if the user is the schedular to the 'taken_appointments' array and add the appointment ID if the user is the appointee to the 'given_appointments' array
@@ -308,7 +308,6 @@ export default class AssistantDAO {
 			throw err;
 		}
 	}
-
 	// method to get pending and cancelled appointments from the given FirebaseID
 	static async getPendingCancelledAppointments(firebaseID) {
 		try {
@@ -322,7 +321,6 @@ export default class AssistantDAO {
 			throw e;
 		}
 	}
-
 	// method to update blocked appointments
 	static async updateBlockedAppointments(firebaseID, blockedAppointments) {
 		try {
