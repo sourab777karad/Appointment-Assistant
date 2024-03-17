@@ -17,7 +17,7 @@ router.post('/update-user-details', assistantCtrl.updateUserDetails)
 
 router.post('/get-user-appointment', assistantCtrl.get_user_Appointment)
 
-router.post('/set-appointment', assistantCtrl.setAppointment)
+router.post('/book-appointment', assistantCtrl.setAppointment)
 
 router.post('/change-status', assistantCtrl.changeStatus)
 
@@ -35,5 +35,10 @@ router.post('/update-profile-photo', upload.single('image'),assistantCtrl.update
 
 router.post('/update-blocked-appointments', assistantCtrl.updateBlockedAppointments)
 
+router.post('/get-faculty-schedule', assistantCtrl.getFacultySchedule)
+
+router.post('/unblock-appointment', assistantCtrl.unblockAppointment)
+
+router.delete('/delete-user', assistantCtrl.deleteUser)
 
 export default router
