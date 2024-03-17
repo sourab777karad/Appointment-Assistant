@@ -59,7 +59,6 @@ const Login = (props) => {
 			setLocalUserToken(user.accessToken);
 			setFirebaseid(user.uid);
 
-			console.log("inside use effect", user.accessToken);
 		}
 	}, [user, setUserFullName, setUserEmail, setUserToken, setLocalUserToken]);
 
@@ -78,8 +77,6 @@ const Login = (props) => {
 		// this function asks the server for user details and returns a promise
 		// if the user details are fetched successfully, the promise is resolved
 		// if the user details are not fetched, the promise is rejected
-		console.log("asking server for user details");
-		console.log("user token: ", user.accessToken);
 		return new Promise((resolve, reject) => {
 			axios
 				.post(
@@ -112,8 +109,6 @@ const Login = (props) => {
 		// this function adds the user to the database and returns a promise
 		// if the user is added successfully, the promise is resolved
 		// if the user is not added, the promise is rejected
-		console.log("adding user to database");
-		console.log("local user token: ", user.accessToken);
 		return new Promise((resolve, reject) => {
 			axios
 				.post(
@@ -133,7 +128,6 @@ const Login = (props) => {
 					}
 				)
 				.then((response) => {
-					console.log("user added to database: ", response.data);
 					// false means that the user already exists.
 					if (response.data.status === false) {
 						reject(response.data.message);
@@ -151,16 +145,13 @@ const Login = (props) => {
 		// this function logs in the user and returns a promise
 		// if the user is logged in successfully, the promise is resolved
 		// if the user is not logged in, the promise is rejected
-		console.log("logging in user", email, password);
 		return new Promise((resolve, reject) => {
 			signInWithEmailAndPassword(auth, email, password)
 				.then((userCredential) => {
 					// Signed in
 					const user = userCredential.user;
-					console.log("user logged in: ", user);
 					setUserToken(user.accessToken);
 					setLocalUserToken(user.accessToken);
-					console.log("user logged in successfully");
 					resolve(user);
 				})
 				.catch((error) => {
@@ -179,11 +170,9 @@ const Login = (props) => {
 				.then(async (result) => {
 					// This gives you a Google Access Token. You can use it to access the Google API.
 					setUser(result.user);
-					console.log("user logged in: ", result.user);
 					resolve(result.user);
 				})
 				.catch((error) => {
-					console.log("error logging in: ", error);
 					// Handle Errors here.
 					const errorCode = error.code;
 					const errorMessage = error.message;
@@ -212,8 +201,6 @@ const Login = (props) => {
 				setUserToken(user.accessToken);
 				setLocalUserToken(user.accessToken);
 				setFirebaseid(user.uid);
-				console.log(user.accessToken);
-				console.log("user logged in with Google: ", user);
 				// check if user details are filled
 				const user_details_promise = askServerForUserDetails(user);
 				toast.promise(user_details_promise, {

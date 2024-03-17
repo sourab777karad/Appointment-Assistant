@@ -164,6 +164,7 @@ const UserSchedule = () => {
 				</div>
 			</div>
 			<Schedule
+				user_id={userDetails.firebase_id}
 				userSchedule={userSchedule}
 				currentWeek={currentWeek}
 				handleNextWeekChanged={handleNextWeekChanged}

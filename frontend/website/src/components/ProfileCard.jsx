@@ -26,7 +26,7 @@ export function ProfileCard({ userDetails, uploadProfilePicture }) {
 						className="w-full h-full object-cover rounded-t-lg"
 					/>
 				) : (
-					<div className="w-full h-full flex items-center justify-center text-2xl font-bold text-blue-800">
+					<div className="w-full h-full flex items-center justify-center text-7xl font-bold text-blue-800">
 						{userDetails?.full_name
 							?.split(" ")
 							.map((name) => name[0])

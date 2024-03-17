@@ -13,6 +13,7 @@ import BlockContextMenu from "./context_menus/BlockContextMenu";
 import { useNavigate } from "react-router-dom";
 
 export default function Schedule({
+	user_id,
 	userSchedule,
 	currentWeek,
 	handleNextWeekChanged,
@@ -273,12 +274,10 @@ export default function Schedule({
 	useEffect(() => {
 		// check block privileges
 		console.log("block privileges", userSchedule, userDetails);
-		if (userSchedule.given_appointments.length > 0) {
-			if (userSchedule.given_appointments[0].appointee === userDetails.firebase_id) {
-				setBlockPrivileges(true);
-			} else {
-				setBlockPrivileges(false);
-			}
+		if (user_id === userDetails.firebase_id) {
+			setBlockPrivileges(true);
+		} else {
+			setBlockPrivileges(false);
 		}
 	}, [userSchedule, userDetails]);
 

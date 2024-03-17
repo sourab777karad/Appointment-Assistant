@@ -16,7 +16,6 @@ function ProtectedRoutes({ path }) {
 
 	// Function to check if user is authenticated
 	function isAuthenticated() {
-		console.log(userToken);
 		// Here you should replace this with the actual authentication check
 		// check if the token attribute in userinfocontext is present
 		if (userToken === null || userToken === undefined || userToken === "") {
@@ -41,7 +40,6 @@ function ProtectedRoutes({ path }) {
 		} else if (path === "/profile") {
 			return isAuthenticated() ? <Profile /> : element;
 		} else if (path === "/home") {
-			console.log("your asking for home")
 			return isAuthenticated() ? <Home /> : element;
 		} else if (path === "/day-details") {
 			return isAuthenticated() ? <DayDetails /> : element;

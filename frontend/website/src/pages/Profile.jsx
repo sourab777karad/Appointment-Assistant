@@ -8,6 +8,7 @@ import {
 	IconPhone,
 	IconUserEdit,
 	IconCalendar,
+	IconX,
 } from "@tabler/icons-react";
 import { toast } from "react-hot-toast";
 import { ProfileCard } from "../components/ProfileCard";
@@ -24,6 +25,7 @@ const Profile = () => {
 	const base_url = useContext(BaseUrlContext).baseUrl;
 	const userToken = useContext(UserInfoContext).userToken;
 	const refreshProfile = useContext(UserInfoContext).refreshProfile;
+	const logout = useContext(UserInfoContext).logout;
 
 	const uploadProfilePicture = () => {
 		// open file picker for only png and jpg files and for file size less than 5mb
@@ -89,6 +91,31 @@ const Profile = () => {
 			});
 		} catch (error) {
 			toast.error("Error updating profile");
+		}
+	};
+
+	const deleteUser = async () => {
+		console.log(userToken)
+		try {
+			const response = axios.delete(
+				`${base_url}/delete-user`,
+				{
+					headers: {
+						authorization: `Bearer ${userToken}`,
+					},
+				}
+			);
+			toast.promise(response, {
+				loading: "Deleting User...",
+				success: "User Deleted",
+				error: "Error deleting user",
+			});
+
+			response.then(() => {
+				logout();
+			});
+		} catch (error) {
+			toast.error("Error deleting user");
 		}
 	};
 
@@ -351,6 +378,19 @@ const Profile = () => {
 						Generate Report
 					</button>
 				</div>
+			</div>
+
+			{/* Delete user */}
+			<div className="w-full flex justify-center items-center my-2">
+				<button
+					className="btn hover:bg-red-900 bg-red-800 text-white w-1/4 self-center"
+					onClick={() => {
+						deleteUser();
+					}}
+				>
+					<IconX size={24} stroke={2} />
+					Delete Account
+				</button>
 			</div>
 		</div>
 	);

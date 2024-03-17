@@ -1,6 +1,11 @@
 import React from "react";
 import logo from "../assets/logo.png";
-import { IconBrandWhatsapp, IconMail, IconPhoneCall, IconUserCode } from "@tabler/icons-react";
+import {
+	IconArrowUpRight,
+	IconBrandWhatsapp,
+	IconMail,
+	IconUserCode,
+} from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Footer() {
@@ -13,6 +18,20 @@ export default function Footer() {
 					Appointment Assistant
 					<br />
 					Made to facilitate appointment making throughout MIT World Peace University.
+					<span
+						className="text-blue-900 cursor-pointer hover:underline block w-fit"
+						onClick={
+							// navigate to another tab
+							() => {
+								window.open(
+									"https://krishnarajt.github.io/Appointment-Assistant/",
+									"_blank"
+								);
+							}
+						}
+					>
+						Documentation <IconArrowUpRight className="w-4 h-4 inline" />
+					</span>
 				</p>
 			</aside>
 			<nav>
