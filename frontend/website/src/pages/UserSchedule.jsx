@@ -26,8 +26,6 @@ const UserSchedule = () => {
 		if (userDetails === null) {
 			return;
 		}
-		console.log("current week in user schedule", currentWeek);
-		console.log(userDetails, userSchedule);
 		const user_time_slots = calculate_time_slots(
 			userDetails.single_appointment_start_time,
 			userDetails.single_appointment_end_time,
@@ -56,8 +54,7 @@ const UserSchedule = () => {
 					},
 				}
 			)
-			.then((response) => {
-				console.log(response.data);
+			.then(() => {
 				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
@@ -86,7 +83,6 @@ const UserSchedule = () => {
 				}
 			)
 			.then((response) => {
-				console.log(response.data);
 				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
@@ -97,6 +93,34 @@ const UserSchedule = () => {
 			loading: "Loading",
 			success: "Time slot blocked successfully",
 			error: "Error blocking time slot",
+		});
+	}
+
+	function unblock_appointment(appointment_details_list) {
+		const response = axios
+			.post(
+				`${base_url}/unblock-appointment`,
+				{
+					blocked_appointments: appointment_details_list,
+					firebase_id: userDetails.firebase_id,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then(() => {
+				refreshLoggedInUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Time slot Unblocked successfully",
+			error: "Error unblocking time slot",
 		});
 	}
 
@@ -146,6 +170,7 @@ const UserSchedule = () => {
 				handlePreviousWeekChanged={handlePreviousWeekChanged}
 				change_status={change_status}
 				block_appointment={block_appointment}
+				unblock_appointment={unblock_appointment}
 				user_time_slots={user_time_slots}
 				json_time_slots={json_time_slots}
 			/>

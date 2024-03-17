@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { UserInfoContext } from "../../context/UserInfoContext";
+
 const AppointmentContextMenu = ({
 	x,
 	y,
@@ -5,12 +8,14 @@ const AppointmentContextMenu = ({
 	appointment,
 	change_status,
 	block_appointment,
+	unblock_appointment,
 	blockPrivileges,
 }) => {
 	const handleClick = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
 		onClose(); // Close custom menu
 	};
+	const { setNewAppointmentDate, setNewAppointmentTime } = useContext(UserInfoContext);
 
 	return (
 		<div
@@ -23,7 +28,7 @@ const AppointmentContextMenu = ({
 		>
 			<div className="p-2">
 				<ul className="menu bg-base-200 w-56 rounded-box">
-					{appointment ? (
+					{appointment.status === "confirmed" ? (
 						<li
 							onClick={() => {
 								change_status(appointment.start_time, "confirmed");
@@ -42,10 +47,22 @@ const AppointmentContextMenu = ({
 							<a>Block Time Slot</a>
 						</li>
 					)}
+					{blockPrivileges && (
+						<li
+							onClick={() => {
+								console.log(appointment, "clicked");
+								unblock_appointment(appointment);
+							}}
+						>
+							<a>Un-Block Time Slot</a>
+						</li>
+					)}
 					{!blockPrivileges && (
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
+								setNewAppointmentDate(appointment[0].appointment_date);
+								setNewAppointmentTime(appointment[0].start_time);
 								// open the book appointment nav
 								document.getElementById(
 									"book-drawer"

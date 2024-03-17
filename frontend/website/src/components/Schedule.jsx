@@ -19,6 +19,7 @@ export default function Schedule({
 	handlePreviousWeekChanged,
 	change_status,
 	block_appointment,
+	unblock_appointment,
 	user_time_slots,
 	json_time_slots,
 }) {
@@ -92,13 +93,20 @@ export default function Schedule({
 
 	// check if the current date and time are present in the userschedule
 	function checkDivInSchedule(time_slot, date) {
-		console.log(date, "date")
-		console.log(userSchedule, "userSchedule");
+		// timeslot
+		// {
+		// "start_time": "10:30 AM",
+		// "end_time": "10:45 AM"
+		// }
+		// 12/3/2024 date
+		// appointment_time: "10:30 AM"
 		// this function will check if the time_slot and date are present in the userSchedule
 		// if yes, then it will return the details of the appointment
 		// if no, then it will return null
 		let taken_appointment = null;
 		let given_appointment = null;
+		let blocked_appointment = null;
+
 		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
 		userSchedule.taken_appointments.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
@@ -126,7 +134,6 @@ export default function Schedule({
 		});
 
 		// look through the userSchedule.blocked_appointments to find the appointment with date matching date, and if its time is present in the time_slot
-		let blocked_appointments = [];
 		userSchedule.blocked_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
@@ -134,18 +141,65 @@ export default function Schedule({
 					appointment.start_time >= time_slot.start_time &&
 					appointment.start_time <= time_slot.end_time
 				) {
-					blocked_appointments.push(appointment);
+					blocked_appointment = appointment;
 				}
 			}
 		});
-		return { taken_appointment, given_appointment, blocked_appointments };
+		return { taken_appointment, given_appointment, blocked_appointment };
+	}
+
+	function checkDivInFacultySchedule(time_slot, date) {
+		// this function will go through the entire schedule, but in return it will only give blocked appointments
+		let blocked_appointment = null;
+		let taken_appointment = null;
+		let given_appointment = null;
+
+		userSchedule.blocked_appointments?.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
+				if (
+					appointment.start_time >= time_slot.start_time &&
+					appointment.start_time <= time_slot.end_time
+				) {
+					blocked_appointment = appointment;
+				}
+			}
+		});
+
+		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		userSchedule.taken_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					appointment.appointment_time >= time_slot.start_time &&
+					appointment.appointment_time <= time_slot.end_time
+				) {
+					blocked_appointment = appointment;
+				}
+			}
+		});
+
+		// look through the userSchedule.given_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		userSchedule.given_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					appointment.appointment_time >= time_slot.start_time &&
+					appointment.appointment_time <= time_slot.end_time
+				) {
+					blocked_appointment = appointment;
+				}
+			}
+		});
+
+		return { taken_appointment, given_appointment, blocked_appointment };
 	}
 
 	// function to get the week dates from the start date
 	function get_week_dates_from_start_date() {
 		// this will return an array of dates from the currentWeek.start_date to currentWeek.end_date in the format "dd-mm-yyyy"
 		var week = [];
-		for (var i = 0; i < 6; i++) {
+		for (var i = 0; i < 7; i++) {
 			week.push(
 				new Date(
 					currentWeek.start_date.getFullYear(),
@@ -162,7 +216,7 @@ export default function Schedule({
 		// this will take the start_date and end_date and return an array of dates from start_date to end_date
 		const monday = new Date(start_date);
 		var week = [];
-		for (var i = 0; i < 6; i++) {
+		for (var i = 0; i < 7; i++) {
 			week.push(new Date(monday));
 			monday.setDate(monday.getDate() + 1);
 		}
@@ -208,7 +262,6 @@ export default function Schedule({
 				appointee.phone_number = user.phone_number;
 			}
 		});
-		console.log(scheduler, appointee);
 		return {
 			scheduler: scheduler,
 			appointee: appointee,
@@ -230,7 +283,6 @@ export default function Schedule({
 	}, [userSchedule, userDetails]);
 
 	useEffect(() => {
-		console.log(currentWeek);
 		const handleScroll = () => {
 			if (showAppointmentMenu) {
 				setShowAppointmentMenu(false); // Close menu when scrolling
@@ -255,6 +307,7 @@ export default function Schedule({
 					onClose={handleCloseMenu}
 					change_status={change_status}
 					block_appointment={block_appointment}
+					unblock_appointment={unblock_appointment}
 					blockPrivileges={blockPrivileges}
 				/>
 			)}
@@ -305,7 +358,6 @@ export default function Schedule({
 										handleBlockContextMenu(e, day);
 									}}
 									onClick={() => {
-										console.log("clicked day");
 										if (blockPrivileges) {
 											console.log("block privileges exist");
 											navigate("/day-details", {
@@ -349,11 +401,15 @@ export default function Schedule({
 								{/* rest of the columns are mapped to the slots */}
 
 								{get_week_dates_from_start_date().map((date) => {
-									const current_div_schedule = checkDivInSchedule(
-										time_slot,
-										date
-									);
-									console.log(current_div_schedule, "current_div_schedule");
+									let current_div_schedule;
+									if (blockPrivileges) {
+										current_div_schedule = checkDivInSchedule(time_slot, date);
+									} else {
+										current_div_schedule = checkDivInFacultySchedule(
+											time_slot,
+											date
+										);
+									}
 									const current_appointment =
 										current_div_schedule.taken_appointment
 											? current_div_schedule.taken_appointment
@@ -383,13 +439,6 @@ export default function Schedule({
 										current_div_schedule.given_appointment = null;
 									}
 
-									if (
-										current_div_schedule.blocked_appointments !== null &&
-										current_div_schedule.blocked_appointments.length === 0
-									) {
-										current_div_schedule.blocked_appointments = null;
-									}
-
 									const taken_person_info = get_names_from_appointment(
 										current_div_schedule?.taken_appointment
 									);
@@ -401,7 +450,7 @@ export default function Schedule({
 											key={date}
 											className={
 												"border-2 p-2 " +
-												(current_div_schedule.blocked_appointments !== null
+												(current_div_schedule.blocked_appointment !== null
 													? " bg-red-100 "
 													: "") +
 												(current_div_schedule.taken_appointment !== null

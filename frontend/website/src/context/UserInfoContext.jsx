@@ -20,12 +20,11 @@ function get_current_week_dates() {
 		week.push(new Date(curr));
 		curr.setDate(curr.getDate() + 1);
 	}
-	console.log(week);
 	return week;
 }
 
 const this_week_start = get_current_week_dates()[0];
-const this_week_end = get_current_week_dates()[5];
+const this_week_end = get_current_week_dates()[6];
 
 export const UserInfoContextProvider = ({ children }) => {
 	// important variables
@@ -33,7 +32,10 @@ export const UserInfoContextProvider = ({ children }) => {
 	const [userToken, setUserToken] = useState(null);
 	const [userDetails, setUserDetails] = useState(null);
 	const [allUsers, setAllUsers] = useState([]);
-
+	const [newAppointmentDate, setNewAppointmentDate] = useState(null);
+	const [newAppointmentTime, setNewAppointmentTime] = useState(null);
+	const [newAppointeeId, setNewAppointeeId] = useState(null);
+	const [did_book_new_appointment, setDid_book_new_appointment] = useState(0);
 	// non important variables
 	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const [currentWeek, setCurrentWeek] = useState({
@@ -46,6 +48,10 @@ export const UserInfoContextProvider = ({ children }) => {
 		blocked_appointments: [],
 	});
 	const [notifsExist, setNotifsExist] = useState(false);
+
+	function update_did_book_new_appointment() {
+		setDid_book_new_appointment((did_book_new_appointment) => did_book_new_appointment + 1);
+	}
 
 	function calculate_time_slots(
 		single_appointment_start_time = 9,
@@ -96,7 +102,6 @@ export const UserInfoContextProvider = ({ children }) => {
 
 			startTime = addMinutes(appointmentEnd, break_between_appointments);
 		}
-		console.log("json time slots bro", time_slots);
 		return time_slots;
 	}
 
@@ -260,9 +265,9 @@ export const UserInfoContextProvider = ({ children }) => {
 		) {
 			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
 			if (
-				schedule?.taken_appointments.length > 0 &&
-				schedule?.given_appointments.length > 0 &&
-				schedule?.blocked_appointments.length > 0
+				schedule?.taken_appointments?.length > 0 &&
+				schedule?.given_appointments?.length > 0 &&
+				schedule?.blocked_appointments?.length > 0
 			) {
 				setUserSchedule(schedule);
 			}
@@ -295,6 +300,14 @@ export const UserInfoContextProvider = ({ children }) => {
 				calculate_json_time_slots: calculate_json_time_slots,
 				calculate_time_slots: calculate_time_slots,
 				logout: logout,
+				newAppointmentDate: newAppointmentDate,
+				setNewAppointmentDate: setNewAppointmentDate,
+				newAppointmentTime: newAppointmentTime,
+				setNewAppointmentTime: setNewAppointmentTime,
+				newAppointeeId: newAppointeeId,
+				setNewAppointeeId: setNewAppointeeId,
+				did_book_new_appointment: did_book_new_appointment,
+				update_did_book_new_appointment,
 			}}
 		>
 			{children}

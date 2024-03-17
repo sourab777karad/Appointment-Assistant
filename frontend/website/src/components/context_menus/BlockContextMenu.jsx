@@ -19,14 +19,14 @@ const BlockContextMenu = ({ x, y, onClose, date, start_time }) => {
 				<ul className="menu bg-base-200 w-56 rounded-box">
 					<li
 						onClick={() => {
-							console.log("clicked");
+							console.log("clicked block");
 						}}
 					>
 						<a>Block</a>
 					</li>
 					<li
 						onClick={() => {
-							console.log("clicked");
+							console.log("clicked unblock");
 						}}
 					>
 						<a>Un-Block</a>

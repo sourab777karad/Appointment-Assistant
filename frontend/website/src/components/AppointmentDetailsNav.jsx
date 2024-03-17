@@ -30,7 +30,6 @@ const integerToTime = (integer) => {
 const AppointmentDetailsNav = () => {
 	const currentAppointment = useContext(UserInfoContext).currentAppointment;
 	useEffect(() => {
-		console.log("currentAppointment", currentAppointment);
 	}, [currentAppointment]);
 	const navigate = useNavigate();
 	return (

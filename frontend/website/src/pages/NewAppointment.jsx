@@ -21,7 +21,6 @@ function get_current_week_dates() {
 		week.push(new Date(curr));
 		curr.setDate(curr.getDate() + 1);
 	}
-	console.log(week);
 	return week;
 }
 
@@ -36,6 +35,8 @@ export default function NewAppointment() {
 		calculate_time_slots,
 		allUsers,
 		userDetails,
+		setNewAppointeeId,
+		did_book_new_appointment,
 	} = useContext(UserInfoContext);
 
 	const base_url = useContext(BaseUrlContext).baseUrl;
@@ -51,6 +52,13 @@ export default function NewAppointment() {
 		start_date: this_week_start,
 		end_date: this_week_end,
 	});
+
+	useEffect(() => {
+		if (did_book_new_appointment) {
+			getUserDetails(selectedUserDetails.firebase_id);
+			getUserSchedule(selectedUserDetails.firebase_id);
+		}
+	}, [did_book_new_appointment]);
 
 	const handleNextWeekChanged = () => {
 		// this function will change the currentWeek to the next week
@@ -93,8 +101,7 @@ export default function NewAppointment() {
 					},
 				}
 			)
-			.then((response) => {
-				console.log(response.data);
+			.then(() => {
 				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
@@ -116,7 +123,7 @@ export default function NewAppointment() {
 	const getUserSchedule = (firebase_id) => {
 		axios
 			.post(
-				`${base_url}/get-user-appointment`,
+				`${base_url}/get-faculty-schedule`,
 				{
 					date: {
 						start_date: currentWeek.start_date,
@@ -145,10 +152,10 @@ export default function NewAppointment() {
 
 	const handleUserSelected = (firebase_id) => {
 		const user_details = allUsers.find((user) => user.firebase_id === firebase_id);
-		console.log("user details", user_details);
 		setSelectedUserDetails(user_details);
 		getUserDetails(user_details.firebase_id);
 		getUserSchedule(user_details.firebase_id);
+		setNewAppointeeId(user_details.firebase_id);
 	};
 
 	useEffect(() => {
