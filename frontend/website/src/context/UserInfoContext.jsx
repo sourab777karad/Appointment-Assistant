@@ -43,6 +43,7 @@ export const UserInfoContextProvider = ({ children }) => {
 	const [userSchedule, setUserSchedule] = useState({
 		taken_appointments: [],
 		given_appointments: [],
+		blocked_appointments: [],
 	});
 	const [notifsExist, setNotifsExist] = useState(false);
 
@@ -107,7 +108,7 @@ export const UserInfoContextProvider = ({ children }) => {
 		setNotifsExist(notifs_exist);
 	}
 
-	function refreshUserScheduleForDisplayedWeek() {
+	function refreshLoggedInUserScheduleForDisplayedWeek() {
 		// this function will refresh the userSchedule and allUsers
 		// it will be called after every change in the userSchedule
 		// it will be called after every change in the allUsers
@@ -131,6 +132,7 @@ export const UserInfoContextProvider = ({ children }) => {
 				let userSchedule = {
 					taken_appointments: response.data.taken_appointments,
 					given_appointments: response.data.given_appointments,
+					blocked_appointments: response.data.blocked_appointments,
 				};
 				setUserSchedule(userSchedule);
 			})
@@ -148,42 +150,6 @@ export const UserInfoContextProvider = ({ children }) => {
 			})
 			.then((response) => {
 				setUserDetails(response.data.profile_data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	}
-
-	function updateUserSchedule(start_date, end_date, firebase_id) {
-		// this function does the same thing as refresh user schedule for a given time and date, except it will add the taken and given appointments to the already existing userschedule taken and given appointments list.
-		axios
-			.post(
-				`${base_url}/get-user-appointment`,
-				{
-					date: {
-						start_date: start_date,
-						end_date: end_date,
-					},
-					firebase_id: firebase_id,
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${userToken}`,
-					},
-				}
-			)
-			.then((response) => {
-				let userSchedule = {
-					taken_appointments: [
-						...userSchedule.taken_appointments,
-						...response.data.taken_appointments,
-					],
-					given_appointments: [
-						...userSchedule.given_appointments,
-						...response.data.given_appointments,
-					],
-				};
-				setUserSchedule(userSchedule);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -213,6 +179,10 @@ export const UserInfoContextProvider = ({ children }) => {
 						...userSchedule.given_appointments,
 						...response.data.given_appointments,
 					],
+					blocked_appointments: [
+						...userSchedule.blocked_appointments,
+						...response.data.blocked_appointments,
+					],
 				};
 				setUserSchedule(userSchedule);
 			})
@@ -231,6 +201,7 @@ export const UserInfoContextProvider = ({ children }) => {
 		setUserSchedule({
 			taken_appointments: [],
 			given_appointments: [],
+			blocked_appointments: [],
 		});
 
 		setAllUsers([]);
@@ -247,7 +218,7 @@ export const UserInfoContextProvider = ({ children }) => {
 		if (userSchedule.given_appointments.length > 0) {
 			calculate_notifs_exist();
 		}
-	}, [userSchedule, calculate_notifs_exist]);
+	}, [userSchedule]);
 
 	useEffect(() => {
 		// if our states are null, we start looking in local storage
@@ -284,10 +255,15 @@ export const UserInfoContextProvider = ({ children }) => {
 
 		if (
 			userSchedule.taken_appointments.length === 0 &&
-			userSchedule.given_appointments.length === 0
+			userSchedule.given_appointments.length === 0 &&
+			userSchedule.blocked_appointments.length === 0
 		) {
 			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
-			if (schedule?.taken_appointments.length > 0 && schedule?.given_appointments.length > 0) {
+			if (
+				schedule?.taken_appointments.length > 0 &&
+				schedule?.given_appointments.length > 0 &&
+				schedule?.blocked_appointments.length > 0
+			) {
 				setUserSchedule(schedule);
 			}
 		} else {
@@ -311,8 +287,8 @@ export const UserInfoContextProvider = ({ children }) => {
 				notifsExist: notifsExist,
 				setNotifsExist: setNotifsExist,
 				refreshProfile: refreshProfile,
-				refreshUserScheduleForDisplayedWeek: refreshUserScheduleForDisplayedWeek,
-				updateUserSchedule: updateUserSchedule,
+				refreshLoggedInUserScheduleForDisplayedWeek:
+					refreshLoggedInUserScheduleForDisplayedWeek,
 				currentWeek: currentWeek,
 				setCurrentWeek: setCurrentWeek,
 				refreshNotifications: refreshNotifications,

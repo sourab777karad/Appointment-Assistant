@@ -17,6 +17,7 @@ import Signup from "./pages/Signup.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
 import ProtectedRoutes from "./ProtectedRoutes";
+import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 
 function App() {
 	return (
@@ -33,18 +34,31 @@ function App() {
 			/>
 			<SideNav />
 			<AppointmentDetailsNav />
+			<BookAppointmentNav />
 			<div className="z-1">
 				<Routes>
 					<Route path="/" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
-					<Route path="*" element={<NotFound />} />
 					<Route path="/home" element={<ProtectedRoutes path="/home" />} />
-					<Route path="/upcoming_appointments" element={<ProtectedRoutes path="/upcoming_appointments" />} />
-					<Route path="/user_schedule" element={<ProtectedRoutes path="/user_schedule" />} />
-					<Route path="/appointment-past" element={<ProtectedRoutes path="/appointment-past" />} />
-					<Route path="/new_appointment" element={<ProtectedRoutes path="/new_appointment" />} />
+					<Route
+						path="/upcoming_appointments"
+						element={<ProtectedRoutes path="/upcoming_appointments" />}
+					/>
+					<Route
+						path="/user_schedule"
+						element={<ProtectedRoutes path="/user_schedule" />}
+					/>
+					<Route
+						path="/appointment-past"
+						element={<ProtectedRoutes path="/appointment-past" />}
+					/>
+					<Route
+						path="/new_appointment"
+						element={<ProtectedRoutes path="/new_appointment" />}
+					/>
 					<Route path="/profile" element={<ProtectedRoutes path="/profile" />} />
-					
+					<Route path="/day-details" element={<ProtectedRoutes path="/day-details" />} />
+					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</div>
 		</>

@@ -53,7 +53,7 @@ const BookAppointmentNav = () => {
 					<div className="w-[25vw] min-h-full bg-white text-base-content drawer-content border-r-2 border-black">
 						<div className="bg-gray-200 m-4 rounded-lg outline-2">
 							<div className="w-full flex justify-between p-4">
-								<div className="text-xl">Appointment Details</div>
+								<div className="text-xl">Book Appointment</div>
 								<IconX
 									className="w-6 h-6 cursor-pointer"
 									onClick={() => {

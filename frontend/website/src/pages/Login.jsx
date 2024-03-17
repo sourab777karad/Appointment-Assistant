@@ -71,8 +71,7 @@ const Login = (props) => {
 	let navigate = useNavigate();
 
 	function redirect() {
-		props.setisNavbarPresent(true);
-		window.location.href = "/home";
+		navigate("/home");
 	}
 
 	async function askServerForUserDetails(user) {
@@ -237,7 +236,6 @@ const Login = (props) => {
 							add_user_promise
 								.then(() => {
 									// now redirect to the user details page
-									props.setisNavbarPresent(true);
 									navigate("/profile");
 								})
 								.catch((error) => {
@@ -250,7 +248,6 @@ const Login = (props) => {
 							redirect();
 						} else if (!user.filled) {
 							toast.error("User details not filled. Please fill your details.");
-							props.setisNavbarPresent(true);
 							navigate("/profile");
 						}
 					})
@@ -316,7 +313,6 @@ const Login = (props) => {
 							add_user_promise
 								.then(() => {
 									// now redirect to the user details page
-									props.setisNavbarPresent(true);
 									navigate("/profile");
 								})
 								.catch((error) => {
