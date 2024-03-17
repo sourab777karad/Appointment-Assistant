@@ -26,7 +26,7 @@ function get_current_week_dates() {
 }
 
 const this_week_start = get_current_week_dates()[0];
-const this_week_end = get_current_week_dates()[6];
+const this_week_end = get_current_week_dates()[5];
 
 export default function NewAppointment() {
 	const {

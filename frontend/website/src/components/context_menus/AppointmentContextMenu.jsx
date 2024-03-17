@@ -19,7 +19,7 @@ const AppointmentContextMenu = ({
 		useContext(UserInfoContext);
 
 	function check_if_appointment_is_blocked(appointment) {
-		console.log(appointment, userSchedule)
+		console.log(appointment, userSchedule);
 		// iterate through all blocked appointments in userschedule
 		for (let i = 0; i < userSchedule.blocked_appointments.length; i++) {
 			if (userSchedule.blocked_appointments[i].start_time === appointment[0].start_time) {
@@ -74,7 +74,10 @@ const AppointmentContextMenu = ({
 							onClick={() => {
 								console.log(appointment, "clicked");
 								setNewAppointmentDate(appointment[0].appointment_date);
-								setNewAppointmentTime(appointment[0].start_time);
+								setNewAppointmentTime({
+									start_time: appointment[0].start_time,
+									end_time: appointment[0].end_time,
+								});
 								// open the book appointment nav
 								document.getElementById(
 									"book-drawer"

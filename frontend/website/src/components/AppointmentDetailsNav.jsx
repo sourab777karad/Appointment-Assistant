@@ -4,29 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { UserInfoContext } from "../context/UserInfoContext";
 
-const integerToTime = (integer) => {
-	// Convert integer to string and pad with leading zeros if necessary
-	const timeString = String(integer).padStart(4, "0");
-
-	// Extract hours and minutes from the time string
-	const hours = timeString.slice(0, 2);
-	const minutes = timeString.slice(2);
-
-	// Create a Date object with the extracted hours and minutes
-	const date = new Date();
-	date.setHours(hours);
-	date.setMinutes(minutes);
-
-	// Format the Date object as a time string (12-hour format with AM/PM)
-	const formattedTime = date.toLocaleTimeString("en-US", {
-		hour: "numeric",
-		minute: "numeric",
-		hour12: true,
-	});
-
-	return formattedTime;
-};
-
 const AppointmentDetailsNav = () => {
 	const currentAppointment = useContext(UserInfoContext).currentAppointment;
 	useEffect(() => {
@@ -118,9 +95,9 @@ const AppointmentDetailsNav = () => {
 									<div className="text-lg">
 										{currentAppointment?.appointment.appointment_date}
 										{", "}
-										{integerToTime(
+										{
 											currentAppointment?.appointment.appointment_time
-										)}{" "}
+										}{" "}
 									</div>
 								</div>
 								<div className="text-xl">
@@ -128,9 +105,9 @@ const AppointmentDetailsNav = () => {
 									<div className="text-lg">
 										{currentAppointment?.appointment.creation_date}
 										{", "}
-										{integerToTime(
+										{
 											currentAppointment?.appointment.creation_time
-										)}
+										}
 									</div>
 								</div>
 							</div>

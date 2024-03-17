@@ -11,6 +11,12 @@ import { UserInfoContext } from "../context/UserInfoContext";
 import AppointmentContextMenu from "./context_menus/AppointmentContextMenu";
 import BlockContextMenu from "./context_menus/BlockContextMenu";
 import { useNavigate } from "react-router-dom";
+import {
+	IconCaretLeft,
+	IconCaretLeftFilled,
+	IconCaretRight,
+	IconCaretRightFilled,
+} from "@tabler/icons-react";
 
 export default function Schedule({
 	user_id,
@@ -105,6 +111,7 @@ export default function Schedule({
 		let given_appointment = null;
 		let blocked_appointment = null;
 		let pending_appointment = null;
+		let completed_appointment = null;
 
 		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
 		userSchedule.taken_appointments.forEach((appointment) => {
@@ -118,6 +125,8 @@ export default function Schedule({
 				) {
 					if (appointment.status === "pending") {
 						pending_appointment = appointment;
+					} else if (appointment.status === "completed") {
+						completed_appointment = appointment;
 					} else {
 						taken_appointment = appointment;
 					}
@@ -137,6 +146,8 @@ export default function Schedule({
 				) {
 					if (appointment.status === "pending") {
 						pending_appointment = appointment;
+					} else if (appointment.status === "completed") {
+						completed_appointment = appointment;
 					} else {
 						given_appointment = appointment;
 					}
@@ -167,7 +178,13 @@ export default function Schedule({
 			}
 		});
 
-		return { taken_appointment, given_appointment, blocked_appointment, pending_appointment };
+		return {
+			taken_appointment,
+			given_appointment,
+			blocked_appointment,
+			pending_appointment,
+			completed_appointment,
+		};
 	}
 
 	function checkDivInFacultySchedule(time_slot, date) {
@@ -176,6 +193,7 @@ export default function Schedule({
 		let taken_appointment = null;
 		let given_appointment = null;
 		let pending_appointment = null;
+		let completed_appointment = null;
 
 		userSchedule.blocked_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
@@ -249,14 +267,20 @@ export default function Schedule({
 			}
 		});
 
-		return { taken_appointment, given_appointment, blocked_appointment, pending_appointment };
+		return {
+			taken_appointment,
+			given_appointment,
+			blocked_appointment,
+			pending_appointment,
+			completed_appointment,
+		};
 	}
 
 	// function to get the week dates from the start date
 	function get_week_dates_from_start_date() {
 		// this will return an array of dates from the currentWeek.start_date to currentWeek.end_date in the format "dd-mm-yyyy"
 		var week = [];
-		for (var i = 0; i < 7; i++) {
+		for (var i = 0; i < 6; i++) {
 			week.push(
 				new Date(
 					currentWeek.start_date.getFullYear(),
@@ -273,7 +297,7 @@ export default function Schedule({
 		// this will take the start_date and end_date and return an array of dates from start_date to end_date
 		const monday = new Date(start_date);
 		var week = [];
-		for (var i = 0; i < 7; i++) {
+		for (var i = 0; i < 6; i++) {
 			week.push(new Date(monday));
 			monday.setDate(monday.getDate() + 1);
 		}
@@ -392,7 +416,83 @@ export default function Schedule({
 					Next Week
 				</button>
 			</div> */}
+			{/* legend */}
+			<div className="flex flex-row justify-end gap-5 mb-6">
+				<div className="flex flex-row gap-3 items-center">
+					<div className="w-5 h-5 bg-green-100"></div>
+					<div>Completed</div>
+				</div>
+				<div className="flex flex-row gap-3 items-center">
+					<div className="w-5 h-5 bg-blue-100"></div>
+					<div>Scheduled</div>
+				</div>
+				<div className="flex flex-row gap-3 items-center">
+					<div className="w-5 h-5 bg-yellow-100"></div>
+					<div>Pending</div>
+				</div>
+				<div className="flex flex-row gap-3 items-center">
+					<div className="w-5 h-5 bg-red-100"></div>
+					<div>Blocked</div>
+				</div>
+			</div>
+			{/* this is where we will show next and previous month and week on the right side, and current month on left side */}
+			<div className="flex justify-between flex-row-reverse gap-4 my-4">
+				{/* current month and week */}
+				<div className="flex gap-4">
+					<div className="text-xl flex items-center justify-center font-semibold text-gray-800 uppercase">
+						Week 12 (18 - 24)
+					</div>{" "}
+					<div className="text-2xl flex items-center justify-center font-semibold text-blue-800 uppercase">
+						March
+					</div>
+					<div className="text-2xl flex items-center justify-center font-semibold text-blue-800 uppercase">
+						2024
+					</div>
+				</div>
 
+				{/* month changer and week changer */}
+				<div className="flex gap-8">
+					{/* week */}
+					<div className="flex gap-0 border-2 border-gray-400 rounded-lg bg-white">
+						<div className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2">
+							<IconCaretLeftFilled className="w-6 h-6" />
+						</div>
+						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
+							Week
+						</div>
+						<div className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2">
+							{" "}
+							<IconCaretRightFilled className="w-6 h-6" />
+						</div>
+					</div>
+					{/* month */}
+					<div className="flex gap-0 border-2 border-gray-400 rounded-lg bg-white">
+						<div className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2">
+							<IconCaretLeftFilled className="w-6 h-6" />
+						</div>
+						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
+							March
+						</div>
+						<div className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2">
+							{" "}
+							<IconCaretRightFilled className="w-6 h-6" />
+						</div>
+					</div>
+					{/* Year */}
+					<div className="flex gap-0 border-2 border-gray-400 rounded-lg bg-white">
+						<div className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2">
+							<IconCaretLeftFilled className="w-6 h-6" />
+						</div>
+						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
+							2024
+						</div>
+						<div className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2">
+							{" "}
+							<IconCaretRightFilled className="w-6 h-6" />
+						</div>
+					</div>
+				</div>
+			</div>
 			{/* the table with the schedule */}
 			<table className="table border-2 bg-white">
 				{/* header with day and date */}
@@ -445,7 +545,7 @@ export default function Schedule({
 							<tr key={user_time_slots[index]}>
 								{/* first column will be the time slot */}
 								<td
-									className="border-2 p-2 text-xl text-center hover:bg-blue-50"
+									className="border-2 min-w-56 p-2 text-xl text-center hover:bg-blue-50"
 									onContextMenu={(e) => {
 										handleBlockContextMenu(e, time_slot);
 									}}
@@ -520,10 +620,13 @@ export default function Schedule({
 													? " bg-red-100 "
 													: "") +
 												(current_div_schedule.taken_appointment !== null
-													? " bg-green-100 "
+													? " bg-blue-100 "
 													: "") +
 												(current_div_schedule.given_appointment !== null
 													? " bg-blue-100 "
+													: "") +
+												(current_div_schedule.completed_appointment !== null
+													? " bg-green-100 "
 													: "") +
 												(current_div_schedule.pending_appointment !== null
 													? " bg-yellow-100 "
@@ -584,8 +687,8 @@ export default function Schedule({
 												handleCloseMenu();
 											}}
 										>
-											<div className="flex flex-col gap-1 justify-center items-center">
-												<div>
+											<div className="flex flex-col gap-1 justify-center items-center text-sm font-semibold">
+												<div className="flex justify-center text-center w-full">
 													{current_div_schedule.taken_appointment !== null
 														? "Taken : " +
 															taken_person_info?.appointee.full_name
@@ -595,7 +698,7 @@ export default function Schedule({
 															given_person_info?.scheduler.full_name
 														: ""}{" "}
 												</div>
-												<div>
+												<div className="text-sm flex justify-center items-center text-center">
 													{current_div_schedule.taken_appointment !== null
 														? taken_person_info?.appointee.room
 														: ""}

@@ -34,13 +34,17 @@ const BookAppointmentNav = () => {
 				{
 					scheduler_id: userDetails.firebase_id,
 					appointee_id: newAppointeeId,
-					appointment_time: newAppointmentTime,
+					appointment_time: newAppointmentTime.start_time,
+					appointment_end_time: newAppointmentTime.end_time,
 					appointment_date: newAppointmentDate,
 					creation_time: format(new Date(), "h:mm a"),
 					creation_date: format(new Date(), "yyyy-MM-dd"),
 					title: title,
 					description: description,
 					duration: userDetails.appointment_duration,
+					cancellation_message: "",
+					status: "pending",
+					minutes_of_meeting: "",
 				},
 				{
 					headers: {

@@ -22,7 +22,7 @@ export default function DayDetails() {
 		// for taken appointments
 		for (let i = 0; i < userSchedule?.taken_appointments?.length; i++) {
 			const appointmentDate = userSchedule.taken_appointments[i].appointment_date;
-			const parsedGivenDate = parse(given_date, "dd/MM/yyyy", new Date());
+			const parsedGivenDate = parse(given_date, "yyyy-MM-dd", new Date());
 			const parsedAppointmentDate = parse(appointmentDate, "yyyy-MM-dd", new Date());
 
 			if (isValid(parsedGivenDate) && isValid(parsedAppointmentDate)) {
@@ -43,7 +43,7 @@ export default function DayDetails() {
 		// now same for given apppointments
 		for (let i = 0; i < userSchedule?.given_appointments?.length; i++) {
 			const appointmentDate = userSchedule.given_appointments[i].appointment_date;
-			const parsedGivenDate = parse(given_date, "dd/MM/yyyy", new Date());
+			const parsedGivenDate = parse(given_date, "yyyy-MM-dd", new Date());
 			const parsedAppointmentDate = parse(appointmentDate, "yyyy-MM-dd", new Date());
 
 			if (isValid(parsedGivenDate) && isValid(parsedAppointmentDate)) {
