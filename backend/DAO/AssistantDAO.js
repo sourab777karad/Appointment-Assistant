@@ -324,24 +324,31 @@ export default class AssistantDAO {
 	// method to update blocked appointments
 	static async updateBlockedAppointments(firebaseID, blockedAppointments) {
 		try {
-			// check if the blcoked appointments already exist if it exists then update the blocked appointments else insert the blocked appointments into the users collection
-			const blockedAppointmentsExist = await cluster0.collection("users").findOne({ firebase_id: firebaseID, blocked_appointments: { $exists: true } });
-			if (blockedAppointmentsExist) {
-				await cluster0.collection("users").updateOne(
-					{ firebase_id: firebaseID },
-					{ $set: { blocked_appointments: blockedAppointments } }
-				);
+			// blockedAppointments are array of objects that i have to insert in to users collection
+			// Only keep start_time and appointment_date attributes
+			const result = await cluster0.collection("users").updateOne(
+				{ firebase_id: firebaseID },
+				{ $push: { blocked_appointments:{$each:blockedAppointments} } }
+			);
+			return result;
+		}
+		catch (error) {
+			console.error(error);
+		}
+	}
+
+	// method to get blocked appointments
+	static async getBlockedAppointments(firebaseID) {
+		try {
+			const user = await cluster0.collection("users").findOne({ firebase_id: firebaseID });
+			if (!user) {
+				console.log("User not found");
+				return { message: "User not found" };
 			}
-			else {
-				await cluster0.collection("users").updateOne(
-					{ firebase_id: firebaseID },
-					{ $push: { blocked_appointments: blockedAppointments } }
-				);
-			}
-			return true;
-		} catch (e) {
-			console.error(`Unable to update blocked appointments: ${e}`);
-			return false
+			return user.blocked_appointments;
+		}catch(err){
+			console.error(`Unable to get blocked appointments: ${err}`);
+			throw err;
 		}
 	}
 }

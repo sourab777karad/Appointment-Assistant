@@ -18,6 +18,7 @@ export default class AssistantController {
 				// make it an empty string
 				user.profile_pic_url = "";
 			}
+
 			// if the user's email includes only numbers, then we make a new attribtue called is_faculty, and set it to false.
 			if (user.email.match(/^[0-9]+$/) !== null) {
 				user.is_faculty = false;
@@ -49,9 +50,12 @@ export default class AssistantController {
 			) {
 				return res.status(400).json({ message: "Date range not provided" });
 			}
+			// blocked appointments date from users collection
+			const blocked_appointments = Status.userDetails.blocked_appointments;
+
 			// get appointments of the user with all the given and taken appointments
 			const appointments = await AssistantDAO.getAppointment(user.user_id, appointment_date);
-
+			
 			console.log(appointments);
 			// now sort appointments into taken and given appointments
 			const taken_appointments = [];
@@ -70,7 +74,7 @@ export default class AssistantController {
 				filled: Status.status,
 				userDetails: Status.userDetails,
 				newUser: false,
-				userSchedule: { taken_appointments, given_appointments },
+				userSchedule: { taken_appointments, given_appointments, blocked_appointments },
 				users: users,
 			});
 		} catch (err) {
@@ -118,7 +122,12 @@ export default class AssistantController {
 					given_appointments.push(appointments[i]);
 				}
 			}
-			return res.status(200).json({ taken_appointments, given_appointments });
+			// return blocked_appointments from users table for the given firebase id 
+			const blocked_appointments = await AssistantDAO.getBlockedAppointments(
+				appointment_details.firebase_id
+			);
+
+			return res.status(200).json({ taken_appointments, given_appointments, blocked_appointments});
 		} catch (err) {
 			console.error(err);
 			return res.status(500).json({ message: "Error retrieving appointment" });
@@ -323,12 +332,12 @@ export default class AssistantController {
 		try {
 			const decodedToken = req.user_decoded_details;
 			const firebase_userId = decodedToken.user_id;
-			const blocked_appointments = req.body;
+			const blocked_appointments = req.body.blocked_appointments;
 			const result = await AssistantDAO.updateBlockedAppointments(
 				firebase_userId,
 				blocked_appointments
 			);
-			return res.status(200);
+			return res.status(200).json(result);
 		} catch (err) {
 			console.error(err);
 			return res.status(500);
