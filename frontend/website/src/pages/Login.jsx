@@ -6,6 +6,7 @@ import mit_logo_image from "../assets/mitwpu logo.jpg";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { format } from "date-fns";
 
 import { app, provider } from "../firebase";
 import {
@@ -28,8 +29,8 @@ function get_previous_monday_date() {
 function get_current_week_dates() {
 	var curr = get_previous_monday_date(); // get current date
 	var week = [];
-	for (var i = 0; i < 6; i++) {
-		week.push(curr.toISOString().slice(0, 10));
+	for (var i = 0; i < 7; i++) {
+		week.push(format(curr, "yyyy-MM-dd"));
 		curr.setDate(curr.getDate() + 1);
 	}
 	return week;
@@ -58,7 +59,6 @@ const Login = (props) => {
 			setUserToken(user.accessToken);
 			setLocalUserToken(user.accessToken);
 			setFirebaseid(user.uid);
-
 		}
 	}, [user, setUserFullName, setUserEmail, setUserToken, setLocalUserToken]);
 
@@ -84,7 +84,7 @@ const Login = (props) => {
 					{
 						date: {
 							start_date: get_current_week_dates()[0],
-							end_date: get_current_week_dates()[5],
+							end_date: get_current_week_dates()[6],
 						},
 					},
 					{

@@ -43,9 +43,9 @@ const SideNav = () => {
 		if (appointment === null) {
 			return null;
 		}
-		// iterate through the allUsers array to find the user with the given firebase_id as appointment.scheduler
-		const scheduler = allUsers.find((user) => user.firebase_id === appointment.scheduler);
-		return scheduler;
+		// iterate through the allUsers array to find the user with the given firebase_id as appointment.scheduler_id
+		const scheduler_id = allUsers.find((user) => user.firebase_id === appointment.scheduler_id);
+		return scheduler_id;
 	}
 
 	function get_notification_appointments() {
@@ -149,7 +149,7 @@ const SideNav = () => {
 																		appointment
 																	)?.profile_pic_url
 																}
-																alt="scheduler"
+																alt="scheduler_id"
 																className="w-20 h-20 rounded-full object-cover outline outline-blue-700"
 															/>
 														) : (
@@ -191,8 +191,7 @@ const SideNav = () => {
 													<div>{appointment.description}</div>
 													<div className="text-lg">Asked at</div>
 													<div>
-														{integerToTime(appointment.creation_time)}{" "}
-														on{" "}
+														{appointment.creation_time} on{" "}
 														{new Date(
 															appointment.creation_date
 														).toDateString()}
@@ -201,8 +200,7 @@ const SideNav = () => {
 														Requested Your Time Slot at
 													</div>
 													<div>
-														{integerToTime(appointment.creation_time)}{" "}
-														on{" "}
+														{appointment.appointment_time} on{" "}
 														{new Date(
 															appointment.appointment_date
 														).toDateString()}

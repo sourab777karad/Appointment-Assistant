@@ -5,6 +5,7 @@ import { UserInfoContext } from "../context/UserInfoContext";
 import axios from "axios";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { useContext } from "react";
+import { format } from "date-fns";
 
 function get_previous_monday_date() {
 	// this gives you the date of the previous monday
@@ -17,7 +18,7 @@ function get_previous_monday_date() {
 function get_current_week_dates() {
 	var curr = get_previous_monday_date(); // get current date
 	var week = [];
-	for (var i = 0; i < 6; i++) {
+	for (var i = 0; i < 7; i++) {
 		week.push(new Date(curr));
 		curr.setDate(curr.getDate() + 1);
 	}
@@ -25,7 +26,7 @@ function get_current_week_dates() {
 }
 
 const this_week_start = get_current_week_dates()[0];
-const this_week_end = get_current_week_dates()[5];
+const this_week_end = get_current_week_dates()[6];
 
 export default function NewAppointment() {
 	const {
@@ -121,13 +122,14 @@ export default function NewAppointment() {
 	};
 
 	const getUserSchedule = (firebase_id) => {
+		console.log(currentWeek)
 		axios
 			.post(
 				`${base_url}/get-faculty-schedule`,
 				{
 					date: {
-						start_date: currentWeek.start_date,
-						end_date: currentWeek.end_date,
+						start_date: format(currentWeek.start_date, "yyyy-MM-dd"),
+						end_date: format(currentWeek.end_date, "yyyy-MM-dd"),
 					},
 					firebase_id: firebase_id,
 				},

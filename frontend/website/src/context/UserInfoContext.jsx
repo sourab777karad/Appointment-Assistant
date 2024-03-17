@@ -16,7 +16,7 @@ function get_previous_monday_date() {
 function get_current_week_dates() {
 	var curr = get_previous_monday_date(); // get current date
 	var week = [];
-	for (var i = 0; i < 6; i++) {
+	for (var i = 0; i < 7; i++) {
 		week.push(new Date(curr));
 		curr.setDate(curr.getDate() + 1);
 	}
@@ -122,8 +122,8 @@ export const UserInfoContextProvider = ({ children }) => {
 				`${base_url}/get-user-appointment`,
 				{
 					date: {
-						start_date: currentWeek.start_date,
-						end_date: currentWeek.end_date,
+						start_date: format(currentWeek.start_date, "yyyy-MM-dd"),
+						end_date: format(currentWeek.end_date, "yyyy-MM-dd"),
 					},
 					firebase_id: userDetails.firebase_id,
 				},

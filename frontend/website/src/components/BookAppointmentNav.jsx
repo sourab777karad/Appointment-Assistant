@@ -32,7 +32,7 @@ const BookAppointmentNav = () => {
 			.post(
 				`${base_url}/book-appointment`,
 				{
-					scheduler: userDetails.firebase_id,
+					scheduler_id: userDetails.firebase_id,
 					appointee_id: newAppointeeId,
 					appointment_time: newAppointmentTime,
 					appointment_date: newAppointmentDate,
@@ -58,7 +58,7 @@ const BookAppointmentNav = () => {
 
 		toast.promise(res, {
 			loading: "Loading",
-			success: "Appointment booked successfully",
+			success: "Appointment Requested successfully",
 			error: "Error booking appointment",
 		});
 	}

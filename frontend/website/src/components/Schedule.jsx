@@ -2,7 +2,7 @@
 import React from "react";
 import { useState, useContext, useEffect } from "react";
 import PropTypes from "prop-types";
-import { parse, set, isAfter } from "date-fns";
+import { parse, set, isAfter, format, isWithinInterval, isEqual } from "date-fns";
 
 // importing context
 import { UserInfoContext } from "../context/UserInfoContext";
@@ -76,14 +76,11 @@ export default function Schedule({
 
 	// function to check time and date. if the time and date are in the past, then return false, else return true
 	const compare_time_and_date = (start_time, date1, date2) => {
-		// Parse date1 from "dd/mm/yyyy" format to a Date object
-		const parsedDate1 = parse(date1, "dd/MM/yyyy", new Date());
-
 		// Parse start_time from "Hmm" format to a Date object
 		const parsedStartTime = parse(start_time, "h:mm a", new Date());
 
 		// Combine date1 and start_time into a single Date object
-		const dateTime1 = set(parsedDate1, {
+		const dateTime1 = set(date1, {
 			hours: parsedStartTime.getHours(),
 			minutes: parsedStartTime.getMinutes(),
 		});
@@ -107,14 +104,124 @@ export default function Schedule({
 		let taken_appointment = null;
 		let given_appointment = null;
 		let blocked_appointment = null;
+		let pending_appointment = null;
 
 		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
 		userSchedule.taken_appointments.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				// check if appointment.appointment_time is present in the the times of the json_time_slots
 				if (
-					appointment.appointment_time >= time_slot.start_time &&
-					appointment.appointment_time <= time_slot.end_time
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				) {
+					if (appointment.status === "pending") {
+						pending_appointment = appointment;
+					} else {
+						taken_appointment = appointment;
+					}
+				}
+			}
+		});
+
+		// look through the userSchedule.given_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		userSchedule.given_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				) {
+					if (appointment.status === "pending") {
+						pending_appointment = appointment;
+					} else {
+						given_appointment = appointment;
+					}
+				}
+			}
+		});
+
+		// look through the userSchedule.blocked_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		userSchedule.blocked_appointments?.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
+				if (
+					isWithinInterval(parse(appointment.start_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					}) ||
+					isEqual(
+						parse(appointment.start_time, "h:mm a", new Date()),
+						parse(time_slot.start_time, "h:mm a", new Date())
+					) ||
+					isEqual(
+						parse(appointment.end_time, "h:mm a", new Date()),
+						parse(time_slot.end_time, "h:mm a", new Date())
+					)
+				) {
+					blocked_appointment = appointment;
+				}
+			}
+		});
+
+		return { taken_appointment, given_appointment, blocked_appointment, pending_appointment };
+	}
+
+	function checkDivInFacultySchedule(time_slot, date) {
+		// this function will go through the entire schedule, but in return it will only give blocked appointments
+		let blocked_appointment = null;
+		let taken_appointment = null;
+		let given_appointment = null;
+		let pending_appointment = null;
+
+		userSchedule.blocked_appointments?.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
+				if (
+					isWithinInterval(parse(appointment.start_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					}) ||
+					isEqual(
+						parse(appointment.start_time, "h:mm a", new Date()),
+						parse(time_slot.start_time, "h:mm a", new Date())
+					) ||
+					isEqual(
+						parse(appointment.end_time, "h:mm a", new Date()),
+						parse(time_slot.end_time, "h:mm a", new Date())
+					)
+				) {
+					blocked_appointment = appointment;
+				}
+			}
+		});
+
+		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		userSchedule.taken_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				console.log(parse(appointment.appointment_time, "h:mm a", new Date()));
+				console.log(parse(time_slot.start_time, "h:mm a", new Date()));
+				console.log(
+					isEqual(
+						parse(appointment.appointment_time, "h:mm a", new Date()),
+						parse(time_slot.start_time, "h:mm a", new Date())
+					)
+				);
+				console.log(
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				);
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
 				) {
 					taken_appointment = appointment;
 				}
@@ -126,74 +233,23 @@ export default function Schedule({
 			if (appointment.appointment_date === date) {
 				// check if appointment.appointment_time is present in the the times of the json_time_slots
 				if (
-					appointment.appointment_time >= time_slot.start_time &&
-					appointment.appointment_time <= time_slot.end_time
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
 				) {
-					given_appointment = appointment;
-				}
-			}
-		});
-
-		// look through the userSchedule.blocked_appointments to find the appointment with date matching date, and if its time is present in the time_slot
-		userSchedule.blocked_appointments?.forEach((appointment) => {
-			if (appointment.appointment_date === date) {
-				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
-				if (
-					appointment.start_time >= time_slot.start_time &&
-					appointment.end_time <= time_slot.end_time
-				) {
-					blocked_appointment = appointment;
-				}
-			}
-		});
-		return { taken_appointment, given_appointment, blocked_appointment };
-	}
-
-	function checkDivInFacultySchedule(time_slot, date) {
-		// this function will go through the entire schedule, but in return it will only give blocked appointments
-		let blocked_appointment = null;
-		let taken_appointment = null;
-		let given_appointment = null;
-
-		userSchedule.blocked_appointments?.forEach((appointment) => {
-			if (appointment.appointment_date === date) {
-				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
-				if (
-					appointment.start_time >= time_slot.start_time &&
-					appointment.end_time <= time_slot.end_time
-				) {
+					console.log("in faculty schedule", {
+						taken_appointment,
+						given_appointment,
+						blocked_appointment,
+						pending_appointment,
+					});
 					blocked_appointment = appointment;
 				}
 			}
 		});
 
-		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
-		userSchedule.taken_appointments.forEach((appointment) => {
-			if (appointment.appointment_date === date) {
-				// check if appointment.appointment_time is present in the the times of the json_time_slots
-				if (
-					appointment.appointment_time >= time_slot.start_time &&
-					appointment.appointment_time <= time_slot.end_time
-				) {
-					blocked_appointment = appointment;
-				}
-			}
-		});
-
-		// look through the userSchedule.given_appointments to find the appointment with date matching date, and if its time is present in the time_slot
-		userSchedule.given_appointments.forEach((appointment) => {
-			if (appointment.appointment_date === date) {
-				// check if appointment.appointment_time is present in the the times of the json_time_slots
-				if (
-					appointment.appointment_time >= time_slot.start_time &&
-					appointment.appointment_time <= time_slot.end_time
-				) {
-					blocked_appointment = appointment;
-				}
-			}
-		});
-
-		return { taken_appointment, given_appointment, blocked_appointment };
+		return { taken_appointment, given_appointment, blocked_appointment, pending_appointment };
 	}
 
 	// function to get the week dates from the start date
@@ -206,7 +262,7 @@ export default function Schedule({
 					currentWeek.start_date.getFullYear(),
 					currentWeek.start_date.getMonth(),
 					currentWeek.start_date.getDate() + i
-				).toLocaleDateString()
+				)
 			);
 		}
 		return week;
@@ -248,14 +304,14 @@ export default function Schedule({
 		let scheduler = {};
 		let appointee = {};
 		allUsers.forEach((user) => {
-			if (user.firebase_id === appointment.scheduler) {
+			if (user.firebase_id === appointment.scheduler_id) {
 				scheduler.full_name = user.full_name;
 				scheduler.email = user.email;
 				scheduler.room = user.room;
 				scheduler.profile_pic_url = user.profile_pic_url;
 				scheduler.phone_number = user.phone_number;
 			}
-			if (user.firebase_id === appointment.appointee) {
+			if (user.firebase_id === appointment.appointee_id) {
 				appointee.full_name = user.full_name;
 				appointee.email = user.email;
 				appointee.room = user.room;
@@ -361,7 +417,10 @@ export default function Schedule({
 											console.log("block privileges exist");
 											navigate("/day-details", {
 												state: {
-													date: get_week_dates_from_start_date()[index],
+													date: format(
+														get_week_dates_from_start_date()[index],
+														"yyyy-MM-dd"
+													),
 													json_time_slots: json_time_slots,
 													user_time_slots: user_time_slots,
 													day: day,
@@ -371,7 +430,8 @@ export default function Schedule({
 										handleCloseMenu();
 									}}
 								>
-									{day} <br /> {get_week_dates_from_start_date()[index]}
+									{day} <br />{" "}
+									{format(get_week_dates_from_start_date()[index], "yyyy-MM-dd")}
 								</th>
 							);
 						})}
@@ -402,25 +462,32 @@ export default function Schedule({
 								{get_week_dates_from_start_date().map((date) => {
 									let current_div_schedule;
 									if (blockPrivileges) {
-										current_div_schedule = checkDivInSchedule(time_slot, date);
+										current_div_schedule = checkDivInSchedule(
+											time_slot,
+											format(date, "yyyy-MM-dd")
+										);
 									} else {
 										current_div_schedule = checkDivInFacultySchedule(
 											time_slot,
-											date
+											format(date, "yyyy-MM-dd")
 										);
+										console.log("found something", current_div_schedule);
 									}
-									const current_appointment =
-										current_div_schedule.taken_appointment
-											? current_div_schedule.taken_appointment
-											: current_div_schedule.given_appointment
-												? current_div_schedule.given_appointment
-												: [
-														{
-															start_time: time_slot.start_time,
-															end_time: time_slot.end_time,
-															appointment_date: date,
-														},
-													];
+									let current_appointment = current_div_schedule.taken_appointment
+										? current_div_schedule.taken_appointment
+										: current_div_schedule.given_appointment
+											? current_div_schedule.given_appointment
+											: [
+													{
+														start_time: time_slot.start_time,
+														end_time: time_slot.end_time,
+														appointment_date: format(
+															date,
+															"yyyy-MM-dd"
+														),
+													},
+												];
+
 									// check if the appointment is confirmed or not
 									if (
 										current_div_schedule.taken_appointment !== null &&
@@ -446,7 +513,7 @@ export default function Schedule({
 									);
 									return (
 										<td
-											key={date}
+											key={format(date, "yyyy-MM-dd")}
 											className={
 												"border-2 p-2 " +
 												(current_div_schedule.blocked_appointment !== null
@@ -457,6 +524,9 @@ export default function Schedule({
 													: "") +
 												(current_div_schedule.given_appointment !== null
 													? " bg-blue-100 "
+													: "") +
+												(current_div_schedule.pending_appointment !== null
+													? " bg-yellow-100 "
 													: "") +
 												(!compare_time_and_date(
 													time_slot.start_time,
@@ -472,7 +542,10 @@ export default function Schedule({
 														time_slot.start_time,
 														date,
 														new Date()
-													)
+													) ||
+													(current_div_schedule.blocked_appointment !==
+														null &&
+														!blockPrivileges)
 												) {
 													handleContextMenuDisabled(e);
 													return;
