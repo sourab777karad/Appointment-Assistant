@@ -571,7 +571,6 @@ export default function Schedule({
 											time_slot,
 											format(date, "yyyy-MM-dd")
 										);
-										console.log("found something", current_div_schedule);
 									}
 									let current_appointment = current_div_schedule.taken_appointment
 										? current_div_schedule.taken_appointment

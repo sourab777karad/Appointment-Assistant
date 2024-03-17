@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserInfoContext } from "../../context/UserInfoContext";
 
 const AppointmentContextMenu = ({
@@ -18,11 +18,15 @@ const AppointmentContextMenu = ({
 	const { setNewAppointmentDate, setNewAppointmentTime, userSchedule } =
 		useContext(UserInfoContext);
 
+	useEffect(() => {
+		console.log(userSchedule);
+	}, [userSchedule]);
+	
 	function check_if_appointment_is_blocked(appointment) {
 		console.log(appointment, userSchedule);
 		// iterate through all blocked appointments in userschedule
 		for (let i = 0; i < userSchedule.blocked_appointments.length; i++) {
-			if (userSchedule.blocked_appointments[i].start_time === appointment[0].start_time) {
+			if (userSchedule?.blocked_appointments[i].start_time === appointment[0].start_time) {
 				return true;
 			}
 		}

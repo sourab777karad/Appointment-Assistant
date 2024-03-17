@@ -7,7 +7,7 @@ import { UserInfoContext } from "../context/UserInfoContext";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 const BookAppointmentNav = () => {
 	const {
@@ -68,21 +68,17 @@ const BookAppointmentNav = () => {
 	}
 
 	function get_full_date(date) {
+		console.log(date);
 		if (!date) {
 			return null;
 		}
-		// date is in format dd/mm/yyyy
+		// date is in format yyyy-MM-dd
 		// use date-fns
 		// required format is a string in the format "Monday, 1st January, 2022"
-		const date_parts = date.split("/");
-		const full_date = format(
-			new Date(date_parts[2], date_parts[1] - 1, date_parts[0]),
-			"EEEE, do MMMM, yyyy"
-		);
+		const date_obj = parse(date, "yyyy-MM-dd", new Date());
+		const full_date = format(date_obj, "EEEE, do MMMM, yyyy");
 		return full_date;
 	}
-
-	const navigate = useNavigate();
 	return (
 		<div className="roboto-regular text-black">
 			<div className="drawer drawer-start z-50">
@@ -137,7 +133,8 @@ const BookAppointmentNav = () => {
 								<div className="text-xl">
 									Scheduled at:
 									<div className="text-lg">
-										{newAppointmentTime} on {get_full_date(newAppointmentDate)}
+										{newAppointmentTime?.start_time} on{" "}
+										{get_full_date(newAppointmentDate)}
 									</div>
 								</div>
 							</div>
