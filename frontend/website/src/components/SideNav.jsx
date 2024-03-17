@@ -36,8 +36,8 @@ const SideNav = () => {
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
 	const userToken = React.useContext(UserInfoContext).userToken;
 	const [notifAppointments, setNotifAppointments] = React.useState([]);
-	const refreshUserScheduleForDisplayedWeek =
-		React.useContext(UserInfoContext).refreshUserScheduleForDisplayedWeek;
+	const refreshLoggedInUserScheduleForDisplayedWeek =
+		React.useContext(UserInfoContext).refreshLoggedInUserScheduleForDisplayedWeek;
 
 	function get_scheduler_from_appointment(appointment) {
 		if (appointment === null) {
@@ -92,7 +92,7 @@ const SideNav = () => {
 				if (response.data.sendmail_status === false) {
 					toast.success(`Could not send confirmation mail to ${scheduler_email_id}`);
 				}
-				refreshUserScheduleForDisplayedWeek();
+				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -156,7 +156,8 @@ const SideNav = () => {
 															<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
 																{get_scheduler_from_appointment(
 																	appointment
-																)?.full_name?.split(" ")
+																)
+																	?.full_name?.split(" ")
 																	.map((name) => name[0])
 																	.join("")}
 															</div>

@@ -31,8 +31,7 @@ const this_week_end = get_current_week_dates()[5];
 export default function NewAppointment() {
 	const {
 		userToken,
-		refreshUserScheduleForDisplayedWeek,
-		updateUserSchedule,
+		refreshLoggedInUserScheduleForDisplayedWeek,
 		calculate_json_time_slots,
 		calculate_time_slots,
 		allUsers,
@@ -65,7 +64,7 @@ export default function NewAppointment() {
 		};
 		setCurrentWeek(nextWeek);
 		// now update the userSchedule
-		updateUserSchedule(nextWeek.start_date, nextWeek.end_date, userDetails.firebase_id);
+		getUserSchedule(selectedUserDetails.firebase_id);
 	};
 
 	const handlePreviousWeekChanged = () => {
@@ -80,7 +79,7 @@ export default function NewAppointment() {
 		};
 		setCurrentWeek(previousWeek);
 		// now update the userSchedule
-		updateUserSchedule(previousWeek.start_date, previousWeek.end_date, userDetails.firebase_id);
+		getUserSchedule(selectedUserDetails.firebase_id);
 	};
 
 	const change_status = (appointment, status) => {
@@ -96,7 +95,7 @@ export default function NewAppointment() {
 			)
 			.then((response) => {
 				console.log(response.data);
-				refreshUserScheduleForDisplayedWeek();
+				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -135,6 +134,7 @@ export default function NewAppointment() {
 				let userSchedule = {
 					taken_appointments: response.data.taken_appointments,
 					given_appointments: response.data.given_appointments,
+					blocked_appointments: response.data.blocked_appointments,
 				};
 				setSelectedUserSchedule(userSchedule);
 			})
