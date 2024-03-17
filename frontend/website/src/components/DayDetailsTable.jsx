@@ -1,5 +1,6 @@
 import { useEffect, useContext } from "react";
 import { UserInfoContext } from "../context/UserInfoContext";
+import NoAppsvg from "../assets/no_appointments.svg";
 
 export default function DayDetailsTable({ json_time_slots, user_time_slots, appointments }) {
 	const { allUsers } = useContext(UserInfoContext);
@@ -27,24 +28,23 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 
 	return (
 		<div>
-			<table className="table border-2 bg-white my-8">
-				{/* header with day and date */}
-				<thead>
-					<tr>
-						<th>Sr No</th>
-						<th>Meeting with</th>
-						<th>Agenda</th>
-						<th>Details</th>
-						<th>Time Slot</th>
-						<th>Minutes</th>
-						<th>Done?</th>
-					</tr>
-				</thead>
-
-				{/* body with time slots */}
-				<tbody>
-					{Array.isArray(appointments) &&
-						appointments.map((appointment, index) => {
+			{Array.isArray(appointments) && appointments.length > 0 && (
+				<table className="table border-2 bg-white my-8">
+					{/* header with day and date */}
+					<thead>
+						<tr>
+							<th>Sr No</th>
+							<th>Meeting with</th>
+							<th>Agenda</th>
+							<th>Details</th>
+							<th>Time Slot</th>
+							<th>Minutes</th>
+							<th>Done?</th>
+						</tr>
+					</thead>
+					{/* body with time slots */}
+					<tbody>
+						{appointments.map((appointment, index) => {
 							return (
 								<tr key={index}>
 									<td>{index + 1}</td>
@@ -74,8 +74,18 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 								</tr>
 							);
 						})}
-				</tbody>
-			</table>
+					</tbody>
+				</table>
+			)}
+			{
+				// if there are no appointments
+				!appointments.length && (
+					<div className="text-center text-2xl text-gray-500 mt-8 flex flex-col gap-4">
+						<img src={NoAppsvg} alt="no appointments" className="w-[20vw] mx-auto" />
+						<div className="mt-4">No appointments scheduled for this day</div>
+					</div>
+				)
+			}
 		</div>
 	);
 }

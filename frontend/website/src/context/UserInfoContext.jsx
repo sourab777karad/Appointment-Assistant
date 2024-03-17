@@ -265,8 +265,8 @@ export const UserInfoContextProvider = ({ children }) => {
 		) {
 			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
 			if (
-				schedule?.taken_appointments?.length > 0 &&
-				schedule?.given_appointments?.length > 0 &&
+				schedule?.taken_appointments?.length > 0 ||
+				schedule?.given_appointments?.length > 0 ||
 				schedule?.blocked_appointments?.length > 0
 			) {
 				setUserSchedule(schedule);

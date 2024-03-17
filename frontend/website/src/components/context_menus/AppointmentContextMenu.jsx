@@ -15,7 +15,19 @@ const AppointmentContextMenu = ({
 		e.preventDefault(); // Prevent default right-click menu
 		onClose(); // Close custom menu
 	};
-	const { setNewAppointmentDate, setNewAppointmentTime } = useContext(UserInfoContext);
+	const { setNewAppointmentDate, setNewAppointmentTime, userSchedule } =
+		useContext(UserInfoContext);
+
+	function check_if_appointment_is_blocked(appointment) {
+		console.log(appointment, userSchedule)
+		// iterate through all blocked appointments in userschedule
+		for (let i = 0; i < userSchedule.blocked_appointments.length; i++) {
+			if (userSchedule.blocked_appointments[i].start_time === appointment[0].start_time) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	return (
 		<div
@@ -37,7 +49,7 @@ const AppointmentContextMenu = ({
 							<a>Cancel Appointment</a>
 						</li>
 					) : null}
-					{blockPrivileges && (
+					{blockPrivileges && !check_if_appointment_is_blocked(appointment) && (
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
@@ -82,6 +94,7 @@ const AppointmentContextMenu = ({
 export default AppointmentContextMenu;
 
 import PropTypes from "prop-types";
+import UserSchedule from "./../../pages/UserSchedule";
 
 AppointmentContextMenu.propTypes = {
 	x: PropTypes.number.isRequired,

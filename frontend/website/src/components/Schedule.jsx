@@ -140,7 +140,7 @@ export default function Schedule({
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
 				if (
 					appointment.start_time >= time_slot.start_time &&
-					appointment.start_time <= time_slot.end_time
+					appointment.end_time <= time_slot.end_time
 				) {
 					blocked_appointment = appointment;
 				}
@@ -160,7 +160,7 @@ export default function Schedule({
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
 				if (
 					appointment.start_time >= time_slot.start_time &&
-					appointment.start_time <= time_slot.end_time
+					appointment.end_time <= time_slot.end_time
 				) {
 					blocked_appointment = appointment;
 				}
