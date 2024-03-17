@@ -37,7 +37,7 @@ const transporter = nodemailer.createTransport({
         if (error) {
           reject(error);
         } else {
-          console.log('Mail server is ready to send mail');
+         console.log('✅ Mail server is ready to send mail');
           resolve(success);
         }
       });
@@ -50,10 +50,10 @@ const transporter = nodemailer.createTransport({
         console.error(err.stack);
         process.exit(1);
       }).then(async client => {
-        console.log('Connected to MongoDB');
+        console.log('✅ Connected to MongoDB');
         await AssistantDAO.InjectDB(client);
         app.listen(process.env.PORT || 3000, () => {
-          console.log(`Server is listening on port ${process.env.PORT}`);
+          console.log(`✅ Server is listening on port ${process.env.PORT} 🚀`);
         });
       });
     })

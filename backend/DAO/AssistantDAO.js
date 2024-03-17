@@ -109,6 +109,8 @@ export default class AssistantDAO {
     try {
       // add attribute cancellation_message to the appointment_details object
       appointment_details.cancellation_message = "";
+	  // add attribute status to the appointment_details object
+	  appointment_details.status = "pending";
       // Insert the appointment_details into the 'appointments' collection
       const result = await cluster0
         .collection("appointments")
@@ -132,7 +134,7 @@ export default class AssistantDAO {
       }
       if (!user.phone_number && !user.room) {
         console.log("User details not filled");
-        return { status: false };
+        return {userDetails:user, status: false };
       }
       return { userDetails: user, status: true };
     } catch (e) {
@@ -170,11 +172,11 @@ export default class AssistantDAO {
 
   static async getAppointment(firebase_ID, datetime) {
     try {
-      // get all appointments from the appointments collection where schedular_id or appointee_id is equal to the firebase_ID and the appointment in range of the given date and also sort them into taken appointments and given appointments
+      // get all appointments from the appointments collection where scheduler_id or appointee_id is equal to the firebase_ID and the appointment in range of the given date and also sort them into taken appointments and given appointments
       const appointments = await cluster0
         .collection("appointments")
         .find({
-          $or: [{ scheduler: firebase_ID }, { appointee: firebase_ID }],
+          $or: [{ scheduler_id: firebase_ID }, { appointee_id: firebase_ID }],
           appointment_date: {
             $gte: datetime.date.start_date,
             $lte: datetime.date.end_date,
@@ -319,16 +321,16 @@ export default class AssistantDAO {
   }
   // method to add appointment to user
   static async add_appointment_to_user(
-    schedularId,
+    schedulerId,
     appointeeId,
     appointmentId
   ) {
     try {
-      // Add the appointment ID if the user is the schedular to the 'taken_appointments' array and add the appointment ID if the user is the appointee to the 'given_appointments' array
+      // Add the appointment ID if the user is the scheduler to the 'taken_appointments' array and add the appointment ID if the user is the appointee to the 'given_appointments' array
       await cluster0
         .collection("users")
         .updateOne(
-          { firebase_id: schedularId },
+          { firebase_id: schedulerId },
           { $push: { taken_appointments: appointmentId } }
         );
       await cluster0
@@ -349,7 +351,7 @@ export default class AssistantDAO {
       const appointments = await cluster0
         .collection("appointments")
         .find({
-          $or: [{ scheduler: firebaseID }, { appointee: firebaseID }],
+          $or: [{ scheduler_id: firebaseID }, { appointee_id: firebaseID }],
           status: { $in: ["pending", "cancelled"] },
         })
         .toArray();

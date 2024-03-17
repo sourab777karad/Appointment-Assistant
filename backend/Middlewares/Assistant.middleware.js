@@ -28,9 +28,13 @@ export default class Authenticator{
                 return res.status(403).send({ message: "Unauthorized - Email not verified!" });
             }
             next();
-        } catch (error) {
+        }catch (error) {
             console.error(error);
-            return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+            if (error.code === 'auth/id-token-expired') {
+                return res.status(401).json({ message: 'Unauthorized - Token expired' });
+            } else {
+                return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+            }
         }
     }
 

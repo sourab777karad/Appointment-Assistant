@@ -53,6 +53,7 @@ export default class AssistantController {
       ) {
         return res.status(400).json({ message: "Date range not provided" });
       }
+	  console.log("Status:", Status);
       // blocked appointments date from users collection
       const blocked_appointments = Status.userDetails.blocked_appointments;
 
@@ -62,12 +63,12 @@ export default class AssistantController {
         appointment_date
       );
 
-      console.log(appointments);
+      console.log("Appointments inside areUserDetailsFilled controller",appointments);
       // now sort appointments into taken and given appointments
       const taken_appointments = [];
       const given_appointments = [];
       for (let i = 0; i < appointments.length; i++) {
-        if (appointments[i].scheduler === user.user_id) {
+        if (appointments[i].scheduler_id === user.user_id) {
           taken_appointments.push(appointments[i]);
         } else {
           given_appointments.push(appointments[i]);
@@ -126,7 +127,7 @@ export default class AssistantController {
       const taken_appointments = [];
       const given_appointments = [];
       for (let i = 0; i < appointments.length; i++) {
-        if (appointments[i].scheduler === appointment_details.firebase_id) {
+        if (appointments[i].scheduler_id === appointment_details.firebase_id) {
           taken_appointments.push(appointments[i]);
         } else {
           given_appointments.push(appointments[i]);
@@ -214,15 +215,22 @@ export default class AssistantController {
   // method to change the status of the appointment (confirmed, rejected, pending)
   static async changeStatus(req, res) {
     try {
-      const status_details = req.body; // Get the appointment ID from the request body
+      const appointment_details = req.body; // Get the appointment ID from the request body
 
       // check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
 
-      const result = await AssistantDAO.changeStatus(status_details);
+      const result = await AssistantDAO.changeStatus(appointment_details);
       const mailController = new MailController();
       const sendmail_status = await mailController.sendMail(
-        status_details.scheduler_email_id,
-        status_details.status
+        appointment_details.scheduler_email_id,
+        appointment_details.status,
+		appointment_details.message,
+		appointment_details.appointee_name,
+		appointment_details.appointment_time,
+		appointment_details.appointment_date,
+		appointment_details.appointment_duration,
+		appointment_details.appointment_location,
+		appointment_details.appointee_email_id
       );
 
       // return res.status(200).json({result, sendmail_status});
@@ -338,7 +346,7 @@ export default class AssistantController {
       const taken_appointments = [];
       const given_appointments = [];
       for (let i = 0; i < appointments.length; i++) {
-        if (appointments[i].scheduler === firebase_userId) {
+        if (appointments[i].scheduler_id === firebase_userId) {
           taken_appointments.push(appointments[i]);
         } else {
           given_appointments.push(appointments[i]);
@@ -392,7 +400,7 @@ export default class AssistantController {
       const taken_appointments = [];
       const given_appointments = [];
       for (let i = 0; i < appointments.length; i++) {
-        if (appointments[i].scheduler === appointment_details.firebase_id) {
+        if (appointments[i].scheduler_id === appointment_details.firebase_id) {
           taken_appointments.push(appointments[i]);
         } else {
           given_appointments.push(appointments[i]);
