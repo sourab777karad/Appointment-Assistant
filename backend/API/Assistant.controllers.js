@@ -334,4 +334,16 @@ export default class AssistantController {
 			return res.status(500);
 		}
 	}
+
+	// method to update appointment
+	static async updateAppointment(req, res) {
+		try {
+			const appointment_details = req.body;
+			const result = await AssistantDAO.updateAppointment(appointment_details);
+			return res.status(200).json(result);
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ message: "Error updating appointment" });
+		}
+	}
 }

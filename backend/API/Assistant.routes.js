@@ -35,5 +35,6 @@ router.post('/update-profile-photo', upload.single('image'),assistantCtrl.update
 
 router.post('/update-blocked-appointments', assistantCtrl.updateBlockedAppointments)
 
+router.post("/update-appointment", assistantCtrl.updateAppointment);
 
 export default router

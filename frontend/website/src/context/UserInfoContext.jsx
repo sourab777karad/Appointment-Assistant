@@ -259,9 +259,9 @@ export const UserInfoContextProvider = ({ children }) => {
 		}
 
 		if (
-			userSchedule.taken_appointments.length === 0 &&
-			userSchedule.given_appointments.length === 0 &&
-			userSchedule.blocked_appointments.length === 0
+			userSchedule.taken_appointments?.length === 0 &&
+			userSchedule.given_appointments?.length === 0 &&
+			userSchedule.blocked_appointments?.length === 0
 		) {
 			const schedule = JSON.parse(localStorage.getItem("userSchedule"));
 			if (

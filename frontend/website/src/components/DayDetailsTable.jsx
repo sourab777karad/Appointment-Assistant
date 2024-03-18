@@ -1,21 +1,55 @@
 import { useEffect, useContext } from "react";
 import { UserInfoContext } from "../context/UserInfoContext";
 import NoAppsvg from "../assets/no_appointments.svg";
-import { format, parse } from "date-fns";
-import { IconCheck } from "@tabler/icons-react";
+import { useState } from "react";
+import axios from "axios";
+import { BaseUrlContext } from "../context/BaseUrlContext";
+import { IconCheck, IconDeviceFloppy, IconEdit } from "@tabler/icons-react";
+import { toast } from "react-hot-toast";
 
 export default function DayDetailsTable({ json_time_slots, user_time_slots, appointments }) {
 	const { allUsers } = useContext(UserInfoContext);
+	const [currentMinutes, setCurrentMinutes] = useState("");
+	const [editingAnAppointment, setEditingAnAppointment] = useState(false);
+	const [currentAppointment, setCurrentAppointment] = useState(null);
+	const { baseUrl } = useContext(BaseUrlContext);
+	const { userToken, refreshLoggedInUserScheduleForDisplayedWeek } = useContext(UserInfoContext);
 	useEffect(() => {
 		console.log(appointments);
 	}, [appointments]);
 
-	// function to add duration to time
-	function add_duration(time, duration) {
-		console.log(time, duration);
-		const time_obj = parse(time, "h:mm a", new Date());
-		const new_time = format(new Date(time_obj.getTime() + duration * 60000), "HH:mm");
-		return new_time;
+	async function updateMinutesInAppointment(appointment_id) {
+		// update the appointment with the new minutes
+		const response = await axios
+			.post(
+				`${baseUrl}/update-appointment`,
+				{
+					appointment_id,
+					...currentAppointment,
+					minutes_of_meeting: currentMinutes,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((res) => {
+				console.log(res.data);
+				setCurrentAppointment(null);
+				setEditingAnAppointment(false);
+				setCurrentMinutes("");
+				refreshLoggedInUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Updating Minutes of this meeting...",
+			success: "Minutes Updated!",
+			error: "Error Updating Minutes!",
+		});
 	}
 
 	function get_names_from_appointment(appointment) {
@@ -47,6 +81,7 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 							<th>Meeting with</th>
 							<th>Agenda</th>
 							<th>Details</th>
+							<th>Status</th>
 							<th>Time Slot</th>
 							<th>Minutes</th>
 							<th>Done?</th>
@@ -61,19 +96,52 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 									<td>{get_names_from_appointment(appointment).full_name}</td>
 									<td>{appointment.title}</td>
 									<td>{appointment.description}</td>
+									<td>{appointment.status}</td>
 									<td>
 										{appointment.appointment_time} to{" "}
 										{appointment.appointment_end_time}
 									</td>
 									<td className="flex justify-center items-center min-w-40">
-										{appointment.minutes_of_meeting !== "" ? (
-											<textarea
-												className="textarea textarea-bordered textarea-sm text-sm w-full"
-												placeholder="Minutes of This Meeting"
-											></textarea>
-										) : (
-											<div>{appointment.minutes_of_meeting}</div>
-										)}
+										<textarea
+											className="textarea textarea-bordered textarea-sm text-sm w-full"
+											placeholder="Minutes of This Meeting"
+											disabled={currentAppointment?._id !== appointment._id}
+											value={
+												editingAnAppointment &&
+												currentAppointment?._id === appointment._id
+													? currentMinutes
+													: appointment.minutes
+											}
+											onChange={(e) => {
+												setCurrentMinutes(e.target.value);
+											}}
+										></textarea>
+										<button
+											className="btn btn-sm bg-transparent ml-2 border-none"
+											onClick={() => {
+												if (
+													editingAnAppointment &&
+													currentAppointment?._id === appointment._id
+												) {
+													// you are currently editing this appointment minutes and wanna save it anytime.
+													setEditingAnAppointment(false);
+													setCurrentAppointment(null);
+													// update appointment in the server.
+													updateMinutesInAppointment(appointment._id);
+												} else if (!editingAnAppointment) {
+													// you are not editing this appointment, but may want to.
+													setEditingAnAppointment(true);
+													setCurrentAppointment(appointment);
+												}
+											}}
+										>
+											{editingAnAppointment &&
+											currentAppointment?._id === appointment._id ? (
+												<IconDeviceFloppy className="w-4 h-4" />
+											) : (
+												<IconEdit className="w-4 h-4" />
+											)}
+										</button>
 									</td>
 									<td>
 										<button
