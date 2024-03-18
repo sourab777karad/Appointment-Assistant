@@ -15,7 +15,7 @@ export default class Authenticator{
     static async TokenAuthenticator(req, res, next){
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
-        // added comment
+        // Check if token is provided
         if (!token) {
             return res.status(403).send({ message: "Unauthorized - No token provided!" });
         }
@@ -28,9 +28,13 @@ export default class Authenticator{
                 return res.status(403).send({ message: "Unauthorized - Email not verified!" });
             }
             next();
-        } catch (error) {
+        }catch (error) {
             console.error(error);
-            return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+            if (error.code === 'auth/id-token-expired') {
+                return res.status(401).json({ message: 'Unauthorized - Token expired' });
+            } else {
+                return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+            }
         }
     }
 
