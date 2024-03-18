@@ -20,20 +20,20 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 
 	async function updateMinutesInAppointment(appointment_id) {
 		// update the appointment with the new minutes
-		const response = await axios
-			.post(
-				`${baseUrl}/update-appointment`,
-				{
-					appointment_id,
-					...currentAppointment,
-					minutes_of_meeting: currentMinutes,
+		const response = axios.post(
+			`${baseUrl}/update-appointment`,
+			{
+				appointment_id,
+				...currentAppointment,
+				minutes_of_meeting: currentMinutes,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${userToken}`,
 				},
-				{
-					headers: {
-						Authorization: `Bearer ${userToken}`,
-					},
-				}
-			)
+			}
+		);
+		response
 			.then((res) => {
 				console.log(res.data);
 				setCurrentAppointment(null);
@@ -44,7 +44,7 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 			.catch((error) => {
 				console.log(error);
 			});
-
+		console.log(response);
 		toast.promise(response, {
 			loading: "Updating Minutes of this meeting...",
 			success: "Minutes Updated!",
