@@ -1,44 +1,9 @@
 import Homesvg from "../assets/home.svg";
 import "../pages/style.css";
 import DayDetailsTable from "./../components/DayDetailsTable";
-import { format, parse, isValid } from "date-fns";
-import { useContext, useEffect, useState } from "react";
-import { UserInfoContext } from "../context/UserInfoContext";
+import { format } from "date-fns";
 
 const Home = () => {
-	const [appointments, setAppointments] = useState({});
-	const { userSchedule } = useContext(UserInfoContext);
-
-	function getAppointments() {
-		const appointments = [];
-		console.log(userSchedule);
-
-		// for taken appointments
-		for (let i = 0; i < userSchedule?.taken_appointments?.length; i++) {
-			const appointmentDate = userSchedule.taken_appointments[i].appointment_date;
-			const parsedAppointmentDate = parse(appointmentDate, "yyyy-MM-dd", new Date());
-			const today = new Date();
-			if (isValid(parsedAppointmentDate) && parsedAppointmentDate >= today) {
-				appointments.push(userSchedule.taken_appointments[i]);
-			}
-		}
-
-		// now same for given apppointments
-		for (let i = 0; i < userSchedule?.given_appointments?.length; i++) {
-			const appointmentDate = userSchedule.given_appointments[i].appointment_date;
-			const parsedAppointmentDate = parse(appointmentDate, "yyyy-MM-dd", new Date());
-			const today = new Date();
-			if (isValid(parsedAppointmentDate) && parsedAppointmentDate >= today) {
-				appointments.push(userSchedule.given_appointments[i]);
-			}
-		}
-		return appointments;
-	}
-	useEffect(() => {
-		const appointments = getAppointments();
-		setAppointments(appointments);
-	}, []);
-
 	return (
 		<div className="mt-24 flex flex-col gap-4">
 			{/* first row */}
@@ -70,7 +35,12 @@ const Home = () => {
 				</div>
 				<div className="flex justify-center items-center w-full">
 					<div className="w-[80vw]">
-						<DayDetailsTable appointments={appointments} />
+						<DayDetailsTable
+							given_date={
+								// get the current date in the format "yyyy-MM-dd"
+								format(new Date(), "yyyy-MM-dd")
+							}
+						/>
 					</div>
 				</div>
 			</div>

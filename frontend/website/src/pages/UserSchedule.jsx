@@ -15,12 +15,16 @@ const UserSchedule = () => {
 		setCurrentWeek,
 		calculate_json_time_slots,
 		calculate_time_slots,
-		refreshProfile,
 	} = useContext(UserInfoContext);
 	const base_url = useContext(BaseUrlContext).baseUrl;
 
 	const [user_time_slots, setUser_time_slots] = useState([]);
 	const [json_time_slots, setJson_time_slots] = useState([]);
+
+	useEffect(() => {
+		// update user schedule for the current week
+		refreshLoggedInUserScheduleForDisplayedWeek();
+	}, []);
 
 	useEffect(() => {
 		if (userDetails === null) {
@@ -69,6 +73,11 @@ const UserSchedule = () => {
 	}
 
 	function block_appointment(appointment_details_list) {
+		// check if appointment_details_list is an array or not
+		if (!Array.isArray(appointment_details_list)) {
+			appointment_details_list = [appointment_details_list];
+		}
+
 		const response = axios
 			.post(
 				`${base_url}/update-blocked-appointments`,
@@ -97,6 +106,10 @@ const UserSchedule = () => {
 	}
 
 	function unblock_appointment(appointment_details_list) {
+		if (!Array.isArray(appointment_details_list)) {
+			appointment_details_list = [appointment_details_list];
+		}
+
 		const response = axios
 			.post(
 				`${base_url}/unblock-appointment`,

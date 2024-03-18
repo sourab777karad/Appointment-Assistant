@@ -56,8 +56,8 @@ export default function NewAppointment() {
 
 	useEffect(() => {
 		if (did_book_new_appointment) {
-			getUserDetails(selectedUserDetails.firebase_id);
-			getUserSchedule(selectedUserDetails.firebase_id);
+			getUserDetails(selectedUserDetails?.firebase_id);
+			getUserSchedule(selectedUserDetails?.firebase_id);
 		}
 	}, [did_book_new_appointment]);
 

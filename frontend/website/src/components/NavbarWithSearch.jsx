@@ -683,8 +683,4 @@ function NavbarWithSearch() {
 
 export default NavbarWithSearch;
 
-import PropTypes from "prop-types";
 import { IconCalendar } from "@tabler/icons-react";
-NavbarWithSearch.propTypes = {
-	isNavbarPresent: PropTypes.bool.isRequired,
-};

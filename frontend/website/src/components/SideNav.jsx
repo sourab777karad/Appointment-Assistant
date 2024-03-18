@@ -1,53 +1,26 @@
-// this is the drawer. it contains cart. This is present always, and is activated by javascript.
-
-import { IconCheck, IconX } from "@tabler/icons-react";
+// React imports
 import React, { useEffect } from "react";
+
+// Context imports
 import { UserInfoContext } from "../context/UserInfoContext";
 import { BaseUrlContext } from "./../context/BaseUrlContext";
-import axios from "axios";
-import toast from "react-hot-toast";
 
-const integerToTime = (integer) => {
-	// Convert integer to string and pad with leading zeros if necessary
-	const timeString = String(integer).padStart(4, "0");
+// Third-party library imports
+import { IconCheck, IconX } from "@tabler/icons-react";
+import basic_functions from "../utils/basic_functions";
 
-	// Extract hours and minutes from the time string
-	const hours = timeString.slice(0, 2);
-	const minutes = timeString.slice(2);
-
-	// Create a Date object with the extracted hours and minutes
-	const date = new Date();
-	date.setHours(hours);
-	date.setMinutes(minutes);
-
-	// Format the Date object as a time string (12-hour format with AM/PM)
-	const formattedTime = date.toLocaleTimeString("en-US", {
-		hour: "numeric",
-		minute: "numeric",
-		hour12: true,
-	});
-
-	return formattedTime;
-};
+// This is the drawer. It contains cart. This is present always, and is activated by javascript.
 
 const SideNav = () => {
-	const userSchedule = React.useContext(UserInfoContext).userSchedule;
-	const allUsers = React.useContext(UserInfoContext).allUsers;
+	// Importing the necessary contexts
+	const { userSchedule, allUsers, userToken, refreshLoggedInUserScheduleForDisplayedWeek } =
+		React.useContext(UserInfoContext);
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
-	const userToken = React.useContext(UserInfoContext).userToken;
+
+	// State for storing notification appointments
 	const [notifAppointments, setNotifAppointments] = React.useState([]);
-	const refreshLoggedInUserScheduleForDisplayedWeek =
-		React.useContext(UserInfoContext).refreshLoggedInUserScheduleForDisplayedWeek;
 
-	function get_scheduler_from_appointment(appointment) {
-		if (appointment === null) {
-			return null;
-		}
-		// iterate through the allUsers array to find the user with the given firebase_id as appointment.scheduler_id
-		const scheduler_id = allUsers.find((user) => user.firebase_id === appointment.scheduler_id);
-		return scheduler_id;
-	}
-
+	// Function to get notification appointments
 	function get_notification_appointments() {
 		const notifs = [];
 		const given_appointment = userSchedule.given_appointments.filter(
@@ -64,46 +37,10 @@ const SideNav = () => {
 		setNotifAppointments(notifs);
 	}
 
+	// useEffect hook to call get_notification_appointments when userSchedule changes
 	useEffect(() => {
 		get_notification_appointments();
 	}, [userSchedule]);
-
-	function change_status(appointment, status) {
-		const scheduler_email_id = get_scheduler_from_appointment(appointment).email;
-		const response = axios
-			.post(
-				`${base_url}/change-status`,
-				{
-					status: status,
-					appointment_id: appointment._id,
-					scheduler_email_id: scheduler_email_id,
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${userToken}`,
-					},
-				}
-			)
-			.then((response) => {
-				console.log(response.data);
-				if (response.data.sendmail_status === true) {
-					toast.success(`Mail sent to ${scheduler_email_id} successfully`);
-				}
-				if (response.data.sendmail_status === false) {
-					toast.success(`Could not send confirmation mail to ${scheduler_email_id}`);
-				}
-				refreshLoggedInUserScheduleForDisplayedWeek();
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-
-		toast.promise(response, {
-			loading: "Loading",
-			success: "Status changed successfully",
-			error: "Error changing status",
-		});
-	}
 
 	return (
 		<div>
@@ -141,23 +78,31 @@ const SideNav = () => {
 												<div className="flex flex-row-reverse justify-between px-4 py-4 bg-gray-100 rounded-lg m-2">
 													{
 														// if the profile_pic_url is not empty, display the image, else display the initials
-														get_scheduler_from_appointment(appointment)
-															?.profile_pic_url.length !== 0 ? (
+														basic_functions.get_people_from_appointment(
+															appointment,
+															allUsers
+														)?.scheduler.profile_pic_url.length !==
+														0 ? (
 															<img
 																src={
-																	get_scheduler_from_appointment(
-																		appointment
-																	)?.profile_pic_url
+																	basic_functions.get_people_from_appointment(
+																		appointment,
+																		allUsers
+																	)?.scheduler.profile_pic_url
 																}
 																alt="scheduler_id"
 																className="w-20 h-20 rounded-full object-cover outline outline-blue-700"
 															/>
 														) : (
 															<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
-																{get_scheduler_from_appointment(
-																	appointment
-																)
-																	?.full_name?.split(" ")
+																{basic_functions
+																	.get_people_from_appointment(
+																		appointment,
+																		allUsers
+																	)
+																	?.scheduler.full_name?.split(
+																		" "
+																	)
 																	.map((name) => name[0])
 																	.join("")}
 															</div>
@@ -166,17 +111,19 @@ const SideNav = () => {
 													<div>
 														<div className="text-blue-900 text-lg pt-1">
 															{
-																get_scheduler_from_appointment(
-																	appointment
-																)?.full_name
+																basic_functions.get_people_from_appointment(
+																	appointment,
+																	allUsers
+																)?.scheduler.full_name
 															}
 														</div>
 														<div className="text-blue-900 text-sm pt-1">
 															+91{" "}
 															{
-																get_scheduler_from_appointment(
-																	appointment
-																)?.phone_number
+																basic_functions.get_people_from_appointment(
+																	appointment,
+																	allUsers
+																)?.scheduler.phone_number
 															}
 														</div>
 													</div>
@@ -210,7 +157,15 @@ const SideNav = () => {
 													<button
 														className="btn bg-green-300 hover:bg-green-400 hover:scale-105 flex-1 text-lg"
 														onClick={() => {
-															change_status(appointment, "confirmed");
+															basic_functions.change_status(
+																appointment,
+																"confirmed",
+																base_url,
+																userToken,
+																refreshLoggedInUserScheduleForDisplayedWeek,
+																allUsers,
+																"Your appointment has been confirmed"
+															);
 														}}
 													>
 														<IconCheck className="w-6 h-6" />
@@ -218,7 +173,15 @@ const SideNav = () => {
 													<button
 														className="btn bg-red-300 hover:bg-red-400 hover:scale-105 flex-1 text-lg"
 														onClick={() => {
-															change_status(appointment, "rejected");
+															basic_functions.change_status(
+																appointment,
+																"cancelled",
+																base_url,
+																userToken,
+																refreshLoggedInUserScheduleForDisplayedWeek,
+																allUsers,
+																"Your appointment has been rejected"
+															);
 														}}
 													>
 														<IconX className="w-6 h-6" />

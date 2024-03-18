@@ -139,6 +139,7 @@ export const UserInfoContextProvider = ({ children }) => {
 					given_appointments: response.data.given_appointments,
 					blocked_appointments: response.data.blocked_appointments,
 				};
+				console.log("from the latest update we provide you with", userSchedule);
 				setUserSchedule(userSchedule);
 			})
 			.catch((error) => {

@@ -1,7 +1,6 @@
 // this is the drawer. it contains cart. This is present always, and is activated by javascript.
 import { useContext, useEffect } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { UserInfoContext } from "../context/UserInfoContext";
 import { BaseUrlContext } from "../context/BaseUrlContext";
@@ -131,7 +130,7 @@ const BookAppointmentNav = () => {
 							{/* Appointment Time */}
 							<div className="flex w-full justify-between flex-col gap-4">
 								<div className="text-xl">
-									Scheduled at:
+									To Be Scheduled at:
 									<div className="text-lg">
 										{newAppointmentTime?.start_time} on{" "}
 										{get_full_date(newAppointmentDate)}

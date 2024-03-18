@@ -7,16 +7,14 @@ import { parse, set, isAfter, format, isWithinInterval, isEqual } from "date-fns
 // importing context
 import { UserInfoContext } from "../context/UserInfoContext";
 
-// importong components
+// importing utitlities
+import basic_functions from "./../utils/basic_functions";
+
+// importing components
 import AppointmentContextMenu from "./context_menus/AppointmentContextMenu";
 import BlockContextMenu from "./context_menus/BlockContextMenu";
 import { useNavigate } from "react-router-dom";
-import {
-	IconCaretLeft,
-	IconCaretLeftFilled,
-	IconCaretRight,
-	IconCaretRightFilled,
-} from "@tabler/icons-react";
+import { IconCaretLeftFilled, IconCaretRightFilled } from "@tabler/icons-react";
 
 export default function Schedule({
 	user_id,
@@ -97,65 +95,10 @@ export default function Schedule({
 
 	// check if the current date and time are present in the userschedule
 	function checkDivInSchedule(time_slot, date) {
-		// timeslot
-		// {
-		// "start_time": "10:30 AM",
-		// "end_time": "10:45 AM"
-		// }
-		// 12/3/2024 date
-		// appointment_time: "10:30 AM"
-		// this function will check if the time_slot and date are present in the userSchedule
-		// if yes, then it will return the details of the appointment
-		// if no, then it will return null
-		let taken_appointment = null;
-		let given_appointment = null;
-		let blocked_appointment = null;
-		let pending_appointment = null;
-		let completed_appointment = null;
-
-		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
-		userSchedule.taken_appointments.forEach((appointment) => {
-			if (appointment.appointment_date === date) {
-				// check if appointment.appointment_time is present in the the times of the json_time_slots
-				if (
-					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
-						start: parse(time_slot.start_time, "h:mm a", new Date()),
-						end: parse(time_slot.end_time, "h:mm a", new Date()),
-					})
-				) {
-					if (appointment.status === "pending") {
-						pending_appointment = appointment;
-					} else if (appointment.status === "completed") {
-						completed_appointment = appointment;
-					} else {
-						taken_appointment = appointment;
-					}
-				}
-			}
-		});
-
-		// look through the userSchedule.given_appointments to find the appointment with date matching date, and if its time is present in the time_slot
-		userSchedule.given_appointments.forEach((appointment) => {
-			if (appointment.appointment_date === date) {
-				// check if appointment.appointment_time is present in the the times of the json_time_slots
-				if (
-					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
-						start: parse(time_slot.start_time, "h:mm a", new Date()),
-						end: parse(time_slot.end_time, "h:mm a", new Date()),
-					})
-				) {
-					if (appointment.status === "pending") {
-						pending_appointment = appointment;
-					} else if (appointment.status === "completed") {
-						completed_appointment = appointment;
-					} else {
-						given_appointment = appointment;
-					}
-				}
-			}
-		});
-
-		// look through the userSchedule.blocked_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		// this function will return the appointment, and along with that some generic information that we can display.
+		// we know for a fact that some appointments can coincide.
+		// lets first go through all the appointment lists in the userSchedule
+		let our_appointment = null;
 		userSchedule.blocked_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
@@ -173,28 +116,106 @@ export default function Schedule({
 						parse(time_slot.end_time, "h:mm a", new Date())
 					)
 				) {
-					blocked_appointment = appointment;
+					our_appointment = appointment;
+					our_appointment.type = "blocked";
+					// we know nothing is going to be booked if the appointment is blocked, so we can return the appointment right away
+					our_appointment.concerned_party = "";
 				}
 			}
 		});
 
+		// if there is a blocked appointment, then we can return the appointment right away
+		if (our_appointment) {
+			return our_appointment;
+		}
+
+		userSchedule.taken_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				) {
+					our_appointment = appointment;
+					// check if its confirmed or pending
+					if (our_appointment.status === "confirmed") {
+						our_appointment.type = "Taken and Confirmed";
+					} else if (our_appointment.status === "pending") {
+						our_appointment.type = "Pending Their Confirmation";
+					} else if (our_appointment.status === "cancelled") {
+						our_appointment.type = "Free";
+						our_appointment.concerned_party = "Free";
+					}
+					// you can only possibly have one taken appointment at a time, so we can return the appointment right away
+					our_appointment.concerned_party = basic_functions.get_people_from_appointment(
+						our_appointment,
+						allUsers
+					).appointee;
+				}
+			}
+		});
+		if (our_appointment) {
+			return our_appointment;
+		}
+
+		let given_appointments = [];
+		userSchedule.given_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				) {
+					given_appointments.push(appointment);
+				}
+			}
+		});
+
+		// if there are multiple given appointments, then we will return redirect user to notifications
+		if (given_appointments.length > 1) {
+			our_appointment.type = "Multiple Requests";
+			return {
+				type: "Multiple Requests",
+				concerned_party: "Multiple Requests",
+			};
+		}
+
+		// if there is only one given appointment, then we will check its status
+		if (given_appointments.length === 1) {
+			our_appointment = given_appointments[0];
+			our_appointment.concerned_party = get_names_from_appointment(our_appointment).scheduler;
+
+			// check if its confirmed or pending
+			if (our_appointment.status === "confirmed") {
+				our_appointment.type = "Given and Confirmed";
+			} else if (our_appointment.status === "pending") {
+				our_appointment.type = "Pending Your Confirmation";
+			} else if (our_appointment.status === "cancelled") {
+				our_appointment.type = "Free";
+				our_appointment.concerned_party = "Free";
+			}
+			return our_appointment;
+		}
+
 		return {
-			taken_appointment,
-			given_appointment,
-			blocked_appointment,
-			pending_appointment,
-			completed_appointment,
+			type: "Free",
+			concerned_party: "Free",
+			start_time: time_slot.start_time,
+			end_time: time_slot.end_time,
+			appointment_date: date,
 		};
 	}
 
+	// check if the current date and time are present in the userschedule
 	function checkDivInFacultySchedule(time_slot, date) {
-		// this function will go through the entire schedule, but in return it will only give blocked appointments
-		let blocked_appointment = null;
-		let taken_appointment = null;
-		let given_appointment = null;
-		let pending_appointment = null;
-		let completed_appointment = null;
-
+		// this function will return the appointment, and along with that some generic information that we can display.
+		// we know for a fact that some appointments can coincide.
+		// lets first go through all the appointment lists in the userSchedule
+		let our_appointment = null;
 		userSchedule.blocked_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
@@ -212,28 +233,21 @@ export default function Schedule({
 						parse(time_slot.end_time, "h:mm a", new Date())
 					)
 				) {
-					blocked_appointment = appointment;
+					our_appointment = appointment;
+					our_appointment.type = "blocked";
+					// we know nothing is going to be booked if the appointment is blocked, so we can return the appointment right away
+					our_appointment.concerned_party = "";
 				}
 			}
 		});
 
-		// look through the userSchedule.taken_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		// if there is a blocked appointment, then we can return the appointment right away
+		if (our_appointment) {
+			return our_appointment;
+		}
+
 		userSchedule.taken_appointments.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
-				console.log(parse(appointment.appointment_time, "h:mm a", new Date()));
-				console.log(parse(time_slot.start_time, "h:mm a", new Date()));
-				console.log(
-					isEqual(
-						parse(appointment.appointment_time, "h:mm a", new Date()),
-						parse(time_slot.start_time, "h:mm a", new Date())
-					)
-				);
-				console.log(
-					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
-						start: parse(time_slot.start_time, "h:mm a", new Date()),
-						end: parse(time_slot.end_time, "h:mm a", new Date()),
-					})
-				);
 				// check if appointment.appointment_time is present in the the times of the json_time_slots
 				if (
 					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
@@ -241,12 +255,19 @@ export default function Schedule({
 						end: parse(time_slot.end_time, "h:mm a", new Date()),
 					})
 				) {
-					taken_appointment = appointment;
+					our_appointment = appointment;
+					if (our_appointment.status === "cancelled") {
+						our_appointment.type = "Free";
+					}
+					our_appointment.type = "blocked";
 				}
 			}
 		});
+		if (our_appointment) {
+			return our_appointment;
+		}
 
-		// look through the userSchedule.given_appointments to find the appointment with date matching date, and if its time is present in the time_slot
+		let given_appointments = [];
 		userSchedule.given_appointments.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				// check if appointment.appointment_time is present in the the times of the json_time_slots
@@ -256,23 +277,52 @@ export default function Schedule({
 						end: parse(time_slot.end_time, "h:mm a", new Date()),
 					})
 				) {
-					console.log("in faculty schedule", {
-						taken_appointment,
-						given_appointment,
-						blocked_appointment,
-						pending_appointment,
-					});
-					blocked_appointment = appointment;
+					given_appointments.push(appointment);
 				}
 			}
 		});
 
+		// if there are multiple given appointments, then we will return redirect user to notifications
+		if (given_appointments.length > 1) {
+			// check if any of them is confirmed
+			let confirmed = false;
+			given_appointments.forEach((appointment) => {
+				if (appointment.status === "confirmed") {
+					confirmed = true;
+				}
+			});
+			// if any of them is confirmed, then return blocked
+			if (confirmed) {
+				return {
+					type: "blocked",
+					concerned_party: "Multiple Requests",
+				};
+			}
+			// else you are free to book
+			return {
+				type: "Free",
+				concerned_party: "Multiple Requests",
+			};
+		}
+
+		// if there is only one given appointment, then we will check its status
+		if (given_appointments.length === 1) {
+			our_appointment = given_appointments[0];
+
+			// check if its confirmed or pending
+			if (our_appointment.status === "confirmed") {
+				our_appointment.type = "blocked";
+			} else {
+				our_appointment.type = "Free";
+			}
+			return our_appointment;
+		}
+
 		return {
-			taken_appointment,
-			given_appointment,
-			blocked_appointment,
-			pending_appointment,
-			completed_appointment,
+			type: "Free",
+			start_time: time_slot.start_time,
+			end_time: time_slot.end_time,
+			appointment_date: date,
 		};
 	}
 
@@ -349,6 +399,23 @@ export default function Schedule({
 		};
 	}
 
+	useEffect(() => {
+		console.log(userSchedule, "in the current schedule thing while loading it. ");
+		// if any of the fields are empty, then return
+		if (!userSchedule) {
+			return;
+		}
+		if (!userSchedule.taken_appointments) {
+			return;
+		}
+		if (!userSchedule.given_appointments) {
+			return;
+		}
+		if (!userSchedule.blocked_appointments) {
+			return;
+		}
+	}, []);
+
 	// hooks
 
 	useEffect(() => {
@@ -419,20 +486,20 @@ export default function Schedule({
 			{/* legend */}
 			<div className="flex flex-row justify-end gap-5 mb-6">
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-green-100"></div>
-					<div>Completed</div>
+					<div className="w-5 h-5 bg-green-100 font-semibold"></div>
+					<div className="font-semibold">Completed</div>
 				</div>
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-blue-100"></div>
-					<div>Scheduled</div>
+					<div className="w-5 h-5 bg-blue-100 font-semibold"></div>
+					<div className="font-semibold">Scheduled</div>
 				</div>
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-yellow-100"></div>
-					<div>Pending</div>
+					<div className="w-5 h-5 bg-yellow-100 font-semibold"></div>
+					<div className="font-semibold">Pending</div>
 				</div>
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-red-100"></div>
-					<div>Blocked</div>
+					<div className="w-5 h-5 bg-red-100 font-semibold"></div>
+					<div className="font-semibold">Blocked</div>
 				</div>
 			</div>
 			{/* this is where we will show next and previous month and week on the right side, and current month on left side */}
@@ -561,6 +628,7 @@ export default function Schedule({
 
 								{get_week_dates_from_start_date().map((date) => {
 									let current_div_schedule;
+									// if you are the one checking your schedule, then you have the block privileges
 									if (blockPrivileges) {
 										current_div_schedule = checkDivInSchedule(
 											time_slot,
@@ -572,63 +640,30 @@ export default function Schedule({
 											format(date, "yyyy-MM-dd")
 										);
 									}
-									let current_appointment = current_div_schedule.taken_appointment
-										? current_div_schedule.taken_appointment
-										: current_div_schedule.given_appointment
-											? current_div_schedule.given_appointment
-											: [
-													{
-														start_time: time_slot.start_time,
-														end_time: time_slot.end_time,
-														appointment_date: format(
-															date,
-															"yyyy-MM-dd"
-														),
-													},
-												];
 
-									// check if the appointment is confirmed or not
-									if (
-										current_div_schedule.taken_appointment !== null &&
-										current_div_schedule.taken_appointment.status !==
-											"confirmed"
-									) {
-										current_div_schedule.taken_appointment = null;
-									}
-
-									if (
-										current_div_schedule.given_appointment !== null &&
-										current_div_schedule.given_appointment.status !==
-											"confirmed"
-									) {
-										current_div_schedule.given_appointment = null;
-									}
-
-									const taken_person_info = get_names_from_appointment(
-										current_div_schedule?.taken_appointment
-									);
-									const given_person_info = get_names_from_appointment(
-										current_div_schedule?.given_appointment
-									);
 									return (
 										<td
 											key={format(date, "yyyy-MM-dd")}
 											className={
 												"border-2 p-2 " +
-												(current_div_schedule.blocked_appointment !== null
+												(current_div_schedule?.type === "blocked"
 													? " bg-red-100 "
 													: "") +
-												(current_div_schedule.taken_appointment !== null
-													? " bg-blue-100 "
+												(current_div_schedule?.type ===
+												"Taken and Confirmed"
+													? " bg-blue-200 "
 													: "") +
-												(current_div_schedule.given_appointment !== null
-													? " bg-blue-100 "
+												(current_div_schedule?.type ===
+												"Pending Their Confirmation"
+													? " bg-yellow-200 "
 													: "") +
-												(current_div_schedule.completed_appointment !== null
-													? " bg-green-100 "
+												(current_div_schedule?.type ===
+												"Given and Confirmed"
+													? " bg-blue-200 "
 													: "") +
-												(current_div_schedule.pending_appointment !== null
-													? " bg-yellow-100 "
+												(current_div_schedule?.type ===
+												"Pending Your Confirmation"
+													? " bg-orange-200 "
 													: "") +
 												(!compare_time_and_date(
 													time_slot.start_time,
@@ -639,48 +674,54 @@ export default function Schedule({
 													: "hover:bg-gray-300")
 											}
 											onContextMenu={(e) => {
+												// only able to click if the time is in the future
+												if (
+													compare_time_and_date(
+														time_slot.start_time,
+														date,
+														new Date()
+													)
+												) {
+													// if you dont have block privileges and if the appointment type is blocked,
+													// then return
+													if (
+														current_div_schedule?.type === "blocked" &&
+														!blockPrivileges
+													) {
+														handleContextMenuDisabled(e);
+														return;
+													}
+													handleAppointmentContextMenu(
+														e,
+														current_div_schedule
+													);
+												}
+												handleContextMenuDisabled(e);
+											}}
+											onClick={() => {
+												// only able to click if the time is in the future if appointment is not blocked, and its not free.
 												if (
 													!compare_time_and_date(
 														time_slot.start_time,
 														date,
 														new Date()
 													) ||
-													(current_div_schedule.blocked_appointment !==
-														null &&
-														!blockPrivileges)
+													(current_div_schedule?.type === "blocked" &&
+														!blockPrivileges) ||
+													current_div_schedule?.type === "Free"
 												) {
-													handleContextMenuDisabled(e);
+													handleCloseMenu();
 													return;
 												}
-												handleAppointmentContextMenu(
-													e,
-													current_appointment
-												);
-											}}
-											onClick={() => {
-												if (
-													current_div_schedule.taken_appointment !== null
-												) {
-													setCurrentAppointmentForPanel({
-														appointment:
-															current_div_schedule.taken_appointment,
-														person: taken_person_info.appointee,
-													});
-													document.getElementById(
-														"appointment-drawer"
-													).checked = true;
-												} else if (
-													current_div_schedule.given_appointment !== null
-												) {
-													setCurrentAppointmentForPanel({
-														appointment:
-															current_div_schedule.given_appointment,
-														person: given_person_info.scheduler,
-													});
-													document.getElementById(
-														"appointment-drawer"
-													).checked = true;
+												// if the appointment is blocked, then return
+												if (current_div_schedule?.type === "blocked") {
+													return;
 												}
+												// all other cases, open panel
+												setCurrentAppointmentForPanel(current_div_schedule);
+												document.getElementById(
+													"appointment-drawer"
+												).checked = true;
 
 												// close the menu
 												handleCloseMenu();
@@ -688,22 +729,16 @@ export default function Schedule({
 										>
 											<div className="flex flex-col gap-1 justify-center items-center text-sm font-semibold">
 												<div className="flex justify-center text-center w-full">
-													{current_div_schedule.taken_appointment !== null
-														? "Taken : " +
-															taken_person_info?.appointee.full_name
-														: ""}
-													{current_div_schedule.given_appointment !== null
-														? "Given : " +
-															given_person_info?.scheduler.full_name
-														: ""}{" "}
+													{
+														current_div_schedule?.concerned_party
+															?.full_name
+													}
 												</div>
 												<div className="text-sm flex justify-center items-center text-center">
-													{current_div_schedule.taken_appointment !== null
-														? taken_person_info?.appointee.room
-														: ""}
-													{current_div_schedule.given_appointment !== null
-														? given_person_info?.scheduler.room
-														: ""}{" "}
+													{current_div_schedule?.concerned_party?.room}
+												</div>
+												<div className="text-sm flex justify-center items-center text-center">
+													{current_div_schedule?.type}
 												</div>
 											</div>
 										</td>

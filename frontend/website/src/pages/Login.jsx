@@ -36,7 +36,7 @@ function get_current_week_dates() {
 	return week;
 }
 
-const Login = (props) => {
+const Login = () => {
 	const auth = getAuth(app);
 
 	const base_url = useContext(BaseUrlContext).baseUrl;
@@ -313,7 +313,6 @@ const Login = (props) => {
 							redirect();
 						} else if (!user.filled) {
 							toast.error("User details not filled. Please fill your details.");
-							props.setisNavbarPresent(true);
 							navigate("/profile");
 						}
 					})
@@ -506,5 +505,4 @@ import PropTypes from "prop-types";
 
 Login.propTypes = {
 	props: PropTypes.object,
-	setisNavbarPresent: PropTypes.func,
 };

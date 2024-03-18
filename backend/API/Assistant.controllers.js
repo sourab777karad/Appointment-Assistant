@@ -424,17 +424,19 @@ export default class AssistantController {
 
 			return res.status(200).json({
 				taken_appointments: taken_appointments.map(
-					({ appointment_date, appointment_time, duration }) => ({
+					({ appointment_date, appointment_time, duration, status }) => ({
 						appointment_date,
 						appointment_time,
 						duration,
+						status,
 					})
 				),
 				given_appointments: given_appointments.map(
-					({ appointment_date, appointment_time, duration }) => ({
+					({ appointment_date, appointment_time, duration, status }) => ({
 						appointment_date,
 						appointment_time,
 						duration,
+						status,
 					})
 				),
 				blocked_appointments,

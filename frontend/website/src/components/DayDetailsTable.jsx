@@ -1,22 +1,36 @@
-import { useEffect, useContext } from "react";
+// React imports
+import { useEffect, useState, useContext } from "react";
+
+// Context imports
 import { UserInfoContext } from "../context/UserInfoContext";
-import NoAppsvg from "../assets/no_appointments.svg";
-import { useState } from "react";
-import axios from "axios";
 import { BaseUrlContext } from "../context/BaseUrlContext";
-import { IconCheck, IconDeviceFloppy, IconEdit } from "@tabler/icons-react";
+
+// utility imports
+import basic_functions from "../utils/basic_functions";
+
+// Asset imports
+import NoAppsvg from "../assets/no_appointments.svg";
+
+// Library imports
+import axios from "axios";
 import { toast } from "react-hot-toast";
 
-export default function DayDetailsTable({ json_time_slots, user_time_slots, appointments }) {
-	const { allUsers } = useContext(UserInfoContext);
+// Component imports
+import { IconCheck, IconDeviceFloppy, IconEdit } from "@tabler/icons-react";
+
+export default function DayDetailsTable({ given_date }) {
+	const { allUsers, userSchedule } = useContext(UserInfoContext);
 	const [currentMinutes, setCurrentMinutes] = useState("");
 	const [editingAnAppointment, setEditingAnAppointment] = useState(false);
 	const [currentAppointment, setCurrentAppointment] = useState(null);
 	const { baseUrl } = useContext(BaseUrlContext);
+	const [appointments, setAppointments] = useState({});
+
 	const { userToken, refreshLoggedInUserScheduleForDisplayedWeek } = useContext(UserInfoContext);
 	useEffect(() => {
-		console.log(appointments);
-	}, [appointments]);
+		const appointments = basic_functions.getAppointments(userSchedule, given_date);
+		setAppointments(appointments);
+	}, [userSchedule]);
 
 	async function updateMinutesInAppointment(appointment_id) {
 		// update the appointment with the new minutes
@@ -34,8 +48,7 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 			}
 		);
 		response
-			.then((res) => {
-				console.log(res.data);
+			.then(() => {
 				setCurrentAppointment(null);
 				setEditingAnAppointment(false);
 				setCurrentMinutes("");
@@ -44,7 +57,6 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 			.catch((error) => {
 				console.log(error);
 			});
-		console.log(response);
 		toast.promise(response, {
 			loading: "Updating Minutes of this meeting...",
 			success: "Minutes Updated!",
@@ -110,7 +122,7 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 												editingAnAppointment &&
 												currentAppointment?._id === appointment._id
 													? currentMinutes
-													: appointment.minutes
+													: appointment.minutes_of_meeting
 											}
 											onChange={(e) => {
 												setCurrentMinutes(e.target.value);
@@ -132,6 +144,9 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 													// you are not editing this appointment, but may want to.
 													setEditingAnAppointment(true);
 													setCurrentAppointment(appointment);
+													setCurrentMinutes(
+														appointment.minutes_of_meeting
+													);
 												}
 											}}
 										>
@@ -148,6 +163,15 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 											className="btn text-white rounded-md bg-green-300 flex justify-center items-center gap-2 cursor-pointer hover:bg-green-400 transition-all hover:scale-105 duration-200"
 											onClick={() => {
 												console.log("Mark as Done");
+												basic_functions.change_status(
+													appointment,
+													"completed",
+													baseUrl,
+													userToken,
+													refreshLoggedInUserScheduleForDisplayedWeek,
+													allUsers,
+													"Your appointment has been completed"
+												);
 											}}
 										>
 											<IconCheck className="w-6 h-6" />
@@ -172,3 +196,9 @@ export default function DayDetailsTable({ json_time_slots, user_time_slots, appo
 		</div>
 	);
 }
+
+import PropTypes from "prop-types";
+
+DayDetailsTable.propTypes = {
+	given_date: PropTypes.string.isRequired,
+};

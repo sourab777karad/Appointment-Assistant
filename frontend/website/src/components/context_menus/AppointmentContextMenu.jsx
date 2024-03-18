@@ -20,18 +20,8 @@ const AppointmentContextMenu = ({
 
 	useEffect(() => {
 		console.log(userSchedule);
+		console.log("app", appointment);
 	}, [userSchedule]);
-	
-	function check_if_appointment_is_blocked(appointment) {
-		console.log(appointment, userSchedule);
-		// iterate through all blocked appointments in userschedule
-		for (let i = 0; i < userSchedule.blocked_appointments.length; i++) {
-			if (userSchedule?.blocked_appointments[i].start_time === appointment[0].start_time) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	return (
 		<div
@@ -53,7 +43,7 @@ const AppointmentContextMenu = ({
 							<a>Cancel Appointment</a>
 						</li>
 					) : null}
-					{blockPrivileges && !check_if_appointment_is_blocked(appointment) && (
+					{blockPrivileges && appointment.type !== "blocked" && (
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
@@ -77,10 +67,10 @@ const AppointmentContextMenu = ({
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
-								setNewAppointmentDate(appointment[0].appointment_date);
+								setNewAppointmentDate(appointment.appointment_date);
 								setNewAppointmentTime({
-									start_time: appointment[0].start_time,
-									end_time: appointment[0].end_time,
+									start_time: appointment.start_time,
+									end_time: appointment.end_time,
 								});
 								// open the book appointment nav
 								document.getElementById(
@@ -101,7 +91,6 @@ const AppointmentContextMenu = ({
 export default AppointmentContextMenu;
 
 import PropTypes from "prop-types";
-import UserSchedule from "./../../pages/UserSchedule";
 
 AppointmentContextMenu.propTypes = {
 	x: PropTypes.number.isRequired,
@@ -109,4 +98,7 @@ AppointmentContextMenu.propTypes = {
 	onClose: PropTypes.func.isRequired,
 	appointment: PropTypes.object.isRequired,
 	change_status: PropTypes.func.isRequired,
+	block_appointment: PropTypes.func.isRequired,
+	unblock_appointment: PropTypes.func.isRequired,
+	blockPrivileges: PropTypes.bool.isRequired,
 };

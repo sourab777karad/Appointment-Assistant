@@ -1,16 +1,3 @@
-/**
- * @file AssistantDAO.js
- * @description This file contains the AssistantDAO class which is responsible for interacting with the database to perform CRUD operations related to users and appointments.
- * @module AssistantDAO
- */
-
-/**
- * @class AssistantDAO
- * @classdesc Represents the AssistantDAO class.
- */
-
-// import AWS from 'aws-sdk';
-// import config from '../config/config.js'
 import { ObjectId } from "mongodb";
 
 // variable to hold db connection
