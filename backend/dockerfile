@@ -7,8 +7,11 @@ WORKDIR /app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
+# install bun package manager
+RUN npm install -g bun
+
 # Install the application dependencies
-RUN npm install
+RUN bun install
 
 # Copy the rest of the application code to the working directory
 COPY . .
@@ -17,4 +20,4 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run the application
-CMD [ "npm", "start" ]
+CMD [ "bun","run", "start" ]
