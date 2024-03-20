@@ -42,7 +42,7 @@ export default class AssistantController {
 			// only want user id from the token
 			const firebaseID = user.user_id;
 			const appointment_date = req.body;
-			console.log(appointment_date);
+			// console.log(appointment_date);
 			const Status = await AssistantDAO.areUserDetailsFilled(firebaseID);
 			if (Status.message === "User not found") {
 				return res.status(200).json({ filled: false, newUser: true });
@@ -53,14 +53,14 @@ export default class AssistantController {
 			) {
 				return res.status(400).json({ message: "Date range not provided" });
 			}
-			console.log("Status:", Status);
+			// console.log("Status:", Status);
 			// blocked appointments date from users collection
 			const blocked_appointments = Status.userDetails.blocked_appointments;
 
 			// get appointments of the user with all the given and taken appointments
 			const appointments = await AssistantDAO.getAppointment(user.user_id, appointment_date);
 
-			console.log("Appointments inside areUserDetailsFilled controller", appointments);
+			// console.log("Appointments inside areUserDetailsFilled controller", appointments);
 			// now sort appointments into taken and given appointments
 			const taken_appointments = [];
 			const given_appointments = [];
@@ -73,7 +73,7 @@ export default class AssistantController {
 			}
 			// get all users from the users collection and return the name, firebase id, email, phone number, room.
 			const users = await AssistantDAO.getUsers();
-			console.log(users);
+			// console.log(users);
 			return res.status(200).json({
 				filled: Status.status,
 				userDetails: Status.userDetails,
@@ -112,14 +112,14 @@ export default class AssistantController {
 			) {
 				return res.status(400).json({ message: "Date range not provided" });
 			}
-			console.log("appointment_details:", appointment_details);
+			// console.log("appointment_details:", appointment_details);
 			// get appointments of the user with all the given and taken appointments
 			const appointments = await AssistantDAO.getAppointment(
 				appointment_details.firebase_id,
 				appointment_details
 			);
 
-			console.log(appointments);
+			// console.log(appointments);
 			// now sort appointments into taken and given appointments
 			const taken_appointments = [];
 			const given_appointments = [];
@@ -154,10 +154,10 @@ export default class AssistantController {
 			// taken appointments and given appointments add appointment id to the user collection for if the user is scheduler insert the appointment id into the users taken appointment attribute array and if the user is the appointer insert the appointment id into the users given appointment attribute array.
 			// schedular , appointee are the attributes in appointment_details
 
-			console.log(
-				"appointment_details in SetAppointment controller method",
-				appointment_details
-			);
+			// console.log(
+			// 	"appointment_details in SetAppointment controller method",
+			// 	appointment_details
+			// );
 			const appointeeId = appointment_details.appointee_id;
 
 			const status = await AssistantDAO.add_appointment_to_user(
@@ -242,7 +242,7 @@ export default class AssistantController {
 			const decodedToken = req.user_decoded_details;
 			const userId = decodedToken.user_id;
 			const image = req.file;
-			console.log(image);
+			// console.log(image);
 			if (!image) {
 				return res.status(400).json({ message: "No image uploaded" });
 			}
@@ -250,7 +250,7 @@ export default class AssistantController {
 			// first delete the old profile photo
 			const user = await AssistantDAO.getProfile(userId);
 			const oldProfilePhoto = user.profile_pic_url;
-			console.log("old profile photos", oldProfilePhoto);
+			// console.log("old profile photos", oldProfilePhoto);
 
 			try {
 				// if it exists.
@@ -261,7 +261,7 @@ export default class AssistantController {
 					let filePath = url.pathname.split("/");
 					// get the last 2 elements of this array
 					filePath = filePath.slice(-2).join("/");
-					console.log("file path", filePath);
+					// console.log("file path", filePath);
 
 					// delete this file
 					await bucket.file("/" + filePath).delete();
@@ -399,14 +399,14 @@ export default class AssistantController {
 			) {
 				return res.status(400).json({ message: "Date range not provided" });
 			}
-			console.log("appointment_details:", appointment_details);
+			// console.log("appointment_details:", appointment_details);
 			// get appointments of the user with all the given and taken appointments
 			const appointments = await AssistantDAO.getAppointment(
 				appointment_details.firebase_id,
 				appointment_details
 			);
 
-			console.log(appointments);
+			// console.log(appointments);
 			// now sort appointments into taken and given appointments
 			const taken_appointments = [];
 			const given_appointments = [];
@@ -472,7 +472,7 @@ export default class AssistantController {
 			const bucket = firebase.storage().bucket();
 			const user = await AssistantDAO.getProfile(firebase_userId);
 			const oldProfilePhoto = user.profile_pic_url;
-			console.log("old profile photos", oldProfilePhoto);
+			// console.log("old profile photos", oldProfilePhoto);
 			try {
 				// if it exists.
 				if (oldProfilePhoto && oldProfilePhoto.length > 0) {

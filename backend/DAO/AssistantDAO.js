@@ -367,21 +367,24 @@ export default class AssistantDAO {
 	// method to unblock appointment slot
 	static async unblockAppointment(firebaseID, appointment_details) {
 		try {
-			const result = await cluster0.collection("users").updateOne(
-				{ firebase_id: firebaseID },
-				{
-					$pull: {
-						blocked_appointments: appointment_details.blocked_appointments[0],
-					},
-				}
-			);
-			return result;
+			const collection = cluster0.collection("users");
+			for (const appointment of appointment_details.blocked_appointments) {
+				console.log("appointment_details inside unblock appointments", appointment)
+				await collection.updateOne(
+					{ firebase_id: firebaseID },
+					{
+						$pull: {
+							blocked_appointments: appointment,
+						},
+					}
+				);
+			}
+			return true;
 		} catch (err) {
 			console.error(`Unable to unblock appointment: ${err}`);
-			throw err;
+			return false;
 		}
-	}
-	// method to delete user
+	}	// method to delete user
 	static async deleteUser(firebaseID) {
 		try {
 			// just put deleted user in front of the user name
