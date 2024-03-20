@@ -20,11 +20,8 @@ export default function Schedule({
 	user_id,
 	userSchedule,
 	currentWeek,
-	handleNextWeekChanged,
-	handlePreviousWeekChanged,
-	change_status,
-	block_appointment,
-	unblock_appointment,
+	handleDateIncreased,
+	handleDateDecreased,
 	user_time_slots,
 	json_time_slots,
 }) {
@@ -39,6 +36,8 @@ export default function Schedule({
 	const [showAppointmentMenu, setShowAppointmentMenu] = useState(false);
 	const [showBlockMenu, setShowBlockMenu] = useState(false);
 	const setCurrentAppointmentForPanel = useContext(UserInfoContext).setCurrentAppointment;
+	const [currentRightClickDate, setCurrentRightClickDate] = useState(null);
+	const [currentRightClickTimeSlot, setCurrentRightClickTimeSlot] = useState(null);
 
 	const handleContextMenuDisabled = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
@@ -64,7 +63,6 @@ export default function Schedule({
 	};
 
 	const handleBlockContextMenu = (e) => {
-		// if the id in userdetails doenst match the id the the userschedule.givenappointments.scheduler, then return
 		if (!blockPrivileges) {
 			return;
 		}
@@ -360,7 +358,7 @@ export default function Schedule({
 		var week_days = [];
 		var today = new Date();
 		for (var i = 0; i < week.length; i++) {
-			if (week[i].getDate() === today.getDate()) {
+			if (week[i].toLocaleDateString() === today.toLocaleDateString()) {
 				week_days.push("Today");
 			} else {
 				week_days.push(week[i].toLocaleString("default", { weekday: "long" }));
@@ -400,7 +398,6 @@ export default function Schedule({
 	}
 
 	useEffect(() => {
-		console.log(userSchedule, "in the current schedule thing while loading it. ");
 		// if any of the fields are empty, then return
 		if (!userSchedule) {
 			return;
@@ -419,8 +416,11 @@ export default function Schedule({
 	// hooks
 
 	useEffect(() => {
+		console.log(currentWeek);
+	}, [currentWeek]);
+
+	useEffect(() => {
 		// check block privileges
-		console.log("block privileges", userSchedule, userDetails);
 		if (user_id === userDetails.firebase_id) {
 			setBlockPrivileges(true);
 		} else {
@@ -451,9 +451,6 @@ export default function Schedule({
 					x={menuPosition.x}
 					y={menuPosition.y}
 					onClose={handleCloseMenu}
-					change_status={change_status}
-					block_appointment={block_appointment}
-					unblock_appointment={unblock_appointment}
 					blockPrivileges={blockPrivileges}
 				/>
 			)}
@@ -462,43 +459,30 @@ export default function Schedule({
 					x={menuPosition.x}
 					y={menuPosition.y}
 					onClose={handleCloseMenu}
-					change_status={change_status}
+					date={currentRightClickDate}
+					time_slot={currentRightClickTimeSlot}
 				/>
 			)}
-			{/* <div className="flex justify-between items-center">
-				<button
-					onClick={handlePreviousWeekChanged}
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-				>
-					Previous Week
-				</button>
-				<h1 className="text-3xl font-semibold text-center mt-4 text-blue-800">
-					{currentWeek.start_date.toLocaleDateString()} -{" "}
-					{currentWeek.end_date.toLocaleDateString()}
-				</h1>
-				<button
-					onClick={handleNextWeekChanged}
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-				>
-					Next Week
-				</button>
-			</div> */}
 			{/* legend */}
 			<div className="flex flex-row justify-end gap-5 mb-6">
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-green-100 font-semibold"></div>
+					<div className="w-5 h-5 bg-green-200 font-semibold"></div>
 					<div className="font-semibold">Completed</div>
 				</div>
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-blue-100 font-semibold"></div>
+					<div className="w-5 h-5 bg-blue-200 font-semibold"></div>
 					<div className="font-semibold">Scheduled</div>
 				</div>
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-yellow-100 font-semibold"></div>
-					<div className="font-semibold">Pending</div>
+					<div className="w-5 h-5 bg-yellow-200 font-semibold"></div>
+					<div className="font-semibold">Pending Their Confirmation</div>
 				</div>
 				<div className="flex flex-row gap-3 items-center">
-					<div className="w-5 h-5 bg-red-100 font-semibold"></div>
+					<div className="w-5 h-5 bg-orange-200 font-semibold"></div>
+					<div className="font-semibold">Pending Your Confirmation</div>
+				</div>
+				<div className="flex flex-row gap-3 items-center">
+					<div className="w-5 h-5 bg-red-200 font-semibold"></div>
 					<div className="font-semibold">Blocked</div>
 				</div>
 			</div>
@@ -521,39 +505,69 @@ export default function Schedule({
 				<div className="flex gap-8">
 					{/* week */}
 					<div className="flex gap-0 border-2 border-gray-400 rounded-lg bg-white">
-						<div className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2">
+						<div
+							className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2"
+							onClick={() => {
+								handleDateDecreased(7);
+							}}
+						>
 							<IconCaretLeftFilled className="w-6 h-6" />
 						</div>
 						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
 							Week
 						</div>
-						<div className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2">
+						<div
+							className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex 	justify-center items-center px-2"
+							onClick={() => {
+								handleDateIncreased(7);
+							}}
+						>
 							{" "}
 							<IconCaretRightFilled className="w-6 h-6" />
 						</div>
 					</div>
 					{/* month */}
 					<div className="flex gap-0 border-2 border-gray-400 rounded-lg bg-white">
-						<div className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2">
+						<div
+							className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2"
+							onClick={() => {
+								handleDateDecreased(28);
+							}}
+						>
 							<IconCaretLeftFilled className="w-6 h-6" />
 						</div>
 						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
 							March
 						</div>
-						<div className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2">
+						<div
+							className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2"
+							onClick={() => {
+								handleDateIncreased(28);
+							}}
+						>
 							{" "}
 							<IconCaretRightFilled className="w-6 h-6" />
 						</div>
 					</div>
 					{/* Year */}
 					<div className="flex gap-0 border-2 border-gray-400 rounded-lg bg-white">
-						<div className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2">
+						<div
+							className="border-r-2 border-gray-400 hover:bg-gray-300 rounded-l-md flex justify-center items-center px-2"
+							onClick={() => {
+								handleDateDecreased(365);
+							}}
+						>
 							<IconCaretLeftFilled className="w-6 h-6" />
 						</div>
 						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
 							2024
 						</div>
-						<div className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2">
+						<div
+							className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2"
+							onClick={() => {
+								handleDateIncreased(365);
+							}}
+						>
 							{" "}
 							<IconCaretRightFilled className="w-6 h-6" />
 						</div>
@@ -578,6 +592,13 @@ export default function Schedule({
 									}
 									onContextMenu={(e) => {
 										handleBlockContextMenu(e, day);
+										setCurrentRightClickDate(
+											format(
+												get_week_dates_from_start_date()[index],
+												"yyyy-MM-dd"
+											)
+										);
+										setCurrentRightClickTimeSlot("");
 									}}
 									onClick={() => {
 										if (blockPrivileges) {
@@ -614,7 +635,9 @@ export default function Schedule({
 								<td
 									className="border-2 min-w-56 p-2 text-xl text-center hover:bg-blue-50"
 									onContextMenu={(e) => {
-										handleBlockContextMenu(e, time_slot);
+										handleBlockContextMenu(e);
+										setCurrentRightClickDate("");
+										setCurrentRightClickTimeSlot(time_slot);
 									}}
 									onClick={() => {
 										console.log("clicked");
@@ -757,11 +780,11 @@ export default function Schedule({
 Schedule.propTypes = {
 	userSchedule: PropTypes.object.isRequired,
 	currentWeek: PropTypes.object.isRequired,
-	handleNextWeekChanged: PropTypes.func.isRequired,
-	handlePreviousWeekChanged: PropTypes.func.isRequired,
-	change_status: PropTypes.func.isRequired,
+	handleDateIncreased: PropTypes.func.isRequired,
+	handleDateDecreased: PropTypes.func.isRequired,
 	user_time_slots: PropTypes.array.isRequired,
 	json_time_slots: PropTypes.array.isRequired,
+	user_id: PropTypes.string.isRequired,
 };
 
 AppointmentContextMenu.propTypes = {

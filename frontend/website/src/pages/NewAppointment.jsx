@@ -61,34 +61,42 @@ export default function NewAppointment() {
 		}
 	}, [did_book_new_appointment]);
 
-	const handleNextWeekChanged = () => {
+	const handleDateIncreased = (days) => {
 		// this function will change the currentWeek to the next week
 		const nextWeek = {
-			start_date: new Date(currentWeek.start_date).setDate(
-				new Date(currentWeek.start_date).getDate() + 7
+			start_date: new Date(
+				new Date(currentWeek.start_date).setDate(
+					new Date(currentWeek.start_date).getDate() + days
+				)
 			),
-			end_date: new Date(currentWeek.end_date).setDate(
-				new Date(currentWeek.end_date).getDate() + 7
+			end_date: new Date(
+				new Date(currentWeek.end_date).setDate(
+					new Date(currentWeek.end_date).getDate() + days
+				)
 			),
 		};
 		setCurrentWeek(nextWeek);
 		// now update the userSchedule
-		getUserSchedule(selectedUserDetails.firebase_id);
+		getUserSchedule(selectedUserDetails.firebase_id, nextWeek);
 	};
 
-	const handlePreviousWeekChanged = () => {
+	const handleDateDecreased = (days) => {
 		// this function will change the currentWeek to the previous week
 		const previousWeek = {
-			start_date: new Date(currentWeek.start_date).setDate(
-				new Date(currentWeek.start_date).getDate() - 7
+			start_date: new Date(
+				new Date(currentWeek.start_date).setDate(
+					new Date(currentWeek.start_date).getDate() - days
+				)
 			),
-			end_date: new Date(currentWeek.end_date).setDate(
-				new Date(currentWeek.end_date).getDate() - 7
+			end_date: new Date(
+				new Date(currentWeek.end_date).setDate(
+					new Date(currentWeek.end_date).getDate() - days
+				)
 			),
 		};
 		setCurrentWeek(previousWeek);
 		// now update the userSchedule
-		getUserSchedule(selectedUserDetails.firebase_id);
+		getUserSchedule(selectedUserDetails.firebase_id, previousWeek);
 	};
 
 	const change_status = (appointment, status) => {
@@ -121,15 +129,15 @@ export default function NewAppointment() {
 		setSelectedUserDetails(user);
 	};
 
-	const getUserSchedule = (firebase_id) => {
-		console.log(currentWeek)
-		axios
+	const getUserSchedule = (firebase_id, given_week = currentWeek) => {
+		console.log(currentWeek);
+		const response = axios
 			.post(
 				`${base_url}/get-faculty-schedule`,
 				{
 					date: {
-						start_date: format(currentWeek.start_date, "yyyy-MM-dd"),
-						end_date: format(currentWeek.end_date, "yyyy-MM-dd"),
+						start_date: format(given_week.start_date, "yyyy-MM-dd"),
+						end_date: format(given_week.end_date, "yyyy-MM-dd"),
 					},
 					firebase_id: firebase_id,
 				},
@@ -150,6 +158,12 @@ export default function NewAppointment() {
 			.catch((error) => {
 				console.log(error);
 			});
+
+		toast.promise(response, {
+			loading: "Refreshing",
+			success: "Done",
+			error: "Error while Loading",
+		});
 	};
 
 	const handleUserSelected = (firebase_id) => {
@@ -222,8 +236,8 @@ export default function NewAppointment() {
 				<Schedule
 					userSchedule={selectedUserSchedule}
 					currentWeek={currentWeek}
-					handleNextWeekChanged={handleNextWeekChanged}
-					handlePreviousWeekChanged={handlePreviousWeekChanged}
+					handleDateIncreased={handleDateIncreased}
+					handleDateDecreased={handleDateDecreased}
 					block_appointment={null}
 					change_status={change_status}
 					user_time_slots={user_time_slots}
