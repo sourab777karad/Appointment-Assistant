@@ -240,4 +240,49 @@ export default class basic_functions {
 		);
 		return response.data;
 	}
+
+	static get_current_month(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+		// return it in mmmm format
+		return format(midDate, "MMMM");
+	}
+
+	static get_current_year(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+		// return it in yyyy format
+		return format(midDate, "yyyy");
+	}
+
+	static get_current_week(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+		// calculate week number
+		const weekNumber = format(midDate, "w");
+		// return it in the format "Week 2 (7th - 13th)"
+		return `Week ${weekNumber} (${format(currentWeek.start_date, "do")} - ${format(currentWeek.end_date, "do")})`;
+	}
+
+	static get_current_month_week(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+
+		// Calculate which week of the month it is
+		const weekOfMonth = Math.ceil(midDate.getDate() / 7);
+
+		// Format the week of the month
+		const suffix = ["st", "nd", "rd"][((((weekOfMonth + 90) % 100) - 10) % 10) - 1] || "th";
+		const formattedWeek = `${weekOfMonth}${suffix} Week`;
+
+		return formattedWeek;
+	}
 }

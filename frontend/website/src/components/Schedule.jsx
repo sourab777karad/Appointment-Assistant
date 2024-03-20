@@ -97,7 +97,7 @@ export default function Schedule({
 		// we know for a fact that some appointments can coincide.
 		// lets first go through all the appointment lists in the userSchedule
 		let our_appointment = null;
-		userSchedule.blocked_appointments?.forEach((appointment) => {
+		userSchedule?.blocked_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
 				if (
@@ -398,6 +398,12 @@ export default function Schedule({
 	}
 
 	useEffect(() => {
+		if (!user_time_slots) {
+			return;
+		}
+		if (!json_time_slots) {
+			return;
+		}
 		// if any of the fields are empty, then return
 		if (!userSchedule) {
 			return;
@@ -491,13 +497,13 @@ export default function Schedule({
 				{/* current month and week */}
 				<div className="flex gap-4">
 					<div className="text-xl flex items-center justify-center font-semibold text-gray-800 uppercase">
-						Week 12 (18 - 24)
+						{basic_functions.get_current_week(currentWeek)}
 					</div>{" "}
 					<div className="text-2xl flex items-center justify-center font-semibold text-blue-800 uppercase">
-						March
+						{basic_functions.get_current_month(currentWeek)}
 					</div>
 					<div className="text-2xl flex items-center justify-center font-semibold text-blue-800 uppercase">
-						2024
+						{basic_functions.get_current_year(currentWeek)}
 					</div>
 				</div>
 
@@ -514,7 +520,7 @@ export default function Schedule({
 							<IconCaretLeftFilled className="w-6 h-6" />
 						</div>
 						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
-							Week
+							{basic_functions.get_current_month_week(currentWeek)}
 						</div>
 						<div
 							className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex 	justify-center items-center px-2"
@@ -537,7 +543,7 @@ export default function Schedule({
 							<IconCaretLeftFilled className="w-6 h-6" />
 						</div>
 						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
-							March
+							{basic_functions.get_current_month(currentWeek)}
 						</div>
 						<div
 							className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2"
@@ -560,7 +566,7 @@ export default function Schedule({
 							<IconCaretLeftFilled className="w-6 h-6" />
 						</div>
 						<div className="px-2 min-w-24 text-center flex justify-center items-center text-xl">
-							2024
+							{basic_functions.get_current_year(currentWeek)}
 						</div>
 						<div
 							className="border-l-2 border-gray-400 hover:bg-gray-300 rounded-r-md flex justify-center items-center px-2"
