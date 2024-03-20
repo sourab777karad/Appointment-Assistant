@@ -1,22 +1,22 @@
 import { useContext, useEffect } from "react";
 import { UserInfoContext } from "../../context/UserInfoContext";
+import { BaseUrlContext } from "../../context/BaseUrlContext";
 
-const AppointmentContextMenu = ({
-	x,
-	y,
-	onClose,
-	appointment,
-	change_status,
-	block_appointment,
-	unblock_appointment,
-	blockPrivileges,
-}) => {
+const AppointmentContextMenu = ({ x, y, onClose, appointment, change_status, blockPrivileges }) => {
 	const handleClick = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
 		onClose(); // Close custom menu
 	};
-	const { setNewAppointmentDate, setNewAppointmentTime, userSchedule } =
-		useContext(UserInfoContext);
+	const {
+		setNewAppointmentDate,
+		setNewAppointmentTime,
+		userSchedule,
+		refreshLoggedInUserScheduleForDisplayedWeek,
+		userToken,
+		userDetails,
+	} = useContext(UserInfoContext);
+
+	const base_url = useContext(BaseUrlContext).baseUrl;
 
 	useEffect(() => {
 		console.log(userSchedule);
@@ -47,7 +47,13 @@ const AppointmentContextMenu = ({
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
-								block_appointment(appointment);
+								basic_functions.block_appointment(
+									appointment,
+									base_url,
+									userToken,
+									userDetails,
+									refreshLoggedInUserScheduleForDisplayedWeek
+								);
 							}}
 						>
 							<a>Block Time Slot</a>
@@ -57,7 +63,13 @@ const AppointmentContextMenu = ({
 						<li
 							onClick={() => {
 								console.log(appointment, "clicked");
-								unblock_appointment(appointment);
+								basic_functions.unblock_appointment(
+									appointment,
+									base_url,
+									userToken,
+									userDetails,
+									refreshLoggedInUserScheduleForDisplayedWeek
+								);
 							}}
 						>
 							<a>Un-Block Time Slot</a>
@@ -91,6 +103,7 @@ const AppointmentContextMenu = ({
 export default AppointmentContextMenu;
 
 import PropTypes from "prop-types";
+import basic_functions from "../../utils/basic_functions";
 
 AppointmentContextMenu.propTypes = {
 	x: PropTypes.number.isRequired,

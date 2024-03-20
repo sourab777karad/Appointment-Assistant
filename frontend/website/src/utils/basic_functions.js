@@ -124,4 +124,165 @@ export default class basic_functions {
 
 		return appointments;
 	}
+
+	static async block_appointment(
+		appointment_details_list,
+		base_url,
+		userToken,
+		userDetails,
+		refreshLoggedInUserScheduleForDisplayedWeek
+	) {
+		// check if appointment_details_list is an array or not
+		if (!Array.isArray(appointment_details_list)) {
+			appointment_details_list = [appointment_details_list];
+		}
+
+		// for every element of this list, remove everything other than start_time, end_time and appointment_date
+		appointment_details_list = appointment_details_list.map((appointment) => {
+			return {
+				start_time: appointment.start_time,
+				end_time: appointment.end_time,
+				appointment_date: appointment.appointment_date,
+			};
+		});
+
+		const response = axios
+			.post(
+				`${base_url}/update-blocked-appointments`,
+				{
+					blocked_appointments: appointment_details_list,
+					firebase_id: userDetails.firebase_id,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				refreshLoggedInUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Time slot blocked successfully",
+			error: "Error blocking time slot",
+		});
+	}
+
+	static async unblock_appointment(
+		appointment_details_list,
+		base_url,
+		userToken,
+		userDetails,
+		refreshLoggedInUserScheduleForDisplayedWeek
+	) {
+		if (!Array.isArray(appointment_details_list)) {
+			appointment_details_list = [appointment_details_list];
+		}
+
+		// for every element of this list, remove everything other than start_time, end_time and appointment_date
+		appointment_details_list = appointment_details_list.map((appointment) => {
+			return {
+				start_time: appointment.start_time,
+				end_time: appointment.end_time,
+				appointment_date: appointment.appointment_date,
+			};
+		});
+
+		const response = axios
+			.post(
+				`${base_url}/unblock-appointment`,
+				{
+					blocked_appointments: appointment_details_list,
+					firebase_id: userDetails.firebase_id,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then(() => {
+				refreshLoggedInUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Time slot Unblocked successfully",
+			error: "Error unblocking time slot",
+		});
+	}
+
+	static async get_user_schedule_for_week(firebase_id, base_url, userToken, currentWeek) {
+		// return the user schedule for the given week
+		const response = await axios.post(
+			`${base_url}/get-faculty-schedule`,
+			{
+				date: {
+					start_date: format(currentWeek.start_date, "yyyy-MM-dd"),
+					end_date: format(currentWeek.end_date, "yyyy-MM-dd"),
+				},
+				firebase_id: firebase_id,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
+		return response.data;
+	}
+
+	static get_current_month(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+		// return it in mmmm format
+		return format(midDate, "MMMM");
+	}
+
+	static get_current_year(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+		// return it in yyyy format
+		return format(midDate, "yyyy");
+	}
+
+	static get_current_week(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+		// calculate week number
+		const weekNumber = format(midDate, "w");
+		// return it in the format "Week 2 (7th - 13th)"
+		return `Week ${weekNumber} (${format(currentWeek.start_date, "do")} - ${format(currentWeek.end_date, "do")})`;
+	}
+
+	static get_current_month_week(currentWeek) {
+		/// get a date in the middle of start_date and end_date
+		const midDate = new Date(
+			(currentWeek.start_date.getTime() + currentWeek.end_date.getTime()) / 2
+		);
+
+		// Calculate which week of the month it is
+		const weekOfMonth = Math.ceil(midDate.getDate() / 7);
+
+		// Format the week of the month
+		const suffix = ["st", "nd", "rd"][((((weekOfMonth + 90) % 100) - 10) % 10) - 1] || "th";
+		const formattedWeek = `${weekOfMonth}${suffix} Week`;
+
+		return formattedWeek;
+	}
 }

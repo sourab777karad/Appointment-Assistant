@@ -67,7 +67,6 @@ const BookAppointmentNav = () => {
 	}
 
 	function get_full_date(date) {
-		console.log(date);
 		if (!date) {
 			return null;
 		}

@@ -81,14 +81,14 @@ const SideNav = () => {
 														basic_functions.get_people_from_appointment(
 															appointment,
 															allUsers
-														)?.scheduler.profile_pic_url.length !==
+														)?.scheduler?.profile_pic_url.length !==
 														0 ? (
 															<img
 																src={
 																	basic_functions.get_people_from_appointment(
 																		appointment,
 																		allUsers
-																	)?.scheduler.profile_pic_url
+																	)?.scheduler?.profile_pic_url
 																}
 																alt="scheduler_id"
 																className="w-20 h-20 rounded-full object-cover outline outline-blue-700"
@@ -114,7 +114,7 @@ const SideNav = () => {
 																basic_functions.get_people_from_appointment(
 																	appointment,
 																	allUsers
-																)?.scheduler.full_name
+																)?.scheduler?.full_name
 															}
 														</div>
 														<div className="text-blue-900 text-sm pt-1">
@@ -123,7 +123,7 @@ const SideNav = () => {
 																basic_functions.get_people_from_appointment(
 																	appointment,
 																	allUsers
-																)?.scheduler.phone_number
+																)?.scheduler?.phone_number
 															}
 														</div>
 													</div>

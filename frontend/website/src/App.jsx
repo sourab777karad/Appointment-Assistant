@@ -1,6 +1,8 @@
 // importing react stuff
 
 import { Route, Routes } from "react-router-dom";
+import { useEffect, useContext } from "react";
+import io from "socket.io-client";
 
 // importing ui and extras stuff
 
@@ -19,7 +21,30 @@ import NotFound from "./pages/NotFound.jsx";
 import ProtectedRoutes from "./ProtectedRoutes";
 import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 
+// importing context
+import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
+
 function App() {
+	// const { baseUrl } = useContext(BaseUrlContext);
+	// useEffect(() => {
+	// 	const socket = io(baseUrl);
+
+	// 	socket.on("connect", () => {
+	// 		console.log("connected to server");
+	// 	});
+
+	// 	socket.on("notification", (message) => {
+	// 		console.log("Received notification:", message);
+	// 	});
+
+	// 	socket.on("disconnect", () => {
+	// 		console.log("disconnected from server");
+	// 	});
+
+	// 	// Clean up the effect
+	// 	return () => socket.disconnect();
+	// }, []); // Empty array ensures that effect is only run on mount and unmount
+
 	return (
 		<>
 			<Toaster

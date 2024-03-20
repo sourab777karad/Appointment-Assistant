@@ -4,6 +4,7 @@ import { BaseUrlContext } from "./../context/BaseUrlContext";
 import axios from "axios";
 export const UserInfoContext = createContext();
 import { addMinutes, format } from "date-fns";
+import { toast } from "react-hot-toast";
 
 function get_previous_monday_date() {
 	// this gives you the date of the previous monday
@@ -113,17 +114,17 @@ export const UserInfoContextProvider = ({ children }) => {
 		setNotifsExist(notifs_exist);
 	}
 
-	function refreshLoggedInUserScheduleForDisplayedWeek() {
+	function refreshLoggedInUserScheduleForDisplayedWeek(given_week = currentWeek) {
 		// this function will refresh the userSchedule and allUsers
 		// it will be called after every change in the userSchedule
 		// it will be called after every change in the allUsers
-		axios
+		const response = axios
 			.post(
 				`${base_url}/get-user-appointment`,
 				{
 					date: {
-						start_date: format(currentWeek.start_date, "yyyy-MM-dd"),
-						end_date: format(currentWeek.end_date, "yyyy-MM-dd"),
+						start_date: format(given_week.start_date, "yyyy-MM-dd"),
+						end_date: format(given_week.end_date, "yyyy-MM-dd"),
 					},
 					firebase_id: userDetails.firebase_id,
 				},
@@ -139,12 +140,17 @@ export const UserInfoContextProvider = ({ children }) => {
 					given_appointments: response.data.given_appointments,
 					blocked_appointments: response.data.blocked_appointments,
 				};
-				console.log("from the latest update we provide you with", userSchedule);
 				setUserSchedule(userSchedule);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
+
+		toast.promise(response, {
+			loading: "Refreshing",
+			success: "Done",
+			error: "Error while Refreshing",
+		});
 	}
 
 	function refreshProfile() {
