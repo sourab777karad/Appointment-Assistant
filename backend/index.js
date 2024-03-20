@@ -9,8 +9,13 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import nodemailer from 'nodemailer';
+// import { Server, http } from 'http';
+// import socketIo from 'socket.io';
 
 dotenv.config();
+// intialize the server
+// const server = http.createServer(app);
+// const io = socketIo(server);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
