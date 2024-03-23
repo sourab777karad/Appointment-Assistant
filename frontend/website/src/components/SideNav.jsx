@@ -9,6 +9,8 @@ import { BaseUrlContext } from "./../context/BaseUrlContext";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import basic_functions from "../utils/basic_functions";
 
+import io from "socket.io-client";
+
 // This is the drawer. It contains cart. This is present always, and is activated by javascript.
 
 const SideNav = () => {
@@ -41,6 +43,25 @@ const SideNav = () => {
 	useEffect(() => {
 		get_notification_appointments();
 	}, [userSchedule]);
+
+	useEffect(() => {
+		const socket = io("https://h1gk4w07-3000.euw.devtunnels.ms");
+		//h1gk4w07-3000.euw.devtunnels.ms/
+		https: socket.on("connect", () => {
+			console.log("Connected to server");
+
+			// Send a message to the server
+			socket.emit("message", "Hello, server!");
+		});
+
+		socket.on("message", (message) => {
+			console.log(`Received: ${message}`);
+		});
+
+		socket.on("connect_error", (error) => {
+			console.log(error);
+		});
+	}, []);
 
 	return (
 		<div>
