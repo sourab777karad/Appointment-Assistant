@@ -1,13 +1,13 @@
 version: '3'
 services:
   frontend:
-    image: krishnarajt/appointment-frontend:3.0
+    image: krishnarajt/appointment-frontend:latest
     ports:
       - 5173:5173
     environment:
       - HOST=0.0.0.0
 
   backend:
-    image: parthz/appointment_backend:3.0
+    image: krishnarajt/appointment-backend:latest
     ports:
       - 3000:3000
