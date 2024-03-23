@@ -9,13 +9,27 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import nodemailer from 'nodemailer';
-// import { Server, http } from 'http';
-// import socketIo from 'socket.io';
+import http from 'http';
+import {Server} from 'socket.io';
 
 dotenv.config();
+
+const corsOptions = {
+  origin: '*', // replace with your origin
+  methods: 'GET,HEAD',
+};
+
 // intialize the server
-// const server = http.createServer(app);
-// const io = socketIo(server);
+const server = http.createServer(app);
+const io = new Server(server,{cors: corsOptions});
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,7 +71,7 @@ const transporter = nodemailer.createTransport({
       }).then(async client => {
         console.log('✅ Connected to MongoDB');
         await AssistantDAO.InjectDB(client);
-        app.listen(process.env.PORT || 3000, () => {
+        server.listen(process.env.PORT || 3000, () => {
           console.log(`✅ Server is listening on port ${process.env.PORT} 🚀`);
         });
       });
@@ -65,8 +79,7 @@ const transporter = nodemailer.createTransport({
     .catch((error) => {
       console.error('Failed to verify Mail', error);
     });
-  
-  export { transporter };
+  export { transporter, io };
 
 
 
