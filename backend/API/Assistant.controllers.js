@@ -229,7 +229,7 @@ export default class AssistantController {
 				appointment_details.appointment_location,
 				appointment_details.appointee_email_id
 			);
-				
+			await NotificationService.sendMessageToScheduler(appointment_details.scheduler_id, result);
 			// return res.status(200).json({result, sendmail_status});
 			return res.status(200).json({ sendmail_status });
 		} catch (e) {
@@ -506,7 +506,7 @@ export default class AssistantController {
 	static async realtimeMessageTest(req, res) {
 		try {
 			const message = "hello from the server";
-			await NotificationService.sendMessageToClient(message);
+			await NotificationService.sendMessageToScheduler("afdlkajsdlfkjaowsjfoi",message);
 			return res.status(200).json({ message: "Message sent" });
 		} catch (err) {
 			console.error(err);
