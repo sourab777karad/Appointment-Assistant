@@ -6,6 +6,8 @@ import { URL } from "url";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 
+import NotificationService from "../Services/Notification.websocket.service.js";
+
 // class to handle all the assistant related operations
 export default class AssistantController {
 	// method to add new user
@@ -227,7 +229,7 @@ export default class AssistantController {
 				appointment_details.appointment_location,
 				appointment_details.appointee_email_id
 			);
-
+				
 			// return res.status(200).json({result, sendmail_status});
 			return res.status(200).json({ sendmail_status });
 		} catch (e) {
@@ -499,6 +501,16 @@ export default class AssistantController {
 		} catch (err) {
 			console.error(err);
 			return res.status(500).json({ message: "Error deleting user" });
+		}
+	}
+	static async realtimeMessageTest(req, res) {
+		try {
+			const message = "hello from the server";
+			await NotificationService.sendMessageToClient(message);
+			return res.status(200).json({ message: "Message sent" });
+		} catch (err) {
+			console.error(err);
+			return res.status(500).json({ message: "Error sending message" });
 		}
 	}
 }

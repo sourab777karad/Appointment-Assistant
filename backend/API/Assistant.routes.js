@@ -43,4 +43,6 @@ router.delete('/delete-user', assistantCtrl.deleteUser)
 
 router.post("/update-appointment", assistantCtrl.updateAppointment);
 
+router.get("/realtime-message-test", assistantCtrl.realtimeMessageTest);
+
 export default router
