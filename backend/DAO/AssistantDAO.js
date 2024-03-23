@@ -249,7 +249,7 @@ export default class AssistantDAO {
 				console.log("No appointment found with the given ID");
 				return { message: "No appointment found with the given ID" };
 			}
-			return true;
+			return result;
 		} catch (e) {
 			console.error(`Unable to change status: ${e}`);
 			throw e;

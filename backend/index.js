@@ -23,11 +23,26 @@ const corsOptions = {
 const server = http.createServer(app);
 const io = new Server(server,{cors: corsOptions});
 
+// Map to store user to socket id mapping
+const userToSocketId = {};
+
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  // When a client connects, they should emit a 'register' event with their user identifier
+
+  let userId = socket.handshake.query.userId;
+  socket.on('register', () => {
+    userToSocketId[userId] = socket.id;
+    console.log(`User ${userId} connected with socket id ${socket.id}`);
+  });
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    // When a client disconnects, remove their entry from the map
+    for (let userId in userToSocketId) {
+      if (userToSocketId[userId] === socket.id) {
+        delete userToSocketId[userId];
+        break;
+      }
+    }
   });
 });
 
@@ -79,7 +94,7 @@ const transporter = nodemailer.createTransport({
     .catch((error) => {
       console.error('Failed to verify Mail', error);
     });
-  export { transporter, io };
+  export { transporter, io,userToSocketId };
 
 
 
