@@ -2,7 +2,6 @@
 
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useContext } from "react";
-import io from "socket.io-client";
 
 // importing ui and extras stuff
 
