@@ -15,8 +15,13 @@ import io from "socket.io-client";
 
 const SideNav = () => {
 	// Importing the necessary contexts
-	const { userSchedule, allUsers, userToken, refreshLoggedInUserScheduleForDisplayedWeek } =
-		React.useContext(UserInfoContext);
+	const {
+		userSchedule,
+		userDetails,
+		allUsers,
+		userToken,
+		refreshLoggedInUserScheduleForDisplayedWeek,
+	} = React.useContext(UserInfoContext);
 	const base_url = React.useContext(BaseUrlContext).baseUrl;
 
 	// State for storing notification appointments
@@ -45,7 +50,12 @@ const SideNav = () => {
 	}, [userSchedule]);
 
 	useEffect(() => {
-		const socket = io("https://h1gk4w07-3000.euw.devtunnels.ms");
+		if (userDetails === null) {
+			return;
+		}
+		const socket = io("https://h1gk4w07-3000.euw.devtunnels.ms", {
+			query: { userId: userDetails.firebase_id },
+		});
 		//h1gk4w07-3000.euw.devtunnels.ms/
 		https: socket.on("connect", () => {
 			console.log("Connected to server");
@@ -61,7 +71,7 @@ const SideNav = () => {
 		socket.on("connect_error", (error) => {
 			console.log(error);
 		});
-	}, []);
+	}, [userDetails]);
 
 	return (
 		<div>
