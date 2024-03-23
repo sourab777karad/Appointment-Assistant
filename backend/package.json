@@ -2,7 +2,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "test": "jest",
-    "server":"bun index.js"
+    "server": "pm2-runtime start ecosystem.config.cjs"
   },
   "type": "module",
   "dependencies": {
