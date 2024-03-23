@@ -8,6 +8,6 @@ services:
       - HOST=0.0.0.0
 
   backend:
-    image: krishnarajt/appointment-backend:latest
+    image: parthz/appointment_backend:latest
     ports:
       - 3000:3000
