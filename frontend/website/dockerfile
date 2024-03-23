@@ -9,6 +9,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # Install Vite globally
 RUN npm install -g create-vite
+RUN npm install -g serve
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
@@ -19,8 +20,9 @@ RUN npm install
 # Copy the current directory contents into the container at /app
 COPY . .
 
+RUN npm run build
 # Make port 5173 available to the world outside this container
 EXPOSE 5173
 
 # Run the app when the container launches
-CMD ["npm", "run", "host"]
+CMD ["serve", "-s", "dist", "-l", "5173"]
