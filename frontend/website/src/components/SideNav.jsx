@@ -210,9 +210,9 @@ const SideNav = () => {
 												</div>
 												<div className="p-2">
 													Has
-													<spam className="italic text-blue-700 mx-1">
+													<span className="italic text-blue-700 mx-1">
 														{appointment.status}
-													</spam>
+													</span>
 													the following appointment with you.
 												</div>
 												<details className="px-2 cursor-pointer">

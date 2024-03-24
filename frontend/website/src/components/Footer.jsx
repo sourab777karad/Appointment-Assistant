@@ -47,7 +47,7 @@ export default function Footer() {
 				</div>
 			</nav>
 			<nav>
-				<h6 className="footer-title text-gray-800">About Developers</h6>
+				<h6 className="footer-title text-gray-800 text-center ml-6">Developers</h6>
 				<div className="flex flex-col gap-4 my-4">
 					<div
 						className="flex gap-2 cursor-pointer hover:underline"

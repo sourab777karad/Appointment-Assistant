@@ -127,30 +127,44 @@ export default function Schedule({
 			return our_appointment;
 		}
 
-		userSchedule.taken_appointments.forEach((appointment) => {
+		userSchedule?.taken_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
-				// check if appointment.appointment_time is present in the the times of the json_time_slots
-				if (
-					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
-						start: parse(time_slot.start_time, "h:mm a", new Date()),
-						end: parse(time_slot.end_time, "h:mm a", new Date()),
-					})
-				) {
-					our_appointment = appointment;
-					// check if its confirmed or pending
-					if (our_appointment.status === "confirmed") {
-						our_appointment.type = "Taken and Confirmed";
-					} else if (our_appointment.status === "pending") {
-						our_appointment.type = "Pending Their Confirmation";
-					} else if (our_appointment.status === "cancelled") {
-						our_appointment.type = "Free";
-						our_appointment.concerned_party = "Free";
+				try {
+					// check if appointment.appointment_time is present in the the times of the json_time_slots
+					if (
+						isWithinInterval(
+							parse(appointment.appointment_time, "h:mm a", new Date()),
+							{
+								start: parse(time_slot.start_time, "h:mm a", new Date()),
+								end: parse(time_slot.end_time, "h:mm a", new Date()),
+							}
+						)
+					) {
+						our_appointment = appointment;
+						// check if its confirmed or pending
+						if (our_appointment.status === "confirmed") {
+							our_appointment.type = "Taken and Confirmed";
+						} else if (our_appointment.status === "pending") {
+							our_appointment.type = "Pending Their Confirmation";
+						} else {
+							our_appointment = {
+								type: "Free",
+								concerned_party: "Free",
+								start_time: time_slot.start_time,
+								end_time: time_slot.end_time,
+								appointment_date: date,
+							};
+							return;
+						}
+						// you can only possibly have one taken appointment at a time, so we can return the appointment right away
+						our_appointment.concerned_party =
+							basic_functions.get_people_from_appointment(
+								our_appointment,
+								allUsers
+							).appointee;
 					}
-					// you can only possibly have one taken appointment at a time, so we can return the appointment right away
-					our_appointment.concerned_party = basic_functions.get_people_from_appointment(
-						our_appointment,
-						allUsers
-					).appointee;
+				} catch (error) {
+					console.log(error);
 				}
 			}
 		});
@@ -159,16 +173,23 @@ export default function Schedule({
 		}
 
 		let given_appointments = [];
-		userSchedule.given_appointments.forEach((appointment) => {
+		userSchedule?.given_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
-				// check if appointment.appointment_time is present in the the times of the json_time_slots
-				if (
-					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
-						start: parse(time_slot.start_time, "h:mm a", new Date()),
-						end: parse(time_slot.end_time, "h:mm a", new Date()),
-					})
-				) {
-					given_appointments.push(appointment);
+				try {
+					// check if appointment.appointment_time is present in the the times of the json_time_slots
+					if (
+						isWithinInterval(
+							parse(appointment.appointment_time, "h:mm a", new Date()),
+							{
+								start: parse(time_slot.start_time, "h:mm a", new Date()),
+								end: parse(time_slot.end_time, "h:mm a", new Date()),
+							}
+						)
+					) {
+						given_appointments.push(appointment);
+					}
+				} catch (error) {
+					console.log(error);
 				}
 			}
 		});
@@ -192,7 +213,7 @@ export default function Schedule({
 				our_appointment.type = "Given and Confirmed";
 			} else if (our_appointment.status === "pending") {
 				our_appointment.type = "Pending Your Confirmation";
-			} else if (our_appointment.status === "cancelled") {
+			} else {
 				return {
 					type: "Free",
 					concerned_party: "Free",
@@ -259,10 +280,20 @@ export default function Schedule({
 					})
 				) {
 					our_appointment = appointment;
-					if (our_appointment.status === "cancelled") {
-						our_appointment.type = "Free";
+					if (
+						(our_appointment.status === "confirmed") |
+						(our_appointment.status === "pending")
+					) {
+						our_appointment.type = "blocked";
+					} else {
+						return {
+							type: "Free",
+							concerned_party: "Free",
+							start_time: time_slot.start_time,
+							end_time: time_slot.end_time,
+							appointment_date: date,
+						};
 					}
-					our_appointment.type = "blocked";
 				}
 			}
 		});
@@ -304,7 +335,10 @@ export default function Schedule({
 			// else you are free to book
 			return {
 				type: "Free",
-				concerned_party: "Multiple Requests",
+				concerned_party: "Free",
+				start_time: time_slot.start_time,
+				end_time: time_slot.end_time,
+				appointment_date: date,
 			};
 		}
 
@@ -316,7 +350,13 @@ export default function Schedule({
 			if (our_appointment.status === "confirmed") {
 				our_appointment.type = "blocked";
 			} else {
-				our_appointment.type = "Free";
+				return {
+					type: "Free",
+					concerned_party: "Free",
+					start_time: time_slot.start_time,
+					end_time: time_slot.end_time,
+					appointment_date: date,
+				};
 			}
 			return our_appointment;
 		}
@@ -667,10 +707,14 @@ export default function Schedule({
 											format(date, "yyyy-MM-dd")
 										);
 									} else {
-										current_div_schedule = checkDivInFacultySchedule(
-											time_slot,
-											format(date, "yyyy-MM-dd")
-										);
+										try {
+											current_div_schedule = checkDivInFacultySchedule(
+												time_slot,
+												format(date, "yyyy-MM-dd")
+											);
+										} catch (error) {
+											console.log(error);
+										}
 									}
 
 									return (
@@ -719,6 +763,13 @@ export default function Schedule({
 													if (
 														current_div_schedule?.type === "blocked" &&
 														!blockPrivileges
+													) {
+														handleContextMenuDisabled(e);
+														return;
+													}
+													// if the appointment type is pending, then return
+													if (
+														current_div_schedule?.status === "pending"
 													) {
 														handleContextMenuDisabled(e);
 														return;

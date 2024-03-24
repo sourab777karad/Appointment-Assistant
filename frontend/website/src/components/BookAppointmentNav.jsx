@@ -27,6 +27,7 @@ const BookAppointmentNav = () => {
 
 	// function to book appointment
 	function book_appointment() {
+		console.log("booking new appointment", newAppointmentTime)
 		const res = axios
 			.post(
 				`${base_url}/book-appointment`,
