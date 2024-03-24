@@ -10,8 +10,10 @@ import NotificationService from "../Services/Notification.websocket.service.js";
 
 // class to handle all the assistant related operations
 export default class AssistantController {
+  
   // method to add new user
   static async addNewUser(req, res) {
+    // Extract the user object from the request body
     const user = req.body;
 
     try {
@@ -30,25 +32,33 @@ export default class AssistantController {
         user.is_faculty = true;
       }
 
+      // Add the new user to the database
       const status = await AssistantDAO.add_new_user(user);
+      // Return a response with a status of 200 and the status of the database operation
       return res.status(200).json({ status: status });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error adding new user" });
     }
   }
+
   // method to check if the user details are filled or not
   static async areUserDetailsFilled(req, res) {
     try {
+      // Extract the user details from the decoded user token
       const user = req.user_decoded_details;
       // only want user id from the token
       const firebaseID = user.user_id;
+      // Extract the appointment date from the request body
       const appointment_date = req.body;
       // console.log(appointment_date);
       const Status = await AssistantDAO.areUserDetailsFilled(firebaseID);
+
+      // If the user is not found in the database, return a response indicating that the user is new
       if (Status.message === "User not found") {
         return res.status(200).json({ filled: false, newUser: true });
       }
+      // If the start date of the appointment date range is not provided, return an error response
       if (
         appointment_date.date.start_date === null
       ) {
@@ -94,17 +104,22 @@ export default class AssistantController {
       return res.status(500).json({ message: "Error checking user details" });
     }
   }
+
   // update user details in the users collection
   static async updateUserDetails(req, res) {
     try {
+      // Extract the user details from the request body
       const user = req.body;
+      // Update the user's details in the database
       const result = await AssistantDAO.updateUserDetails(user);
+      // Return a response with a status of 200 and the result of the database operation
       return res.status(200).json(result);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error updating user details" });
     }
   }
+
   // method to get all the appointments of the user as scheduler and appointee
   static async get_user_Appointment(req, res) {
     try {
@@ -146,6 +161,7 @@ export default class AssistantController {
       return res.status(500).json({ message: "Error retrieving appointment" });
     }
   }
+
   // method to set appointment by the user
   static async setAppointment(req, res) {
     try {
@@ -177,50 +193,69 @@ export default class AssistantController {
       return res.status(500).json({ message: "Error setting appointment" });
     }
   }
+
   // method to get all users from the users collection with the name, firebase id, email, phone number, room
   static async getUsers(req, res) {
     try {
+      // Get all users from the database
       const users = await AssistantDAO.getUsers();
+
+      // Return a response with a status of 200 and the users
       res.status(200).json(users);
     } catch (e) {
       console.error(`Unable to get users: ${e}`);
       res.status(500).json({ message: `Unable to get users: ${e}` });
     }
   }
+
   // method to getProfile of the user by user id
   static async getProfileByUserId(req, res) {
     try {
+      // Extract the user details from the decoded user token
       const user = req.user_decoded_details;
+       // Extract the user ID from the user details
       const userId = user.user_id;
 
+      // Get the user's profile from the database
       const profile_data = await AssistantDAO.getProfile(userId);
 
+      // Return a response with a status of 200 and the user's profile
       return res.status(200).json({ profile_data });
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error retrieving profile" });
     }
   }
+
   // method to delete appointment
   static async deleteAppointment(req, res) {
     try {
+      // Extract the appointment ID from the request body
       const appointmentId = req.body.appointmentId; // Get the appointment ID from the request parameters
+      // Delete the appointment from the database
       const result = await AssistantDAO.deleteAppointment(appointmentId);
+       // Return a response with a status of 200 and the result of the database operation
       res.status(200).json(result);
     } catch (e) {
       console.error(`Unable to delete appointment: ${e}`);
       res.status(500).json({ message: `Unable to delete appointment: ${e}` });
     }
   }
+
   // method to change the status of the appointment (confirmed, rejected, pending)
   static async changeStatus(req, res) {
     try {
+      // Extract the appointment details from the request body
       const appointment_details = req.body; // Get the appointment ID from the request body
 
       // check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
-
+      // Update the status of the appointment in the database
       const result = await AssistantDAO.changeStatus(appointment_details);
+
+      // Create a new mail controller
       const mailController = new MailController();
+
+      // Send an email with the updated appointment details
       const sendmail_status = await mailController.sendMail(
         appointment_details.scheduler_email_id,
         appointment_details.status,
@@ -232,6 +267,8 @@ export default class AssistantController {
         appointment_details.appointment_location,
         appointment_details.appointee_email_id
       );
+
+      // Send a notification to the scheduler and the appointee
       await NotificationService.sendMessagetoUser(
         appointment_details.scheduler_id
       );
@@ -262,14 +299,21 @@ export default class AssistantController {
       res.status(500).json({ message: `Unable to change status: ${e}` });
     }
   }
+
   // method to update profile photo
   static async updateProfilePhoto(req, res) {
     try {
+      // Get a reference to the Firebase storage bucket
       const bucket = firebase.storage().bucket();
+
+      // Extract the user details from the decoded user token
       const decodedToken = req.user_decoded_details;
       const userId = decodedToken.user_id;
+
+      // Get the image file from the request
       const image = req.file;
       // console.log(image);
+      // If no image was uploaded, return an error
       if (!image) {
         return res.status(400).json({ message: "No image uploaded" });
       }
@@ -308,12 +352,14 @@ export default class AssistantController {
 
       let fileUpload = bucket.file("/profile-photos/" + new_filename);
 
+      // Create a write stream for the new profile photo
       const blobStream = fileUpload.createWriteStream({
         metadata: {
           contentType: image.mimetype,
         },
       });
 
+      // Handle any errors that occur during the upload
       blobStream.on("error", (error) => {
         console.error(
           "Something is wrong! Unable to upload at the moment." + error
@@ -323,6 +369,7 @@ export default class AssistantController {
           .json({ message: "Error uploading file", error: error.message });
       });
 
+      // Once the upload is finished, get the public URL of the photo and update the user's profile
       blobStream.on("finish", async () => {
         // The public URL can be used to directly access the file via HTTP.
         const file = bucket.file(`/profile-photos/${new_filename}`);
@@ -333,33 +380,42 @@ export default class AssistantController {
         await AssistantDAO.uploadProfilePhoto(userId, publicUrl[0]);
         return res.status(200).send(publicUrl[0]);
       });
+      // End the write stream and start the upload
       blobStream.end(image.buffer);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error uploading profile photo" });
     }
   }
+
   // method to update user profile
   static async updateUserProfile(req, res) {
     try {
+      // Extract the user details from the decoded user token
       const decodedToken = req.user_decoded_details;
       const firebase_userId = decodedToken.user_id;
+      // Get the updated user details from the request body
       const user_updated_details = req.body;
+      // Update the user's profile in the database
       const result = await AssistantDAO.updateUserProfile(
         user_updated_details,
         firebase_userId
       );
+      // Return a response with a status of 200 and the result of the database operation
       return res.status(200).json(result);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ message: "Error updating user profile" });
     }
   }
+
   // method to get pending and cancelled appointments for that firebaseID
   static async getPendingCancelledAppointments(req, res) {
     try {
+      // Extract the user details from the decoded user token
       const decodedToken = req.user_decoded_details;
       const firebase_userId = decodedToken.user_id;
+      // Get the pending and cancelled appointments from the database
       const appointments = await AssistantDAO.getPendingCancelledAppointments(
         firebase_userId
       );
@@ -374,6 +430,7 @@ export default class AssistantController {
           given_appointments.push(appointments[i]);
         }
       }
+      // Return a response with a status of 200 and the sorted appointments
       return res.status(200).json(taken_appointments, given_appointments);
     } catch (err) {
       console.error(err);
@@ -386,13 +443,19 @@ export default class AssistantController {
   // method to update blocked appointments
   static async updateBlockedAppointments(req, res) {
     try {
+      // Extract the user details from the decoded user token
       const decodedToken = req.user_decoded_details;
       const firebase_userId = decodedToken.user_id;
+      // Get the blocked appointments from the request body
       const blocked_appointments = req.body.blocked_appointments;
+
+      // Update the blocked appointments in the database
       const result = await AssistantDAO.updateBlockedAppointments(
         firebase_userId,
         blocked_appointments
       );
+
+      // Return a response with a status of 200 and the result of the database operation
       return res.status(200).json(result);
     } catch (err) {
       console.error(err);
@@ -403,12 +466,17 @@ export default class AssistantController {
   // method to update appointment
   static async updateAppointment(req, res) {
     try {
+      // Get the appointment details from the request body
       const appointment_details = req.body;
+
+      // Update the appointment in the database
       AssistantDAO.updateAppointment(appointment_details)
         .then((result) => {
+          // If the operation is successful, return a response with a status of 200 and the result of the database operation
           return res.status(200).json(result);
         })
         .catch((err) => {
+          // If an error occurs during the database operation, log the error and return a response with a status of 500 and an error message
           console.error(err);
           return res
             .status(500)
@@ -419,15 +487,19 @@ export default class AssistantController {
       return res.status(500).json({ message: "Error updating appointment" });
     }
   }
+
   // method to get faculty schedule
   static async getFacultySchedule(req, res) {
     try {
+      // Get the appointment details from the request body
       const appointment_details = req.body;
 
+      // Check if the start and end dates are provided
       if (
         appointment_details.date.start_date === null &&
         appointment_details.date.end_date === null
       ) {
+        // If not, return a response with a status of 400 and an error message
         return res.status(400).json({ message: "Date range not provided" });
       }
       // console.log("appointment_details:", appointment_details);
@@ -441,6 +513,7 @@ export default class AssistantController {
       // now sort appointments into taken and given appointments
       const taken_appointments = [];
       const given_appointments = [];
+      // Sort the appointments into the taken and given arrays
       for (let i = 0; i < appointments.length; i++) {
         if (appointments[i].scheduler_id === appointment_details.firebase_id) {
           taken_appointments.push(appointments[i]);
@@ -453,6 +526,7 @@ export default class AssistantController {
         appointment_details.firebase_id
       );
 
+      // Return a response with a status of 200 and the sorted and blocked appointments
       return res.status(200).json({
         taken_appointments: taken_appointments.map(
           ({ appointment_date, appointment_time, duration, status }) => ({
@@ -479,15 +553,21 @@ export default class AssistantController {
         .json({ message: "Error retrieving faculty schedule" });
     }
   }
+
   // method to unblock appointment
   static async unblockAppointment(req, res) {
     try {
       const decodedToken = req.user_decoded_details;
+
+      // Get the appointment details from the request body
       const appointment_details = req.body;
+      // Unblock the appointment in the database
       const result = await AssistantDAO.unblockAppointment(
         decodedToken.user_id,
         appointment_details
       );
+
+      // Log the result of the database operation
       console.log("result", result);
       return res.status(200).json(result);
     } catch (err) {
@@ -535,11 +615,15 @@ export default class AssistantController {
     }
   }
 
+  // method to test real-time messaging
   static async realtimeMessageTest(req, res) {
     try {
+      // Define a message
       const message = "hello from the server";
+
+      // Send the message to a user using the NotificationService
       const response = NotificationService.sendMessagetoUser(
-        "Jful19gEnaQR5xWbd4giRKl8ism1"
+        "Jful19gEnaQR5xWbd4giRKl8ism1" // This is a hardcoded user ID, replace it with a dynamic one in production
       ); // will be some value like true or false
 
       // after we get some repsonse, be it true or false, we send it back to the client
@@ -547,6 +631,7 @@ export default class AssistantController {
         return res.status(200).json({ result });
       });
     } catch (err) {
+       // If an error occurs, log the error and return a response with a status of 500 and an error message
       console.error(err);
       return res.status(500).json({ message: "Error sending message" });
     }
