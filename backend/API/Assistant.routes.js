@@ -22,9 +22,9 @@ router.post("/get-user-appointment", assistantCtrl.get_user_Appointment);
 
 router.post("/book-appointment", assistantCtrl.setAppointment);
 
-router.post("/change-status", assistantCtrl.changeStatusWithoutMail);
+router.post("/change-status", assistantCtrl.changeStatus);
 
-router.post("/change-status-without-mail", assistantCtrl.changeStatus);
+router.post("/change-status-without-mail", assistantCtrl.changeStatusWithoutMail);
 
 router.post("/delete-appointment", assistantCtrl.deleteAppointment);
 
