@@ -81,6 +81,71 @@ export default class basic_functions {
 		});
 	}
 
+	static async change_status_without_mail(
+		appointment,
+		status,
+		base_url,
+		userToken,
+		refreshLoggedInUserScheduleForDisplayedWeek,
+		allUsers,
+		message
+	) {
+		/**
+		 * This function changes the status of the appointment and sends a mail to the scheduler
+		 * @param {Object} appointment - The appointment object
+		 * @param {string} status - The new status of the appointment
+		 * @param {string} base_url - The base URL for the API
+		 * @param {string} userToken - The user's token
+		 * @param {Function} refreshLoggedInUserScheduleForDisplayedWeek - Function to refresh the user's schedule
+		 * @param {Array} allUsers - Array of all users
+		 * @param {string} message - The message to be sent in the email
+		 * @return {Promise} Returns a promise that resolves to the response of the axios post request
+		 */
+		const { scheduler, appointee } = await this.get_people_from_appointment(
+			appointment,
+			allUsers
+		);
+		const response = axios
+			.post(
+				`${base_url}/change-status-without-mail`,
+				{
+					status: status,
+					appointment_id: appointment._id,
+					scheduler_email_id: scheduler.email,
+					appointee_email_id: appointee.email,
+					message: message,
+					appointment_location: appointee.room,
+					appointment_time: appointment.start_time,
+					appiontment_duration: appointment.duration,
+					appointee_name: appointee.full_name,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				if (response.data.sendmail_status === true) {
+					toast.success(`Mail sent to ${scheduler.email} successfully`);
+				}
+				if (response.data.sendmail_status === false) {
+					toast.success(`Could not send confirmation mail to ${scheduler.email}`);
+				}
+				refreshLoggedInUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Status changed successfully",
+			error: "Error changing status",
+		});
+	}
+
 	static getAppointments(userSchedule, given_date) {
 		/**
 		 * This function returns the appointments for the given date

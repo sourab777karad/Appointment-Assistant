@@ -229,9 +229,28 @@ export default class AssistantController {
 				appointment_details.appointment_location,
 				appointment_details.appointee_email_id
 			);
-			await NotificationService.sendMessageToScheduler(appointment_details.scheduler_id, result);
+			await NotificationService.sendMessagetoUser(appointment_details.scheduler_id);
+			await NotificationService.sendMessagetoUser(appointment_details.appointee_id);
+
 			// return res.status(200).json({result, sendmail_status});
 			return res.status(200).json({ sendmail_status });
+		} catch (e) {
+			console.error(`Unable to change status: ${e}`);
+			res.status(500).json({ message: `Unable to change status: ${e}` });
+		}
+	}
+
+	// method to change the status of the appointment (confirmed, rejected, pending) without triggering mail or notif
+	static async changeStatusWithoutMail(req, res) {
+		try {
+			const appointment_details = req.body; // Get the appointment ID from the request body
+
+			// check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
+
+			const result = await AssistantDAO.changeStatus(appointment_details);
+			result.then((result) => {
+				return res.status(200).json(result);
+			});
 		} catch (e) {
 			console.error(`Unable to change status: ${e}`);
 			res.status(500).json({ message: `Unable to change status: ${e}` });
@@ -506,8 +525,12 @@ export default class AssistantController {
 	static async realtimeMessageTest(req, res) {
 		try {
 			const message = "hello from the server";
-			await NotificationService.sendMessageToScheduler("afdlkajsdlfkjaowsjfoi",message);
-			return res.status(200).json({ message: "Message sent" });
+			const response = NotificationService.sendMessagetoUser("Jful19gEnaQR5xWbd4giRKl8ism1"); // will be some value like true or false
+
+			// after we get some repsonse, be it true or false, we send it back to the client
+			response.then((result) => {
+				return res.status(200).json({ result });
+			});
 		} catch (err) {
 			console.error(err);
 			return res.status(500).json({ message: "Error sending message" });

@@ -369,7 +369,7 @@ export default class AssistantDAO {
 		try {
 			const collection = cluster0.collection("users");
 			for (const appointment of appointment_details.blocked_appointments) {
-				console.log("appointment_details inside unblock appointments", appointment)
+				console.log("appointment_details inside unblock appointments", appointment);
 				await collection.updateOne(
 					{ firebase_id: firebaseID },
 					{
@@ -384,7 +384,7 @@ export default class AssistantDAO {
 			console.error(`Unable to unblock appointment: ${err}`);
 			return false;
 		}
-	}	// method to delete user
+	} // method to delete user
 	static async deleteUser(firebaseID) {
 		try {
 			// just put deleted user in front of the user name
