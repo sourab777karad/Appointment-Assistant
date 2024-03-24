@@ -34,35 +34,50 @@ const SideNav = () => {
 	function get_notification_appointments() {
 		const notifs = [];
 		const status_notifs = [];
-		const given_appointment = userSchedule.given_appointments.filter(
-			(appointment) =>
-				(appointment.status === "pending") | (appointment.status === "rejected")
+		const taken_appointments = [];
+
+		const given_appointments = userSchedule.given_appointments.filter(
+			(appointment) => appointment.status === "pending"
 		);
 
-		const taken_appointments = userSchedule.taken_appointments.filter(
-			(appointment) => appointment.status === "rejected"
-		);
-
-		notifs.push(...given_appointment);
+		notifs.push(...given_appointments);
 		notifs.push(...taken_appointments);
 		setNotifAppointments(notifs);
-		console.log(notifs);
 
 		// get status notifications
 		const status_notif_given = userSchedule.given_appointments.filter(
-			(appointment) => appointment.status === "confirmed"
+			(appointment) => appointment.status === "cancelled" // they cancelled after you approved
 		);
+
+		// for each of these filtered given appointments, we have to assign the concerned party as the scheduler
+
+		for (let i = 0; i < status_notif_given.length; i++) {
+			status_notif_given[i].concerned_party = basic_functions.get_people_from_appointment(
+				status_notif_given[i],
+				allUsers
+			)?.scheduler;
+		}
 
 		const status_notif_taken = userSchedule.taken_appointments.filter(
-			(appointment) => appointment.status === "confirmed"
+			(appointment) =>
+				(appointment.status === "confirmed") |
+				(appointment.status === "cancelled") |
+				(appointment.status === "rejected")
 		);
 
+		// for all the filtered taken appointments, we have to assign the concerned party as the appointee
+		for (let i = 0; i < status_notif_taken.length; i++) {
+			status_notif_taken[i].concerned_party = basic_functions.get_people_from_appointment(
+				status_notif_taken[i],
+				allUsers
+			)?.appointee;
+		}
 		status_notifs.push(...status_notif_given);
 		status_notifs.push(...status_notif_taken);
 
 		setStatusNotifications(status_notifs);
 
-		console.log(status_notifs);
+		console.log("status notifs", status_notifs);
 	}
 
 	// useEffect hook to call get_notification_appointments when userSchedule changes
@@ -151,31 +166,20 @@ const SideNav = () => {
 												<div className="flex flex-row-reverse justify-between px-4 py-4 bg-gray-100 rounded-lg m-2">
 													{
 														// if the profile_pic_url is not empty, display the image, else display the initials
-														basic_functions.get_people_from_appointment(
-															appointment,
-															allUsers
-														)?.scheduler?.profile_pic_url.length !==
-														0 ? (
+														appointment.concerned_party?.profile_pic_url
+															.length !== 0 ? (
 															<img
 																src={
-																	basic_functions.get_people_from_appointment(
-																		appointment,
-																		allUsers
-																	)?.scheduler?.profile_pic_url
+																	appointment.concerned_party
+																		?.profile_pic_url
 																}
 																alt="scheduler_id"
 																className="w-20 h-20 rounded-full object-cover outline outline-blue-700"
 															/>
 														) : (
 															<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
-																{basic_functions
-																	.get_people_from_appointment(
-																		appointment,
-																		allUsers
-																	)
-																	?.scheduler.full_name?.split(
-																		" "
-																	)
+																{appointment.concerned_party?.full_name
+																	?.split(" ")
 																	.map((name) => name[0])
 																	.join("")}
 															</div>
@@ -183,50 +187,47 @@ const SideNav = () => {
 													}
 													<div>
 														<div className="text-blue-900 text-lg pt-1">
-															{
-																basic_functions.get_people_from_appointment(
-																	appointment,
-																	allUsers
-																)?.scheduler?.full_name
-															}
+															{appointment.concerned_party?.full_name}
 														</div>
 														<div className="text-blue-900 text-sm pt-1">
 															+91{" "}
 															{
-																basic_functions.get_people_from_appointment(
-																	appointment,
-																	allUsers
-																)?.scheduler?.phone_number
+																appointment.concerned_party
+																	?.phone_number
 															}
 														</div>
 													</div>
 												</div>
 												<div className="p-2">
-													Has requested an appointment with you.{" "}
-													{appointment.status}
+													Has
+													<spam className="italic text-blue-700 mx-1">
+														{appointment.status}
+													</spam>
+													the following appointment with you.
 												</div>
-												<div className="p-2 flex flex-col gap-2">
-													<div className="text-lg">Agenda</div>
-													<div>{appointment.title}</div>
-													<div className="text-lg">Description</div>
-													<div>{appointment.description}</div>
-													<div className="text-lg">Asked at</div>
-													<div>
-														{appointment.creation_time} on{" "}
-														{new Date(
-															appointment.creation_date
-														).toDateString()}
+												<details className="px-2 cursor-pointer">
+													<summary>Appointment Details</summary>
+													<div className="p-2 flex flex-col gap-2">
+														<div className="text-lg">Agenda</div>
+														<div>{appointment.title}</div>
+														<div className="text-lg">Description</div>
+														<div>{appointment.description}</div>
+														<div className="text-lg">Asked at</div>
+														<div>
+															{appointment.creation_time} on{" "}
+															{new Date(
+																appointment.creation_date
+															).toDateString()}
+														</div>
+														<div className="text-lg">Time slot:</div>
+														<div>
+															{appointment.appointment_time} on{" "}
+															{new Date(
+																appointment.appointment_date
+															).toDateString()}
+														</div>
 													</div>
-													<div className="text-lg">
-														Requested Your Time Slot at
-													</div>
-													<div>
-														{appointment.appointment_time} on{" "}
-														{new Date(
-															appointment.appointment_date
-														).toDateString()}
-													</div>
-												</div>
+												</details>
 												<div className="flex w-full justify-between flex-row gap-4 p-2">
 													<button
 														className="btn bg-green-300 hover:bg-green-400 hover:scale-105 flex-1 text-lg font-normal"
@@ -317,28 +318,29 @@ const SideNav = () => {
 												<div className="p-2">
 													Has requested an appointment with you.
 												</div>
-												<div className="p-2 flex flex-col gap-2">
-													<div className="text-lg">Agenda</div>
-													<div>{appointment.title}</div>
-													<div className="text-lg">Description</div>
-													<div>{appointment.description}</div>
-													<div className="text-lg">Asked at</div>
-													<div>
-														{appointment.creation_time} on{" "}
-														{new Date(
-															appointment.creation_date
-														).toDateString()}
+												<details className="px-2 cursor-pointer">
+													<summary>Appointment Details</summary>
+													<div className="p-2 flex flex-col gap-2">
+														<div className="text-lg">Agenda</div>
+														<div>{appointment.title}</div>
+														<div className="text-lg">Description</div>
+														<div>{appointment.description}</div>
+														<div className="text-lg">Asked at</div>
+														<div>
+															{appointment.creation_time} on{" "}
+															{new Date(
+																appointment.creation_date
+															).toDateString()}
+														</div>
+														<div className="text-lg">Time slot:</div>
+														<div>
+															{appointment.appointment_time} on{" "}
+															{new Date(
+																appointment.appointment_date
+															).toDateString()}
+														</div>
 													</div>
-													<div className="text-lg">
-														Requested Your Time Slot at
-													</div>
-													<div>
-														{appointment.appointment_time} on{" "}
-														{new Date(
-															appointment.appointment_date
-														).toDateString()}
-													</div>
-												</div>
+												</details>
 												<div className="flex w-full justify-between flex-row gap-4 p-2">
 													<button
 														className="btn bg-green-300 hover:bg-green-400 hover:scale-105 flex-1 text-lg"

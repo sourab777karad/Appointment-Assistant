@@ -13,11 +13,11 @@ import {
 	getAuth,
 	signInWithPopup,
 	GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  sendEmailVerification
+	createUserWithEmailAndPassword,
+	sendEmailVerification,
 } from "firebase/auth";
 
-const Signup = (props) => {
+const Signup = () => {
 	const auth = getAuth(app);
 
 	const [email, setEmail] = useState("");
@@ -106,7 +106,9 @@ const Signup = (props) => {
 					const user = userCredential.user;
 					sendEmailVerification(user)
 						.then(() => {
-              toast.success("Email verification link sent successfully", { autoClose: 5000 });
+							toast.success("Email verification link sent successfully", {
+								autoClose: 5000,
+							});
 						})
 						.catch((error) => {
 							console.log("error sending email verification link", error);
@@ -237,8 +239,9 @@ const Signup = (props) => {
 	};
 
 	const validateEmail = (email) => {
-		const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return re.test(email);
+		const domainRegex = /^[\w-]+(\.[\w-]+)*@mitwpu\.edu\.in$/;
+
+		return domainRegex.test(email);
 	};
 
 	const validatePassword = (password) => {
@@ -397,6 +400,7 @@ const Signup = (props) => {
 										<label className="block text-gray-700">Password</label>
 										<input
 											type="password"
+											autoComplete="new-password"
 											name=""
 											id=""
 											value={password}
@@ -414,6 +418,7 @@ const Signup = (props) => {
 										</label>
 										<input
 											type="password"
+											autoComplete="new-password"
 											value={confirmPassword}
 											onChange={(e) => setConfirmPassword(e.target.value)}
 											id=""

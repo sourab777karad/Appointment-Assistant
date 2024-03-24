@@ -97,11 +97,8 @@ export default function Schedule({
 		// we know for a fact that some appointments can coincide.
 		// lets first go through all the appointment lists in the userSchedule
 		let our_appointment = null;
-		console.log(userSchedule);
 		userSchedule?.blocked_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
-				console.log(appointment)
-				console.log("what the hell", userSchedule)
 				// check if appointment.start_time is between the time_slot.start_time and time_slot.end_time
 				if (
 					isWithinInterval(parse(appointment.start_time, "h:mm a", new Date()), {
