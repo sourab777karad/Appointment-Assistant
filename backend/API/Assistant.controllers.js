@@ -50,8 +50,7 @@ export default class AssistantController {
         return res.status(200).json({ filled: false, newUser: true });
       }
       if (
-        appointment_date.date.start_date === null &&
-        appointment_date.date.end_date === null
+        appointment_date.date.start_date === null
       ) {
         return res.status(400).json({ message: "Date range not provided" });
       }
@@ -112,8 +111,7 @@ export default class AssistantController {
       const appointment_details = req.body;
 
       if (
-        appointment_details.date.start_date === null &&
-        appointment_details.date.end_date === null
+        appointment_details.date.start_date === null 
       ) {
         return res.status(400).json({ message: "Date range not provided" });
       }
@@ -139,7 +137,7 @@ export default class AssistantController {
       const blocked_appointments = await AssistantDAO.getBlockedAppointments(
         appointment_details.firebase_id
       );
-
+	 
       return res
         .status(200)
         .json({ taken_appointments, given_appointments, blocked_appointments });
@@ -172,7 +170,7 @@ export default class AssistantController {
         appointeeId,
         appointment._id
       );
-
+	  await NotificationService.sendMessagetoUser(appointeeId);
       return res.status(200).json({ status });
     } catch (err) {
       console.error(err);
@@ -536,6 +534,7 @@ export default class AssistantController {
       return res.status(500).json({ message: "Error deleting user" });
     }
   }
+
   static async realtimeMessageTest(req, res) {
     try {
       const message = "hello from the server";
