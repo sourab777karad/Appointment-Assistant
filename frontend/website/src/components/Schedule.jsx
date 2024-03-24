@@ -193,8 +193,13 @@ export default function Schedule({
 			} else if (our_appointment.status === "pending") {
 				our_appointment.type = "Pending Your Confirmation";
 			} else if (our_appointment.status === "cancelled") {
-				our_appointment.type = "Free";
-				our_appointment.concerned_party = "Free";
+				return {
+					type: "Free",
+					concerned_party: "Free",
+					start_time: time_slot.start_time,
+					end_time: time_slot.end_time,
+					appointment_date: date,
+				};
 			}
 			return our_appointment;
 		}
@@ -418,8 +423,6 @@ export default function Schedule({
 			return;
 		}
 	}, []);
-
-	// hooks
 
 	useEffect(() => {
 		console.log(currentWeek);

@@ -143,6 +143,10 @@ const AppointmentDetailsNav = () => {
 													allUsers,
 													"Your appointment has been Confirmed"
 												);
+
+												document.getElementById(
+													"appointment-drawer"
+												).checked = false;
 											}}
 										>
 											<IconCheck className="w-6 h-6" />
@@ -180,6 +184,10 @@ const AppointmentDetailsNav = () => {
 													allUsers,
 													"Your appointment has been Cancelled"
 												);
+
+												document.getElementById(
+													"appointment-drawer"
+												).checked = false;
 											}}
 										>
 											<IconX className="w-6 h-6" />
