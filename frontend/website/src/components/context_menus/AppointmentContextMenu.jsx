@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { UserInfoContext } from "../../context/UserInfoContext";
 import { BaseUrlContext } from "../../context/BaseUrlContext";
 
-const AppointmentContextMenu = ({ x, y, onClose, appointment, change_status, blockPrivileges }) => {
+const AppointmentContextMenu = ({ x, y, onClose, appointment, blockPrivileges }) => {
 	const handleClick = (e) => {
 		e.preventDefault(); // Prevent default right-click menu
 		onClose(); // Close custom menu
@@ -37,7 +37,14 @@ const AppointmentContextMenu = ({ x, y, onClose, appointment, change_status, blo
 					{appointment.status === "confirmed" ? (
 						<li
 							onClick={() => {
-								change_status(appointment.start_time, "confirmed");
+								basic_functions.change_status_without_mail(
+									appointment,
+									"cancelled",
+									base_url,
+									userToken,
+									userDetails,
+									refreshLoggedInUserScheduleForDisplayedWeek
+								);
 							}}
 						>
 							<a>Cancel Appointment</a>

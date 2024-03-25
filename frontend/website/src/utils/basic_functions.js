@@ -146,6 +146,50 @@ export default class basic_functions {
 		});
 	}
 
+	static async change_notif_status(
+		appointment,
+		status,
+		baseUrl,
+		userToken,
+		refreshLoggedInUserScheduleForDisplayedWeek,
+		current_user_id
+	) {
+		// figure out if the current user id is the scheduler or the appointee
+		if (appointment.scheduler_id === current_user_id) {
+			appointment.scheduler_notif_status = status;
+		} else {
+			appointment.appointee_notif_status = status;
+		}
+
+		const response = axios
+			.post(
+				`${baseUrl}/update-appointment`,
+				{
+					...appointment,
+					scheduler_notif_status: appointment.scheduler_notif_status,
+					appointee_notif_status: appointment.appointee_notif_status,
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
+					},
+				}
+			)
+			.then((response) => {
+				console.log(response.data);
+				refreshLoggedInUserScheduleForDisplayedWeek();
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+
+		toast.promise(response, {
+			loading: "Loading",
+			success: "Notification status changed successfully",
+			error: "Error changing notification status",
+		});
+	}
+
 	static getAppointments(userSchedule, given_date) {
 		/**
 		 * This function returns the appointments for the given date

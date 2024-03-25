@@ -34,10 +34,17 @@ const SideNav = () => {
 
 	// Function to get notification appointments
 	function get_notification_appointments() {
-		const notifs = [];
+		// status notifications are those that we can mark as completed.
 		const status_notifs = [];
+		// notifs are those that we can say yes or no to. They are pending appointments.
+		const notifs = [];
+
+		// first we will find the notifications to display which are pending.
+
+		// in appointments where you are taking, you dont need to check for pending appointments, because you are the one who is taking the appointment, hence the empty list.
 		const taken_appointments = [];
 
+		// in appointments where you are giving, you need to check for pending appointments, because you are the one who is giving the appointment. It is pending your confirmation, and thus must be displayed.
 		const given_appointments = userSchedule.given_appointments.filter(
 			(appointment) => appointment.status === "pending"
 		);
@@ -46,34 +53,23 @@ const SideNav = () => {
 		notifs.push(...taken_appointments);
 		setNotifAppointments(notifs);
 
-		// get status notifications
-		const status_notif_given = userSchedule.given_appointments.filter(
-			(appointment) => appointment.status === "cancelled" // they cancelled after you approved
-		);
+		// now let us work on finding status notifications.
+		// get status notifications. This works like this: if the status_notif_pending field in the appointment is false, we ignore, if it is true, we display it. Upon marking as read, we set the status_notif_pending to false. To make sure it is shown to both we have a scheduler_status_notif_pending field, and a appointee_status_notif_pending field.
 
-		// for each of these filtered given appointments, we have to assign the concerned party as the scheduler
+		// for taken appointments, we are the ones taking them, hence the field of our interest will be scheduler_status_notif_pending
 
-		for (let i = 0; i < status_notif_given.length; i++) {
-			status_notif_given[i].concerned_party = basic_functions.get_people_from_appointment(
-				status_notif_given[i],
-				allUsers
-			)?.scheduler;
-		}
-
+		// so we check taken appointemnts for that.
 		const status_notif_taken = userSchedule.taken_appointments.filter(
-			(appointment) =>
-				(appointment.status === "confirmed") |
-				(appointment.status === "cancelled") |
-				(appointment.status === "rejected")
+			(appointment) => appointment.scheduler_status_notif_pending === true
 		);
 
-		// for all the filtered taken appointments, we have to assign the concerned party as the appointee
-		for (let i = 0; i < status_notif_taken.length; i++) {
-			status_notif_taken[i].concerned_party = basic_functions.get_people_from_appointment(
-				status_notif_taken[i],
-				allUsers
-			)?.appointee;
-		}
+		// for given appointments, we are the ones giving them, hence the field of our interest will be appointee_status_notif_pending
+
+		// so we check given appointemnts for that.
+		const status_notif_given = userSchedule.given_appointments.filter(
+			(appointment) => appointment.appointee_status_notif_pending === true
+		);
+
 		status_notifs.push(...status_notif_given);
 		status_notifs.push(...status_notif_taken);
 
@@ -242,14 +238,13 @@ const SideNav = () => {
 													<button
 														className="btn bg-green-300 hover:bg-green-400 hover:scale-105 flex-1 text-lg font-normal"
 														onClick={() => {
-															basic_functions.change_status_without_mail(
+															basic_functions.change_notif_status(
 																appointment,
-																"completed",
+																false,
 																baseUrl,
 																userToken,
 																refreshLoggedInUserScheduleForDisplayedWeek,
-																allUsers,
-																appointment.cancellation_message
+																userDetails.firebase_id
 															);
 														}}
 													>
@@ -373,7 +368,7 @@ const SideNav = () => {
 														onClick={() => {
 															basic_functions.change_status(
 																appointment,
-																"cancelled",
+																"rejected",
 																baseUrl,
 																userToken,
 																refreshLoggedInUserScheduleForDisplayedWeek,
