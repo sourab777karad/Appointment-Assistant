@@ -127,6 +127,7 @@ export default function Schedule({
 			return our_appointment;
 		}
 
+		// now working to get taken appointments.  we will go through all the taken appointments
 		userSchedule?.taken_appointments?.forEach((appointment) => {
 			if (appointment.appointment_date === date) {
 				try {
@@ -146,7 +147,13 @@ export default function Schedule({
 							our_appointment.type = "Taken and Confirmed";
 						} else if (our_appointment.status === "pending") {
 							our_appointment.type = "Pending Their Confirmation";
+						} else if (
+							our_appointment.status === "completed" ||
+							our_appointment.status === "read"
+						) {
+							our_appointment.type = "completed";
 						} else {
+							// this only leaves rejected and cancelled, in both cases this is going to be free.
 							our_appointment = {
 								type: "Free",
 								concerned_party: "Free",
@@ -196,6 +203,7 @@ export default function Schedule({
 
 		// if there are multiple given appointments, then we will return redirect user to notifications
 		if (given_appointments.length > 1) {
+			our_appointment = {};
 			our_appointment.type = "Multiple Requests";
 			return {
 				type: "Multiple Requests",
@@ -214,7 +222,7 @@ export default function Schedule({
 			} else if (our_appointment.status === "pending") {
 				our_appointment.type = "Pending Your Confirmation";
 			} else {
-				return {
+				our_appointment = {
 					type: "Free",
 					concerned_party: "Free",
 					start_time: time_slot.start_time,
@@ -224,7 +232,6 @@ export default function Schedule({
 			}
 			return our_appointment;
 		}
-
 		return {
 			type: "Free",
 			concerned_party: "Free",
@@ -722,6 +729,12 @@ export default function Schedule({
 											key={format(date, "yyyy-MM-dd")}
 											className={
 												"border-2 p-2 " +
+												(current_div_schedule?.type === "Multiple Requests"
+													? " bg-purple-200 "
+													: "") +
+												(current_div_schedule?.type === "completed"
+													? " bg-green-200 "
+													: "") +
 												(current_div_schedule?.type === "blocked"
 													? " bg-red-100 "
 													: "") +
@@ -769,7 +782,19 @@ export default function Schedule({
 													}
 													// if the appointment type is pending, then return
 													if (
-														current_div_schedule?.status === "pending"
+														current_div_schedule?.status ===
+															"pending" ||
+														current_div_schedule?.status === "read" ||
+														current_div_schedule?.status ===
+															"completed" ||
+														current_div_schedule?.status ===
+															"rejected" ||
+														current_div_schedule?.status ===
+															"cancelled" ||
+														current_div_schedule?.status ===
+															"confirmed" ||
+														current_div_schedule?.type ===
+															"Multiple Requests"
 													) {
 														handleContextMenuDisabled(e);
 														return;
@@ -800,6 +825,17 @@ export default function Schedule({
 												if (current_div_schedule?.type === "blocked") {
 													return;
 												}
+												// if the appointment is blocked, then return
+												if (
+													current_div_schedule?.type ===
+													"Multiple Requests"
+												) {
+													// open the notif panel and return
+													document.getElementById(
+														"notif-drawer"
+													).checked = true;
+													return;
+												}
 												// all other cases, open panel
 												setCurrentAppointmentForPanel(current_div_schedule);
 												document.getElementById(
@@ -810,7 +846,7 @@ export default function Schedule({
 												handleCloseMenu();
 											}}
 										>
-											<div className="flex flex-col gap-1 justify-center items-center text-sm font-semibold">
+											<div className="flex flex-col justify-center items-center text-sm font-semibold">
 												<div className="flex justify-center text-center w-full">
 													{
 														current_div_schedule?.concerned_party

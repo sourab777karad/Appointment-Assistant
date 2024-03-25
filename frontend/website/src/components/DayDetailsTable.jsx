@@ -174,8 +174,12 @@ export default function DayDetailsTable({ given_date }) {
 												);
 											}}
 										>
-											<IconCheck className="w-6 h-6" />
-											Mark as Completed
+											<div className="flex gap-1">
+												<IconCheck className="w-6 h-6" />
+												<div className="w-full flex-1 text-nowrap p-1 flex justify-center items-center">
+													Mark as Completed
+												</div>
+											</div>
 										</button>
 									</td>
 								</tr>

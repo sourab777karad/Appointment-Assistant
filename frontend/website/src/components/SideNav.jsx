@@ -244,7 +244,7 @@ const SideNav = () => {
 														onClick={() => {
 															basic_functions.change_status_without_mail(
 																appointment,
-																"read",
+																"completed",
 																baseUrl,
 																userToken,
 																refreshLoggedInUserScheduleForDisplayedWeek,
