@@ -1,7 +1,7 @@
-import express from 'express';
-import AssistantRoutes from './API/Assistant.routes.js';
-import cors from 'cors';
-import helmet from 'helmet';
+import express from "express";
+import AssistantRoutes from "./API/Assistant.routes.js";
+import cors from "cors";
+import helmet from "helmet";
 const app = express();
 // using helmet to secure the app by setting various HTTP headers
 app.use(helmet());

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const UpcomingAppointments  = (myappointments) => {
+const UpcomingAppointments = (myappointments) => {
   const appointments = [
     {
       title: "Appointment 1",

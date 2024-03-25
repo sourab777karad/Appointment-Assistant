@@ -1,38 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<body>
+  <body>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
     <script>
-        // Initialize Firebase
-    var firebaseConfig = {
+      // Initialize Firebase
+      var firebaseConfig = {
         apiKey: "AIzaSyCiQAtx17n-LmaZRK5Gq7yCPYURG19ZSUE",
         projectId: "appointment-assistant-2c9de",
-    };
-        firebase.initializeApp(firebaseConfig);
+      };
+      firebase.initializeApp(firebaseConfig);
 
-        // Sign in the user
+      // Sign in the user
 
-        firebase.auth().signInWithEmailAndPassword('parthzarekar@gmail.com', '12345678')
+      firebase
+        .auth()
+        .signInWithEmailAndPassword("parthzarekar@gmail.com", "12345678")
 
-            .then((userCredential) => {
-                // Signed in 
-                var user = userCredential.user;
-                
-                user.getIdToken().then(function(idToken) {
-                    // ID Token for `user` is now refreshed and can be used.
-                    console.log(idToken);
-                });
-            })
-            .catch((error) => {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // ..
-            });
+        .then((userCredential) => {
+          // Signed in
+          var user = userCredential.user;
+
+          user.getIdToken().then(function (idToken) {
+            // ID Token for `user` is now refreshed and can be used.
+            console.log(idToken);
+          });
+        })
+        .catch((error) => {
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ..
+        });
     </script>
-</body>
+  </body>
 </html>
 <!-- "email": "admin@gmail.com",
     "password": "1234567 -->
-    <!-- "email": "user1@gmail.com",
+<!-- "email": "user1@gmail.com",
     "password": "1234566", -->

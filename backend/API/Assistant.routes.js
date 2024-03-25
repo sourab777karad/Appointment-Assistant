@@ -12,9 +12,9 @@ router.use(authenticator.TokenAuthenticator);
 
 // Define a POST route at "/are-user-details-filled" that first authenticates the user's token, then calls the areUserDetailsFilled method in the assistantCtrl controller
 router.post(
-	"/are-user-details-filled",
-	authenticator.TokenAuthenticator,
-	assistantCtrl.areUserDetailsFilled
+  "/are-user-details-filled",
+  authenticator.TokenAuthenticator,
+  assistantCtrl.areUserDetailsFilled,
 );
 
 // Define a POST route at "/update-user-details" that calls the updateUserDetails method in the assistantCtrl controller
@@ -30,7 +30,10 @@ router.post("/book-appointment", assistantCtrl.setAppointment);
 router.post("/change-status", assistantCtrl.changeStatus);
 
 // Define a POST route at "/change-status-without-mail" that calls the changeStatusWithoutMail method in the assistantCtrl controller
-router.post("/change-status-without-mail", assistantCtrl.changeStatusWithoutMail);
+router.post(
+  "/change-status-without-mail",
+  assistantCtrl.changeStatusWithoutMail,
+);
 
 // Define a POST route at "/delete-appointment" that calls the deleteAppointment method in the assistantCtrl controller
 router.post("/delete-appointment", assistantCtrl.deleteAppointment);
@@ -45,13 +48,23 @@ router.get("/get-profile", assistantCtrl.getProfileByUserId);
 router.post("/update-user-profile", assistantCtrl.updateUserProfile);
 
 // Define a POST route at "/get-pending-cancelled-appointments" that calls the getPendingCancelledAppointments method in the assistantCtrl controller
-router.post("/get-pending-cancelled-appointments", assistantCtrl.getPendingCancelledAppointments);
+router.post(
+  "/get-pending-cancelled-appointments",
+  assistantCtrl.getPendingCancelledAppointments,
+);
 
 // Define a POST route at "/update-profile-photo" that first handles file upload with middleware, then calls the updateProfilePhoto method in the assistantCtrl controller
-router.post("/update-profile-photo", upload.single("image"), assistantCtrl.updateProfilePhoto);
+router.post(
+  "/update-profile-photo",
+  upload.single("image"),
+  assistantCtrl.updateProfilePhoto,
+);
 
 // Define a POST route at "/update-blocked-appointments" that calls the updateBlockedAppointments method in the assistantCtrl controller
-router.post("/update-blocked-appointments", assistantCtrl.updateBlockedAppointments);
+router.post(
+  "/update-blocked-appointments",
+  assistantCtrl.updateBlockedAppointments,
+);
 
 // Define a POST route at "/get-faculty-schedule" that calls the getFacultySchedule method in the assistantCtrl controller
 router.post("/get-faculty-schedule", assistantCtrl.getFacultySchedule);

@@ -61,7 +61,9 @@ const Appointment_past = () => {
 
   return (
     <div className="mx-auto px-4 pt-24">
-      <h1 className="text-3xl font-semibold my-4 text-center text-blue-700">Past Appointments</h1>
+      <h1 className="text-3xl font-semibold my-4 text-center text-blue-700">
+        Past Appointments
+      </h1>
       <YearScroll onSelectYear={handleYearSelect} />
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[

@@ -1,18 +1,22 @@
 # Appointment Assistant
+
 Cloud Service for Maintaining Apppointments via slots for personal Meetings.
 
 # Target date feb 20
 
 # Functionality
+
 1. Log in sign up
-2. 
+2.
 3. no media queries
 
 # tech
+
 1. material ui, tailwindcss, react, vite
 2. node, express, dynamo, s3, cloud, aws
 
 # Screens
+
 1. Login
 2. Signup
 3. Forgot Password
@@ -22,18 +26,19 @@ Cloud Service for Maintaining Apppointments via slots for personal Meetings.
 7. Appointment Page - Admin /user
 8. Report Generation Page
 9. Past and Upcoming Appointments Page
-15. About Us
+10. About Us
 
 # Collections
 
 # Roles
+
 1. parth - routes and middleware
 2. sourab - cloud and dao
 3. saubhagya - frontend half
 4. krish - frontend half
 
-
 # Collections
+
 ```
 1. Keys {
   KEK: string,
@@ -140,7 +145,7 @@ req {
     scheduler_email_id: string
 }
 
-response: 
+response:
 {
     appiontment: object
 }
@@ -172,7 +177,7 @@ req {
     token
 }
 
-res: 
+res:
 {
     statistics = [
         {
@@ -183,13 +188,14 @@ res:
             name: string
             value: string
         },
-        
+
     ]
 }
 
 ```
 
 # Current research
+
 1. ask vinayak sir for money and aws
 2. jwt token
 3. cloud integration
@@ -197,7 +203,9 @@ res:
 5. Real Time notifications without using multiple api calls
 
 # !no media queries
+
 # credit
 
-# added github pages at 
+# added github pages at
+
 ![here](https://krishnarajt.github.io/Appointment-Assistant)
