@@ -197,7 +197,7 @@ export default class basic_functions {
           },
         },
       )
-      .then((response) => {
+      .then(() => {
         refreshLoggedInUserScheduleForDisplayedWeek();
       })
       .catch((error) => {
@@ -305,7 +305,7 @@ export default class basic_functions {
           },
         },
       )
-      .then((response) => {
+      .then(() => {
         refreshLoggedInUserScheduleForDisplayedWeek();
       })
       .catch((error) => {

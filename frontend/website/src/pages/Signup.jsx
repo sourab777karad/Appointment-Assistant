@@ -27,10 +27,9 @@ const Signup = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [firebaseid, setFirebaseid] = useState("");
+  const [setFirebaseid] = useState("");
   const base_url = React.useContext(BaseUrlContext).baseUrl;
   const setUserToken = React.useContext(UserInfoContext).setUserToken;
-  const userToken = React.useContext(UserInfoContext).userToken;
 
   const mit_wpu_images = [
     "https://mit-wpu.managementquotainfo.in/wp-content/uploads/sites/2/2019/12/MIT-WPU.jpg",

@@ -41,13 +41,13 @@ const Login = () => {
 
   const base_url = useContext(BaseUrlContext).baseUrl;
   const setUserToken = useContext(UserInfoContext).setUserToken;
-  const [localUserToken, setLocalUserToken] = useState("");
+  const [setLocalUserToken] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userFullName, setUserFullName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  const [setUserFullName] = useState("");
+  const [setUserEmail] = useState("");
   const [user, setUser] = useState(null);
-  const [firebaseid, setFirebaseid] = useState("");
+  const [setFirebaseid] = useState("");
   const setUserDetails = useContext(UserInfoContext).setUserDetails;
   const setUserSchedule = useContext(UserInfoContext).setUserSchedule;
   const setAllUsers = useContext(UserInfoContext).setAllUsers;
@@ -381,7 +381,7 @@ const Login = () => {
             />
           </div>
           <div
-            className="bg-white w-full md:max-w-md lg:max-w-full md:mx-auto md:mx-0 md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
+            className="bg-white w-full md:max-w-md lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
   flex items-center justify-center"
           >
             <div className="w-full h-100">
