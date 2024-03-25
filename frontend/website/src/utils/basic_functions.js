@@ -48,10 +48,7 @@ export default class basic_functions {
 		 * @param {string} message - The message to be sent in the email
 		 * @return {Promise} Returns a promise that resolves to the response of the axios post request
 		 */
-		const { scheduler, appointee } = await this.get_people_from_appointment(
-			appointment,
-			allUsers
-		);
+		const { scheduler, appointee } = this.get_people_from_appointment(appointment, allUsers);
 		const response = axios
 			.post(
 				`${base_url}/change-status`,
@@ -65,6 +62,8 @@ export default class basic_functions {
 					appointment_time: appointment.start_time,
 					appiontment_duration: appointment.duration,
 					appointee_name: appointee.full_name,
+					scheduler_id: scheduler.firebase_id,
+					appointee_id: appointee.firebase_id,
 				},
 				{
 					headers: {
