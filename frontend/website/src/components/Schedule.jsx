@@ -157,22 +157,9 @@ export default function Schedule({
 						) {
 							our_appointment.type = "completed";
 						} else {
-							// this only leaves rejected and cancelled, in both cases this is going to be free.
-							our_appointment = {
-								type: "Free",
-								concerned_party: "Free",
-								start_time: time_slot.start_time,
-								end_time: time_slot.end_time,
-								appointment_date: date,
-							};
-							return;
+							// this only leaves rejected and cancelled, in both cases we have to keep looking. else keep free.
+							our_appointment = null;
 						}
-						// you can only possibly have one taken appointment at a time, so we can return the appointment right away
-						our_appointment.concerned_party =
-							basic_functions.get_people_from_appointment(
-								our_appointment,
-								allUsers
-							).appointee;
 					}
 				} catch (error) {
 					console.log(error);
@@ -180,6 +167,11 @@ export default function Schedule({
 			}
 		});
 		if (our_appointment) {
+			// you can only possibly have one taken appointment at a time, so we can return the appointment right away
+			our_appointment.concerned_party = basic_functions.get_people_from_appointment(
+				our_appointment,
+				allUsers
+			).appointee;
 			return our_appointment;
 		}
 
@@ -197,7 +189,13 @@ export default function Schedule({
 							}
 						)
 					) {
-						given_appointments.push(appointment);
+						// only push if the type isnt cancelled or rejected
+						if (
+							appointment.status !== "cancelled" &&
+							appointment.status !== "rejected"
+						) {
+							given_appointments.push(appointment);
+						}
 					}
 				} catch (error) {
 					console.log(error);

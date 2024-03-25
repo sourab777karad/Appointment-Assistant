@@ -51,8 +51,7 @@ const AppointmentDetailsNav = () => {
 								{/* profile pic and name */}
 								<div className="flex w-full justify-between flex-row bg-gray-200 outline-2 rounded-lg my-3 p-4">
 									<div className="flex justify-center items-center w-24">
-										{currentAppointment?.concerned_party?.profile_pic_url
-											.length !== 0 ? (
+										{currentAppointment?.concerned_party?.profile_pic_url ? (
 											<img
 												src={
 													currentAppointment?.concerned_party
@@ -163,6 +162,9 @@ const AppointmentDetailsNav = () => {
 													allUsers,
 													"Your appointment has been Rejected"
 												);
+												document.getElementById(
+													"appointment-drawer"
+												).checked = false;
 											}}
 										>
 											<IconX className="w-6 h-6" />
