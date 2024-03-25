@@ -109,7 +109,7 @@ export const UserInfoContextProvider = ({ children }) => {
 	function calculate_notifs_exist() {
 		const given_appointments = userSchedule.given_appointments;
 		const notifs_exist = given_appointments.some(
-			(appointment) => appointment.status === "pending" || appointment.status === "cancelled"
+			(appointment) => appointment.status === "pending"
 		);
 		setNotifsExist(notifs_exist);
 	}

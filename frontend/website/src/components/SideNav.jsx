@@ -11,6 +11,7 @@ import basic_functions from "../utils/basic_functions";
 
 import io from "socket.io-client";
 import { toast } from "react-hot-toast";
+import NoAppsvg from "../assets/no_notifs.svg";
 
 // This is the drawer. It contains cart. This is present always, and is activated by javascript.
 
@@ -22,6 +23,7 @@ const SideNav = () => {
 		allUsers,
 		userToken,
 		refreshLoggedInUserScheduleForDisplayedWeek,
+		setNotifsExist,
 	} = React.useContext(UserInfoContext);
 	const { baseUrl, onlyBaseUrl } = React.useContext(BaseUrlContext);
 
@@ -77,12 +79,20 @@ const SideNav = () => {
 
 		setStatusNotifications(status_notifs);
 
+		// if either of the notifs is not empty, set the notifs exist to true
+		if (notifs.length > 0 || status_notifs.length > 0) {
+			setNotifsExist(true);
+		} else {
+			setNotifsExist(false);
+		}
+
 		console.log("status notifs", status_notifs);
 	}
 
 	// useEffect hook to call get_notification_appointments when userSchedule changes
 	useEffect(() => {
 		get_notification_appointments();
+		console.log("latest", userSchedule);
 	}, [userSchedule]);
 
 	useEffect(() => {
@@ -166,8 +176,8 @@ const SideNav = () => {
 												<div className="flex flex-row-reverse justify-between px-4 py-4 bg-gray-100 rounded-lg m-2">
 													{
 														// if the profile_pic_url is not empty, display the image, else display the initials
-														appointment.concerned_party?.profile_pic_url
-															.length !== 0 ? (
+														appointment.concerned_party
+															?.profile_pic_url ? (
 															<img
 																src={
 																	appointment.concerned_party
@@ -200,9 +210,9 @@ const SideNav = () => {
 												</div>
 												<div className="p-2">
 													Has
-													<spam className="italic text-blue-700 mx-1">
+													<span className="italic text-blue-700 mx-1">
 														{appointment.status}
-													</spam>
+													</span>
 													the following appointment with you.
 												</div>
 												<details className="px-2 cursor-pointer">
@@ -381,6 +391,18 @@ const SideNav = () => {
 								);
 							})}
 						</div>
+						{/* if there are no status or notif appointments */}
+						{statusNotifications.length === 0 && notifAppointments.length === 0 ? (
+							// if there are no appointments
+							<div className="text-center text-2xl text-gray-500 mt-8 flex flex-col gap-4">
+								<img
+									src={NoAppsvg}
+									alt="no appointments"
+									className="w-[10vw] mx-auto"
+								/>
+								<div className="mt-4 font-normal">No new Notifications!</div>
+							</div>
+						) : null}
 					</div>
 				</div>
 			</div>

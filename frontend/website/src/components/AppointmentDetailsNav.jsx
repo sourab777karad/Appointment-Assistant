@@ -51,19 +51,19 @@ const AppointmentDetailsNav = () => {
 								{/* profile pic and name */}
 								<div className="flex w-full justify-between flex-row bg-gray-200 outline-2 rounded-lg my-3 p-4">
 									<div className="flex justify-center items-center w-24">
-										{currentAppointment?.concerned_party.profile_pic_url
+										{currentAppointment?.concerned_party?.profile_pic_url
 											.length !== 0 ? (
 											<img
 												src={
 													currentAppointment?.concerned_party
-														.profile_pic_url
+														?.profile_pic_url
 												}
 												alt="profile"
 												className="w-20 h-20 self-center aspect-square rounded-full outline object-cover object-center"
 											/>
 										) : (
 											<div className="w-20 h-20 flex items-center justify-center text-2xl font-bold text-blue-800">
-												{currentAppointment?.concerned_party.full_name
+												{currentAppointment?.concerned_party?.full_name
 													?.split(" ")
 													.map((name) => name[0])
 													.join("")}
@@ -72,16 +72,16 @@ const AppointmentDetailsNav = () => {
 									</div>
 									<div>
 										<div className="text-lg">
-											{currentAppointment?.concerned_party.full_name}
+											{currentAppointment?.concerned_party?.full_name}
 										</div>
 										<div className="text-sm">
-											{currentAppointment?.concerned_party.email}
+											{currentAppointment?.concerned_party?.email}
 										</div>
 										<div className="text-sm">
-											{currentAppointment?.concerned_party.room}
+											{currentAppointment?.concerned_party?.room}
 										</div>
 										<div className="text-sm">
-											{currentAppointment?.concerned_party.phone_number}
+											{currentAppointment?.concerned_party?.phone_number}
 										</div>
 									</div>
 								</div>
@@ -143,6 +143,10 @@ const AppointmentDetailsNav = () => {
 													allUsers,
 													"Your appointment has been Confirmed"
 												);
+
+												document.getElementById(
+													"appointment-drawer"
+												).checked = false;
 											}}
 										>
 											<IconCheck className="w-6 h-6" />
@@ -180,6 +184,10 @@ const AppointmentDetailsNav = () => {
 													allUsers,
 													"Your appointment has been Cancelled"
 												);
+
+												document.getElementById(
+													"appointment-drawer"
+												).checked = false;
 											}}
 										>
 											<IconX className="w-6 h-6" />

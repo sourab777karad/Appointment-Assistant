@@ -170,7 +170,7 @@ function NavbarWithSearch() {
 				<IconCalendar className="h-7 w-7" />
 				<span className="text-blue-900">Your Schedule</span>
 			</Typography>
-			<Typography
+			{/* <Typography
 				as="li"
 				variant="small"
 				color="blue-gray"
@@ -240,7 +240,7 @@ function NavbarWithSearch() {
 					</rect>
 				</svg>
 				Upcoming Appointments
-			</Typography>
+			</Typography> */}
 		</ul>
 	);
 
