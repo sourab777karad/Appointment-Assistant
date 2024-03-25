@@ -1,5 +1,5 @@
 // this is the drawer. it contains cart. This is present always, and is activated by javascript.
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useState } from "react";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { UserInfoContext } from "../context/UserInfoContext";
@@ -49,7 +49,7 @@ const BookAppointmentNav = () => {
           },
         },
       )
-      .then((response) => {
+      .then(() => {
         update_did_book_new_appointment();
         refreshLoggedInUserScheduleForDisplayedWeek();
       })

@@ -115,8 +115,6 @@ const SideNav = () => {
     } else {
       setNotifsExist(false);
     }
-
-    console.log("status notifs", status_notifs);
   }
 
   // useEffect hook to call get_notification_appointments when userSchedule changes

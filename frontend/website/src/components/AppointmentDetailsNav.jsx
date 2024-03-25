@@ -14,7 +14,6 @@ const AppointmentDetailsNav = () => {
     if (!currentAppointment) {
       return;
     }
-    console.log("currentAppointment", currentAppointment);
   }, [currentAppointment]);
   return (
     <div className="roboto-regular text-black">

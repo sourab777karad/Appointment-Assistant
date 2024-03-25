@@ -19,7 +19,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 
     // edge case, if both date and time are "", then we return
     if (date === "" && time_slot === "") {
-      console.log("what you even trying to block");
       return;
     }
 
@@ -77,7 +76,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 
     // edge case, if both date and time are "", then we return
     if (date === "" && time_slot === "") {
-      console.log("what you even trying to block");
       return;
     }
 

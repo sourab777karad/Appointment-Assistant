@@ -24,26 +24,6 @@ import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
 
 function App() {
-  // const { baseUrl } = useContext(BaseUrlContext);
-  // useEffect(() => {
-  // 	const socket = io(baseUrl);
-
-  // 	socket.on("connect", () => {
-  // 		console.log("connected to server");
-  // 	});
-
-  // 	socket.on("notification", (message) => {
-  // 		console.log("Received notification:", message);
-  // 	});
-
-  // 	socket.on("disconnect", () => {
-  // 		console.log("disconnected from server");
-  // 	});
-
-  // 	// Clean up the effect
-  // 	return () => socket.disconnect();
-  // }, []); // Empty array ensures that effect is only run on mount and unmount
-
   return (
     <>
       <Toaster
