@@ -27,7 +27,11 @@ export default function Schedule({
 }) {
 	const navigate = useNavigate();
 	// from the context
-	const { allUsers, userDetails } = React.useContext(UserInfoContext);
+	const {
+		allUsers,
+		userDetails,
+		userSchedule: loggedInUserSchedule,
+	} = React.useContext(UserInfoContext);
 
 	// for the right click menu
 	const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
@@ -221,6 +225,11 @@ export default function Schedule({
 				our_appointment.type = "Given and Confirmed";
 			} else if (our_appointment.status === "pending") {
 				our_appointment.type = "Pending Your Confirmation";
+			} else if (
+				our_appointment.status === "completed" ||
+				our_appointment.status === "read"
+			) {
+				our_appointment.type = "completed";
 			} else {
 				our_appointment = {
 					type: "Free",
@@ -293,7 +302,79 @@ export default function Schedule({
 					) {
 						our_appointment.type = "blocked";
 					} else {
-						return {
+						our_appointment = {
+							type: "Free",
+							concerned_party: "Free",
+							start_time: time_slot.start_time,
+							end_time: time_slot.end_time,
+							appointment_date: date,
+						};
+					}
+				}
+			}
+		});
+		if (our_appointment) {
+			return our_appointment;
+		}
+
+		// now we also cant allow the logged in user to make appointments at time slots that he has already commited himself. be it pending or confirmed.
+		// so we will check his pending | confirmed taken appointments, and his confirmed given appointments
+		// if he has any of these, then we will block the time slot
+
+		loggedInUserSchedule.taken_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				) {
+					our_appointment = appointment;
+					if (
+						(our_appointment.status === "confirmed") |
+						(our_appointment.status === "pending")
+					) {
+						our_appointment.type = "blocked";
+						our_appointment.concerned_party = {
+							full_name: "You are Busy",
+						};
+					} else {
+						our_appointment = {
+							type: "Free",
+							concerned_party: "Free",
+							start_time: time_slot.start_time,
+							end_time: time_slot.end_time,
+							appointment_date: date,
+						};
+					}
+				}
+			}
+		});
+		if (our_appointment) {
+			return our_appointment;
+		}
+
+		loggedInUserSchedule.given_appointments.forEach((appointment) => {
+			if (appointment.appointment_date === date) {
+				// check if appointment.appointment_time is present in the the times of the json_time_slots
+				if (
+					isWithinInterval(parse(appointment.appointment_time, "h:mm a", new Date()), {
+						start: parse(time_slot.start_time, "h:mm a", new Date()),
+						end: parse(time_slot.end_time, "h:mm a", new Date()),
+					})
+				) {
+					our_appointment = appointment;
+					if (
+						(our_appointment.status === "confirmed") |
+						(our_appointment.status === "pending")
+					) {
+						our_appointment.type = "blocked";
+						our_appointment.concerned_party = {
+							full_name: "You are Busy",
+						};
+					} else {
+						our_appointment = {
 							type: "Free",
 							concerned_party: "Free",
 							start_time: time_slot.start_time,
@@ -325,6 +406,7 @@ export default function Schedule({
 
 		// if there are multiple given appointments, then we will return redirect user to notifications
 		if (given_appointments.length > 1) {
+			our_appointment = {};
 			// check if any of them is confirmed
 			let confirmed = false;
 			given_appointments.forEach((appointment) => {
@@ -357,7 +439,7 @@ export default function Schedule({
 			if (our_appointment.status === "confirmed") {
 				our_appointment.type = "blocked";
 			} else {
-				return {
+				our_appointment = {
 					type: "Free",
 					concerned_party: "Free",
 					start_time: time_slot.start_time,

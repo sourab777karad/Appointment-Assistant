@@ -11,6 +11,8 @@ function NavbarWithSearch() {
 	const [openNav, setOpenNav] = useState(false);
 	const newNotifications = useContext(UserInfoContext).notifsExist;
 	const logout = useContext(UserInfoContext).logout;
+	const refreshLoggedInUserScheduleForDisplayedWeek =
+		useContext(UserInfoContext).refreshLoggedInUserScheduleForDisplayedWeek;
 
 	const navList = (
 		<ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
@@ -270,50 +272,17 @@ function NavbarWithSearch() {
 							variant="small"
 							color="blue-gray"
 							className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
-							onClick={() => navigate("/profile")}
+							onClick={() => refreshLoggedInUserScheduleForDisplayedWeek()}
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-7 w-7"
 								viewBox="0 0 24 24"
 							>
-								<g stroke="currentColor" stroke-linecap="round" stroke-width="2">
-									<path
-										fill="none"
-										stroke-dasharray="16"
-										stroke-dashoffset="16"
-										d="M10.5 13.5L3 21"
-									>
-										<animate
-											fill="freeze"
-											attributeName="stroke-dashoffset"
-											begin="0.4s"
-											dur="0.2s"
-											values="16;0"
-										></animate>
-									</path>
-									<path
-										fill="currentColor"
-										fillOpacity="0"
-										stroke-dasharray="40"
-										stroke-dashoffset="40"
-										d="M10.7574 13.2426C8.41421 10.8995 8.41421 7.10051 10.7574 4.75736C13.1005 2.41421 16.8995 2.41421 19.2426 4.75736C21.5858 7.10051 21.5858 10.8995 19.2426 13.2426C16.8995 15.5858 13.1005 15.5858 10.7574 13.2426Z"
-									>
-										<animate
-											fill="freeze"
-											attributeName="stroke-dashoffset"
-											dur="0.4s"
-											values="40;0"
-										></animate>
-										<animate
-											fill="freeze"
-											attributeName="fill-opacity"
-											begin="0.6s"
-											dur="0.15s"
-											values="0;0.3"
-										></animate>
-									</path>
-								</g>
+								<path
+									fill="currentColor"
+									d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"
+								/>
 							</svg>
 						</Typography>
 						{/* Account */}

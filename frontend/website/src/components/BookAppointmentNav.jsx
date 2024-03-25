@@ -16,6 +16,7 @@ const BookAppointmentNav = () => {
 		newAppointmentDate,
 		newAppointeeId,
 		update_did_book_new_appointment,
+		refreshLoggedInUserScheduleForDisplayedWeek,
 	} = useContext(UserInfoContext);
 	const base_url = useContext(BaseUrlContext).baseUrl;
 	const [title, setTitle] = useState(null);
@@ -27,7 +28,7 @@ const BookAppointmentNav = () => {
 
 	// function to book appointment
 	function book_appointment() {
-		console.log("booking new appointment", newAppointmentTime)
+		console.log("booking new appointment", newAppointmentTime);
 		const res = axios
 			.post(
 				`${base_url}/book-appointment`,
@@ -55,6 +56,7 @@ const BookAppointmentNav = () => {
 			.then((response) => {
 				console.log(response.data);
 				update_did_book_new_appointment();
+				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
 				console.log(error);

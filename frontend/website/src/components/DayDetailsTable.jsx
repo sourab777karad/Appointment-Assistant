@@ -7,6 +7,7 @@ import { BaseUrlContext } from "../context/BaseUrlContext";
 
 // utility imports
 import basic_functions from "../utils/basic_functions";
+import { parse, isPast } from "date-fns";
 
 // Asset imports
 import NoAppsvg from "../assets/no_appointments.svg";
@@ -64,24 +65,6 @@ export default function DayDetailsTable({ given_date }) {
 		});
 	}
 
-	function get_names_from_appointment(appointment) {
-		if (appointment === null) {
-			return null;
-		}
-		// find the user.firebase_id in allUsers matching with appointment.scheduler and apppointment.appointee
-		let appointee = {};
-		allUsers.forEach((user) => {
-			if (user.firebase_id === appointment.appointee_id) {
-				appointee.full_name = user.full_name;
-				appointee.email = user.email;
-				appointee.room = user.room;
-				appointee.profile_pic_url = user.profile_pic_url;
-				appointee.phone_number = user.phone_number;
-			}
-		});
-		return appointee;
-	}
-
 	return (
 		<div>
 			{Array.isArray(appointments) && appointments.length > 0 && (
@@ -90,7 +73,8 @@ export default function DayDetailsTable({ given_date }) {
 					<thead>
 						<tr>
 							<th>Sr No</th>
-							<th>Meeting with</th>
+							<th>Scheduler</th>
+							<th>Appointee</th>
 							<th>Agenda</th>
 							<th>Details</th>
 							<th>Status</th>
@@ -105,7 +89,22 @@ export default function DayDetailsTable({ given_date }) {
 							return (
 								<tr key={index}>
 									<td>{index + 1}</td>
-									<td>{get_names_from_appointment(appointment).full_name}</td>
+									<td>
+										{
+											basic_functions.get_people_from_appointment(
+												appointment,
+												allUsers
+											).scheduler.full_name
+										}
+									</td>
+									<td>
+										{
+											basic_functions.get_people_from_appointment(
+												appointment,
+												allUsers
+											).appointee.full_name
+										}
+									</td>
 									<td>{appointment.title}</td>
 									<td>{appointment.description}</td>
 									<td>{appointment.status}</td>
@@ -173,6 +172,13 @@ export default function DayDetailsTable({ given_date }) {
 													"Your appointment has been completed"
 												);
 											}}
+											disabled={isPast(
+												parse(
+													appointment.appointment_time,
+													"h:mm a",
+													new Date()
+												)
+											)}
 										>
 											<div className="flex gap-1">
 												<IconCheck className="w-6 h-6" />
