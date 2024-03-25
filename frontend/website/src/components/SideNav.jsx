@@ -49,6 +49,17 @@ const SideNav = () => {
 			(appointment) => appointment.status === "pending"
 		);
 
+		// before we push, we make sure that the concerned party field is present, if its not we assign it.
+		given_appointments.forEach((appointment) => {
+			if (!appointment.concerned_party) {
+				appointment.concerned_party = basic_functions.get_concerned_party(
+					appointment,
+					allUsers,
+					userDetails.firebase_id
+				);
+			}
+		});
+
 		notifs.push(...given_appointments);
 		notifs.push(...taken_appointments);
 		setNotifAppointments(notifs);
@@ -69,6 +80,28 @@ const SideNav = () => {
 		const status_notif_given = userSchedule.given_appointments.filter(
 			(appointment) => appointment.appointee_status_notif_pending === true
 		);
+
+		// before we push, we make sure that the concerned party field is present, if its not we assign it.
+		status_notif_given.forEach((appointment) => {
+			if (!appointment.concerned_party) {
+				appointment.concerned_party = basic_functions.get_concerned_party(
+					appointment,
+					allUsers,
+					userDetails.firebase_id
+				);
+			}
+		});
+
+		// before we push, we make sure that the concerned party field is present, if its not we assign it.
+		status_notif_taken.forEach((appointment) => {
+			if (!appointment.concerned_party) {
+				appointment.concerned_party = basic_functions.get_concerned_party(
+					appointment,
+					allUsers,
+					userDetails.firebase_id
+				);
+			}
+		});
 
 		status_notifs.push(...status_notif_given);
 		status_notifs.push(...status_notif_taken);

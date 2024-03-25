@@ -16,6 +16,18 @@ export default class basic_functions {
 		};
 	}
 
+	static get_concerned_party(appointment, allUsers, current_user_id) {
+		if (appointment === null) {
+			return null;
+		}
+		// figure out if the current user id is the scheduler or the appointee
+		if (appointment.scheduler_id === current_user_id) {
+			return this.get_people_from_appointment(appointment, allUsers).appointee;
+		} else {
+			return this.get_people_from_appointment(appointment, allUsers).scheduler;
+		}
+	}
+
 	static async change_status(
 		appointment,
 		status,
