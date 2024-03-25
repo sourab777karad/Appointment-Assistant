@@ -22,9 +22,6 @@ const BookAppointmentNav = () => {
 	const [title, setTitle] = useState(null);
 	const [description, setDescription] = useState(null);
 
-	useEffect(() => {
-		console.log("appdatetime", newAppointmentDate, newAppointmentTime);
-	}, [newAppointmentDate, newAppointmentTime]);
 
 	// function to book appointment
 	function book_appointment() {
@@ -54,7 +51,6 @@ const BookAppointmentNav = () => {
 				}
 			)
 			.then((response) => {
-				console.log(response.data);
 				update_did_book_new_appointment();
 				refreshLoggedInUserScheduleForDisplayedWeek();
 			})

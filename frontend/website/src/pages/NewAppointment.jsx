@@ -130,7 +130,6 @@ export default function NewAppointment() {
 	};
 
 	const getUserSchedule = (firebase_id, given_week = currentWeek) => {
-		console.log(currentWeek);
 		const response = axios
 			.post(
 				`${base_url}/get-faculty-schedule`,

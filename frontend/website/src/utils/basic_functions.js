@@ -61,7 +61,6 @@ export default class basic_functions {
 				}
 			)
 			.then((response) => {
-				console.log(response.data);
 				if (response.data.sendmail_status === true) {
 					toast.success(`Mail sent to ${scheduler.email} successfully`);
 				}
@@ -126,7 +125,6 @@ export default class basic_functions {
 				}
 			)
 			.then((response) => {
-				console.log(response.data);
 				if (response.data.sendmail_status === true) {
 					toast.success(`Mail sent to ${scheduler.email} successfully`);
 				}
@@ -156,9 +154,9 @@ export default class basic_functions {
 	) {
 		// figure out if the current user id is the scheduler or the appointee
 		if (appointment.scheduler_id === current_user_id) {
-			appointment.scheduler_notif_status = status;
+			appointment.scheduler_status_notif_pending = status;
 		} else {
-			appointment.appointee_notif_status = status;
+			appointment.scheduler_status_notif_pending = status;
 		}
 
 		const response = axios
@@ -166,8 +164,8 @@ export default class basic_functions {
 				`${baseUrl}/update-appointment`,
 				{
 					...appointment,
-					scheduler_notif_status: appointment.scheduler_notif_status,
-					appointee_notif_status: appointment.appointee_notif_status,
+					scheduler_status_notif_pending: appointment.scheduler_status_notif_pending,
+					appointee_status_notif_pending: appointment.appointee_status_notif_pending,
 				},
 				{
 					headers: {
@@ -176,7 +174,6 @@ export default class basic_functions {
 				}
 			)
 			.then((response) => {
-				console.log(response.data);
 				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {
@@ -269,7 +266,6 @@ export default class basic_functions {
 				}
 			)
 			.then((response) => {
-				console.log(response.data);
 				refreshLoggedInUserScheduleForDisplayedWeek();
 			})
 			.catch((error) => {

@@ -18,10 +18,6 @@ const AppointmentContextMenu = ({ x, y, onClose, appointment, blockPrivileges })
 
 	const base_url = useContext(BaseUrlContext).baseUrl;
 
-	useEffect(() => {
-		console.log(userSchedule);
-		console.log("app", appointment);
-	}, [userSchedule]);
 
 	return (
 		<div
@@ -53,7 +49,6 @@ const AppointmentContextMenu = ({ x, y, onClose, appointment, blockPrivileges })
 					{blockPrivileges && appointment.type !== "blocked" && (
 						<li
 							onClick={() => {
-								console.log(appointment, "clicked");
 								basic_functions.block_appointment(
 									appointment,
 									base_url,
@@ -69,7 +64,6 @@ const AppointmentContextMenu = ({ x, y, onClose, appointment, blockPrivileges })
 					{blockPrivileges && (
 						<li
 							onClick={() => {
-								console.log(appointment, "clicked");
 								basic_functions.unblock_appointment(
 									appointment,
 									base_url,
@@ -85,7 +79,6 @@ const AppointmentContextMenu = ({ x, y, onClose, appointment, blockPrivileges })
 					{!blockPrivileges && (
 						<li
 							onClick={() => {
-								console.log(appointment, "clicked");
 								setNewAppointmentDate(appointment.appointment_date);
 								setNewAppointmentTime({
 									start_time: appointment.start_time,

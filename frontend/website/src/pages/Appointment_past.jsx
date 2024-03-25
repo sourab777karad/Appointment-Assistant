@@ -43,12 +43,10 @@ const Appointment_past = () => {
 
   const handleYearSelect = (year) => {
     setSelectedYear(year);
-    console.log("Selected Year:", year);
   };
 
   const handleMonthSelect = (month) => {
     setSelectedMonth(month);
-    console.log("Selected Month:", month);
   };
 
   const getAppointmentsForSelectedMonth = () => {
@@ -58,7 +56,6 @@ const Appointment_past = () => {
         appointment.year === selectedYear &&
         appointment.month === selectedMonth,
     );
-    console.log("Filtered Appointments:", filteredAppointments);
     return filteredAppointments;
   };
 

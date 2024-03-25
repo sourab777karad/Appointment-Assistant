@@ -552,10 +552,6 @@ export default function Schedule({
 	}, []);
 
 	useEffect(() => {
-		console.log(currentWeek);
-	}, [currentWeek]);
-
-	useEffect(() => {
 		// check block privileges
 		if (user_id === userDetails.firebase_id) {
 			setBlockPrivileges(true);
@@ -738,7 +734,6 @@ export default function Schedule({
 									}}
 									onClick={() => {
 										if (blockPrivileges) {
-											console.log("block privileges exist");
 											navigate("/day-details", {
 												state: {
 													date: format(
@@ -776,7 +771,6 @@ export default function Schedule({
 										setCurrentRightClickTimeSlot(time_slot);
 									}}
 									onClick={() => {
-										console.log("clicked");
 										handleCloseMenu();
 									}}
 								>

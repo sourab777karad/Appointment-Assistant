@@ -161,7 +161,6 @@ export default function DayDetailsTable({ given_date }) {
 										<button
 											className="btn text-white rounded-md bg-green-300 flex justify-center items-center gap-2 cursor-pointer hover:bg-green-400 transition-all hover:scale-105 duration-200"
 											onClick={() => {
-												console.log("Mark as Done");
 												basic_functions.change_status_without_mail(
 													appointment,
 													"completed",

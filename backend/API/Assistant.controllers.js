@@ -160,6 +160,9 @@ export default class AssistantController {
 			const schedularToken = req.user_decoded_details;
 			const schedularId = schedularToken.user_id;
 			const appointment_details = req.body;
+			// add pending field
+			appointment_details.scheduler_status_notif_pending = false;
+			appointment_details.appointee_status_notif_pending = false;
 
 			const appointment = await AssistantDAO.SetAppointment(appointment_details);
 			// taken appointments and given appointments add appointment id to the user collection for if the user is scheduler insert the appointment id into the users taken appointment attribute array and if the user is the appointer insert the appointment id into the users given appointment attribute array.
@@ -176,9 +179,6 @@ export default class AssistantController {
 				appointeeId,
 				appointment._id
 			);
-			// add pending field
-			appointment_details.scheduler_status_notif_pending = false;
-			appointment_details.appointee_status_notif_pending = false;
 
 			await NotificationService.sendMessagetoUser(appointeeId);
 			return res.status(200).json({ status });
@@ -246,9 +246,18 @@ export default class AssistantController {
 			const decodedToken = req.user_decoded_details;
 			const userId = decodedToken.user_id;
 
+			// add pending field depending on who is the scheduler and who is the appointee
+			if (userId === appointment_details.scheduler_id) {
+				appointment_details.scheduler_status_notif_pending = false;
+				appointment_details.appointee_status_notif_pending = true;
+			} else {
+				appointment_details.scheduler_status_notif_pending = true;
+				appointment_details.appointee_status_notif_pending = false;
+			}
+
 			// check for the schedular id in the appointment collection schedular attribute if they match then update the status of the appointment
 			// Update the status of the appointment in the database
-			const result = await AssistantDAO.changeStatus(appointment_details);
+			await AssistantDAO.changeStatus(appointment_details);
 
 			// Create a new mail controller
 			const mailController = new MailController();
@@ -265,15 +274,6 @@ export default class AssistantController {
 				appointment_details.appointment_location,
 				appointment_details.appointee_email_id
 			);
-
-			// add pending field depending on who is the scheduler and who is the appointee
-			if (userId === appointment_details.scheduler_id) {
-				appointment_details.scheduler_status_notif_pending = false;
-				appointment_details.appointee_status_notif_pending = true;
-			} else {
-				appointment_details.scheduler_status_notif_pending = true;
-				appointment_details.appointee_status_notif_pending = false;
-			}
 
 			// Send a notification to the scheduler and the appointee
 			await NotificationService.sendMessagetoUser(appointment_details.scheduler_id);

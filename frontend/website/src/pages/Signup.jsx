@@ -44,7 +44,6 @@ const Signup = () => {
 			setFullName(user.displayName);
 			setEmail(user.email);
 			setFirebaseid(user.uid);
-			console.log("inside use effect", user);
 		}
 	}, [user, setUserToken, setFullName, setEmail, setFirebaseid]);
 
@@ -58,8 +57,6 @@ const Signup = () => {
 		// this function adds the user to the database and returns a promise
 		// if the user is added successfully, the promise is resolved
 		// if the user is not added, the promise is rejected
-		console.log("adding user to database");
-		console.log("local user token: ", user.accessToken);
 		return new Promise((resolve, reject) => {
 			axios
 				.post(

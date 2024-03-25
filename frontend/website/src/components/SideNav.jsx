@@ -34,7 +34,6 @@ const SideNav = () => {
 
 	// Function to get notification appointments
 	function get_notification_appointments() {
-		console.log("this is the userschedule while calculating notifications", userSchedule);
 		// status notifications are those that we can mark as completed.
 		const status_notifs = [];
 		// notifs are those that we can say yes or no to. They are pending appointments.
@@ -89,7 +88,6 @@ const SideNav = () => {
 	// useEffect hook to call get_notification_appointments when userSchedule changes
 	useEffect(() => {
 		get_notification_appointments();
-		console.log("latest", userSchedule);
 	}, [userSchedule]);
 
 	useEffect(() => {

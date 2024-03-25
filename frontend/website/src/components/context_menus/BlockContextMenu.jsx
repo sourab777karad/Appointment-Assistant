@@ -51,7 +51,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 				userDetails.single_appointment_duration,
 				userDetails.break_between_appointments
 			);
-			console.log("json_time_slots: ", json_time_slots);
 			appointment_details_list = [];
 			for (let i = 0; i < json_time_slots.length; i++) {
 				const time_slot = json_time_slots[i];
@@ -62,12 +61,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 				});
 			}
 		}
-
-		// print everything
-		console.log("date: ", date);
-		console.log("time_slot: ", time_slot);
-		console.log("appointment_details_list: ", appointment_details_list);
-
 		// now block the appointments
 		basic_functions.block_appointment(
 			appointment_details_list,
@@ -116,7 +109,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 				userDetails.single_appointment_duration,
 				userDetails.break_between_appointments
 			);
-			console.log("json_time_slots: ", json_time_slots);
 			appointment_details_list = [];
 			for (let i = 0; i < json_time_slots.length; i++) {
 				const time_slot = json_time_slots[i];
@@ -127,11 +119,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 				});
 			}
 		}
-
-		// print everything
-		console.log("date: ", date);
-		console.log("time_slot: ", time_slot);
-		console.log("appointment_details_list: ", appointment_details_list);
 
 		// now block the appointments
 		basic_functions.unblock_appointment(
@@ -161,7 +148,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 				<ul className="menu bg-base-200 w-56 rounded-box">
 					<li
 						onClick={() => {
-							console.log("clicked block");
 							block_appointment();
 						}}
 					>
@@ -169,7 +155,6 @@ const BlockContextMenu = ({ x, y, onClose, date, time_slot }) => {
 					</li>
 					<li
 						onClick={() => {
-							console.log("clicked unblock");
 							unblock_appointment();
 						}}
 					>
