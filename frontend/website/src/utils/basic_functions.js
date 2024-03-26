@@ -71,6 +71,7 @@ export default class basic_functions {
           appointee_name: appointee.full_name,
           scheduler_id: scheduler.firebase_id,
           appointee_id: appointee.firebase_id,
+          appointment_date: appointment.appointment_date,
         },
         {
           headers: {
