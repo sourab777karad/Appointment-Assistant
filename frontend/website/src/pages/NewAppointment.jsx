@@ -99,31 +99,6 @@ export default function NewAppointment() {
     getUserSchedule(selectedUserDetails.firebase_id, previousWeek);
   };
 
-  const change_status = (appointment, status) => {
-    const response = axios
-      .post(
-        `${base_url}/change-status`,
-        { status: status, appointment_id: appointment._id },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        },
-      )
-      .then(() => {
-        refreshLoggedInUserScheduleForDisplayedWeek();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    toast.promise(response, {
-      loading: "Loading",
-      success: "Status changed successfully",
-      error: "Error changing status",
-    });
-  };
-
   const getUserDetails = (firebase_id) => {
     const user = allUsers.find((user) => user.firebase_id === firebase_id);
     setSelectedUserDetails(user);
@@ -240,7 +215,6 @@ export default function NewAppointment() {
           handleDateIncreased={handleDateIncreased}
           handleDateDecreased={handleDateDecreased}
           block_appointment={null}
-          change_status={change_status}
           user_time_slots={user_time_slots}
           json_time_slots={json_time_slots}
         />
