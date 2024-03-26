@@ -265,7 +265,7 @@ export default class AssistantController {
 
       // Create a new mail controller
       const mailController = new MailController();
-
+     
       // Send an email with the updated appointment details
       const sendmail_status = await mailController.sendMail(
         appointment_details.scheduler_email_id,
@@ -274,7 +274,7 @@ export default class AssistantController {
         appointment_details.appointee_name,
         appointment_details.appointment_time,
         appointment_details.appointment_date,
-        appointment_details.appointment_duration,
+        appointment_details.appointment_end_time,
         appointment_details.appointment_location,
         appointment_details.appointee_email_id,
       );
