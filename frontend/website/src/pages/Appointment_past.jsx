@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import YearScroll from "../components/YearScroll";
-
+import NotFound from "../assets/notfound.svg";
 const Appointment_past = () => {
   const pastAppointments = [
     {
@@ -38,7 +38,7 @@ const Appointment_past = () => {
     // Add more past appointments here
   ];
 
-  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(null);
 
   const handleYearSelect = (year) => {
@@ -53,14 +53,13 @@ const Appointment_past = () => {
     if (!selectedYear || !selectedMonth) return []; // If year or month not selected, return empty array
     const filteredAppointments = pastAppointments.filter(
       (appointment) =>
-        appointment.year === selectedYear &&
-        appointment.month === selectedMonth,
+        appointment.year === selectedYear && appointment.month === selectedMonth
     );
     return filteredAppointments;
   };
 
   return (
-    <div className="mx-auto px-4 pt-24">
+    <div className="mx-auto px-4 pt-24 mb-[200px]">
       <h1 className="text-3xl font-semibold my-4 text-center text-blue-700">
         Past Appointments
       </h1>
@@ -82,8 +81,8 @@ const Appointment_past = () => {
         ].map((month, index) => (
           <div
             key={index}
-            className={`cursor-pointer bg-white rounded-lg shadow-md p-4 text-center ${
-              selectedMonth === month ? "bg-blue-200" : ""
+            className={`cursor-pointer bg-white rounded-lg shadow-md p-16 text-center ${
+              selectedMonth === month ? "bg-[#E0F6FF]" : ""
             }`}
             onClick={() => handleMonthSelect(month)}
           >
@@ -93,20 +92,37 @@ const Appointment_past = () => {
       </div>
       {selectedMonth && selectedYear && (
         <div>
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="text-xl font-bold mb-24">
             {selectedMonth} {selectedYear}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {getAppointmentsForSelectedMonth().map((appointment, index) => (
-              <div key={index} className="bg-gray-200 rounded-lg shadow-md p-4">
-                <h2 className="text-lg font-bold mb-2">{appointment.title}</h2>
-                <p className="text-gray-600">
-                  {appointment.date} {appointment.month}, {appointment.year}
-                </p>
-                <p className="text-gray-600">{appointment.time}</p>
-                <p className="text-gray-600">{appointment.description}</p>
+            {getAppointmentsForSelectedMonth().length > 0 ? (
+              getAppointmentsForSelectedMonth().map((appointment, index) => (
+                <div
+                  key={index}
+                  className="rounded-lg shadow-md bg-[#E0F6FF] w-[200px] h-[200px] m-2 p-4 flex flex-col justify-between"
+                >
+                  <div>
+                    <h2 className="text-lg font-bold mb-2">
+                      {appointment.title}
+                    </h2>
+                    <p className="text-gray-600 mb-2">
+                      {appointment.date} {appointment.month}, {appointment.year}
+                    </p>
+                    <p className="text-gray-600 mb-2">{appointment.time}</p>
+                    <p className="text-gray-600">{appointment.description}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="ml-[500px] w-[100%] h-[400px] m-2 flex justify-center items-center">
+                <img
+                  src={NotFound}
+                  alt="No appointments found"
+                  className="object-cover w-[100%] rounded-lg"
+                />
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}
