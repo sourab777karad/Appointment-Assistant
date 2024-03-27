@@ -10,7 +10,7 @@ export const BaseUrlProvider = ({ children }) => {
     "https://h1gk4w07-3000.euw.devtunnels.ms/assistant"
   );
 
-  const [onlyBaseUrl, setOnlyBaseUrl] = useState();
+  const [onlyBaseUrl, setOnlyBaseUrl] = useState("");
   // "https://brightly-vital-panther.ngrok-free.app",
   // "https://h1gk4w07-3000.euw.devtunnels.ms"
 

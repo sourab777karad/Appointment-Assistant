@@ -205,10 +205,11 @@ const Appointment_past = () => {
         ].map((month, index) => (
           <div
             key={index}
-            className={`cursor-pointer bg-white rounded-lg shadow-md p-16 text-center ${
-              selectedMonth === month ? "bg-[#E0F6FF]" : ""
+            className={`cursor-pointer bg-white rounded-lg border border-black shadow-md p-14 m-2 text-center ${
+              selectedMonth === month ? "bg-[#c4eeff]" : ""
             }`}
             onClick={() => handleMonthSelect(month)}
+            style={{ transition: "background-color 0.3s" }}
           >
             {month}
           </div>
@@ -224,7 +225,15 @@ const Appointment_past = () => {
               getAppointmentsForSelectedMonth().map((appointment, index) => (
                 <div
                   key={index}
-                  className="rounded-lg shadow-md bg-[#E0F6FF] w-[200px] h-[200px] m-2 p-4 flex flex-col justify-between"
+                  className="rounded-lg shadow-md bg-[#c4feff] border  border-black w-[200px] h-[200px] m-2 p-4 flex flex-col justify-between"
+                  style={{
+                    borderRadius: "15px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    width: "200px",
+                    height: "200px",
+                    margin: "10px",
+                    padding: "20px",
+                  }}
                 >
                   <div>
                     <h2 className="text-lg font-bold mb-2">
