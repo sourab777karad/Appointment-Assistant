@@ -16,7 +16,7 @@ class MailController {
     appointee_name,
     appointment_time,
     appointment_date,
-    appointment_duration,
+    appointment_end_time,
     appointment_location,
     appointee_email_id,
   ) {
@@ -24,11 +24,10 @@ class MailController {
       let text;
       // If the appointment status is confirmed, prepare a confirmation message
       if (status === "confirmed") {
-        text = `Your appointment has been confirmed with ${appointee_name} at ${appointment_time} on ${appointment_date} for a duration of ${appointment_duration} minutes. The appointment is scheduled at ${appointment_location}. Please be on time and bring all the necessary documents. If you have any questions, please feel free to contact the respected Faculty ${appointee_email_id}.`;
+        text = `Your appointment with ${appointee_name} has been confirmed. It will start at ${appointment_time} and end at ${appointment_end_time} on ${appointment_date}. The appointment will take place at ${appointment_location}. Please ensure you arrive on time and bring all necessary documents. If you have any questions, feel free to contact the respective faculty member at ${appointee_email_id}.`;
       } else {
         // If the appointment status is not confirmed, prepare a cancellation message
-        text = `Your appointment has been cancelled with ${appointee_name} at ${appointment_time} on ${appointment_date} for a duration of ${appointment_duration} minutes. The appointment was scheduled at ${appointment_location}. If you have any questions, please feel free to contact the respected Faculty ${appointee_email_id}.
-            The reason for cancellation provided by the faculty is: ${customMessage}`;
+        text = `Your appointment with ${appointee_name} has been rejected. The faculty member has provided the following reason for the cancellation: ${customMessage}. Should you have any questions or concerns, please do not hesitate to reach out to the faculty member directly at ${appointee_email_id}.`;
       }
       // Send the email
       await this.transporter.sendMail({
