@@ -28,17 +28,21 @@ function NavbarWithSearch() {
           className="h-7 w-7"
           viewBox="0 0 24 24"
         >
-          <g stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+          <g
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
             <g
               fill="none"
-              strokeDasharray="10"
-              strokeDashoffset="10"
-              strokeWidth="2"
+              stroke-dasharray="10"
+              stroke-dashoffset="10"
+              stroke-width="2"
             >
               <path d="M3 5L5 7L9 3">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   dur="0.2s"
                   values="10;0"
                 ></animate>
@@ -46,7 +50,7 @@ function NavbarWithSearch() {
               <path d="M3 12L5 14L9 10">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="0.5s"
                   dur="0.2s"
                   values="10;0"
@@ -55,7 +59,7 @@ function NavbarWithSearch() {
               <path d="M3 19L5 21L9 17">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="1s"
                   dur="0.2s"
                   values="10;0"
@@ -65,20 +69,20 @@ function NavbarWithSearch() {
             <g
               fill="currentColor"
               fillOpacity="0"
-              strokeDasharray="22"
-              strokeDashoffset="22"
+              stroke-dasharray="22"
+              stroke-dashoffset="22"
             >
               <rect width="9" height="3" x="11.5" y="3.5" rx="1.5">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="0.2s"
                   dur="0.5s"
                   values="22;0"
                 ></animate>
                 <animate
                   fill="freeze"
-                  attributeName="fillOpacity"
+                  attributeName="fill-opacity"
                   begin="1.7s"
                   dur="0.5s"
                   values="0;1"
@@ -87,14 +91,14 @@ function NavbarWithSearch() {
               <rect width="9" height="3" x="11.5" y="10.5" rx="1.5">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="0.7s"
                   dur="0.5s"
                   values="22;0"
                 ></animate>
                 <animate
                   fill="freeze"
-                  attributeName="fillOpacity"
+                  attributeName="fill-opacity"
                   begin="1.9s"
                   dur="0.5s"
                   values="0;1"
@@ -103,14 +107,14 @@ function NavbarWithSearch() {
               <rect width="9" height="3" x="11.5" y="17.5" rx="1.5">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="1.2s"
                   dur="0.5s"
                   values="22;0"
                 ></animate>
                 <animate
                   fill="freeze"
-                  attributeName="fillOpacity"
+                  attributeName="fill-opacity"
                   begin="2.1s"
                   dur="0.5s"
                   values="0;1"
@@ -136,14 +140,14 @@ function NavbarWithSearch() {
           <g
             fill="none"
             stroke="currentColor"
-            strokeLinecap="round"
-            strokeWidth="2"
+            stroke-linecap="round"
+            stroke-width="2"
           >
-            <g strokeDasharray="12" strokeDashoffset="12">
+            <g stroke-dasharray="12" stroke-dashoffset="12">
               <path d="M12 7V17">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="0.8s"
                   dur="0.2s"
                   values="12;0"
@@ -152,7 +156,7 @@ function NavbarWithSearch() {
               <path d="M7 12H17">
                 <animate
                   fill="freeze"
-                  attributeName="strokeDashoffset"
+                  attributeName="stroke-dashoffset"
                   begin="0.6s"
                   dur="0.2s"
                   values="12;0"
@@ -160,13 +164,13 @@ function NavbarWithSearch() {
               </path>
             </g>
             <path
-              strokeDasharray="60"
-              strokeDashoffset="60"
+              stroke-dasharray="60"
+              stroke-dashoffset="60"
               d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12Z"
             >
               <animate
                 fill="freeze"
-                attributeName="strokeDashoffset"
+                attributeName="stroke-dashoffset"
                 dur="0.5s"
                 values="60;0"
               ></animate>
@@ -196,48 +200,48 @@ function NavbarWithSearch() {
 					<g
 						fill="none"
 						stroke="currentColor"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						strokeWidth="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
 					>
 						<rect
 							width="16"
 							height="16"
 							x="4"
 							y="4"
-							strokeDasharray="64"
-							strokeDashoffset="64"
+							stroke-dasharray="64"
+							stroke-dashoffset="64"
 							rx="1"
 						>
 							<animate
 								fill="freeze"
-								attributeName="strokeDashoffset"
+								attributeName="stroke-dashoffset"
 								dur="0.5s"
 								values="64;0"
 							></animate>
 						</rect>
-						<path strokeDasharray="6" strokeDashoffset="6" d="M7 4V2M17 4V2">
+						<path stroke-dasharray="6" stroke-dashoffset="6" d="M7 4V2M17 4V2">
 							<animate
 								fill="freeze"
-								attributeName="strokeDashoffset"
+								attributeName="stroke-dashoffset"
 								begin="0.5s"
 								dur="0.2s"
 								values="6;0"
 							></animate>
 						</path>
-						<path strokeDasharray="12" strokeDashoffset="12" d="M7 11H17">
+						<path stroke-dasharray="12" stroke-dashoffset="12" d="M7 11H17">
 							<animate
 								fill="freeze"
-								attributeName="strokeDashoffset"
+								attributeName="stroke-dashoffset"
 								begin="0.8s"
 								dur="0.2s"
 								values="12;0"
 							></animate>
 						</path>
-						<path strokeDasharray="9" strokeDashoffset="9" d="M7 15H14">
+						<path stroke-dasharray="9" stroke-dashoffset="9" d="M7 15H14">
 							<animate
 								fill="freeze"
-								attributeName="strokeDashoffset"
+								attributeName="stroke-dashoffset"
 								begin="1s"
 								dur="0.2s"
 								values="9;0"
@@ -319,32 +323,32 @@ function NavbarWithSearch() {
                   fill="currentColor"
                   fillOpacity="0"
                   stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
                 >
                   <path
-                    strokeDasharray="20"
-                    strokeDashoffset="20"
+                    stroke-dasharray="20"
+                    stroke-dashoffset="20"
                     d="M12 5C13.66 5 15 6.34 15 8C15 9.65685 13.6569 11 12 11C10.3431 11 9 9.65685 9 8C9 6.34315 10.3431 5 12 5z"
                   >
                     <animate
                       fill="freeze"
-                      attributeName="strokeDashoffset"
+                      attributeName="stroke-dashoffset"
                       dur="0.4s"
                       values="20;0"
                     ></animate>
                   </path>
                   <path
-                    strokeDasharray="36"
-                    strokeDashoffset="36"
+                    stroke-dasharray="36"
+                    stroke-dashoffset="36"
                     d="M12 14C16 14 19 16 19 17V19H5V17C5 16 8 14 12 14z"
                     opacity="0"
                   >
                     <set attributeName="opacity" begin="0.5s" to="1"></set>
                     <animate
                       fill="freeze"
-                      attributeName="strokeDashoffset"
+                      attributeName="stroke-dashoffset"
                       begin="0.5s"
                       dur="0.4s"
                       values="36;0"
@@ -352,7 +356,7 @@ function NavbarWithSearch() {
                   </path>
                   <animate
                     fill="freeze"
-                    attributeName="fillOpacity"
+                    attributeName="fill-opacity"
                     begin="0.9s"
                     dur="0.5s"
                     values="0;1"
@@ -384,18 +388,18 @@ function NavbarWithSearch() {
                     <g
                       fill="none"
                       stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeWidth="2"
+                      stroke-linecap="round"
+                      stroke-width="2"
                     >
                       <g>
                         <path
-                          strokeDasharray="4"
-                          strokeDashoffset="4"
+                          stroke-dasharray="4"
+                          stroke-dashoffset="4"
                           d="M12 3V5"
                         >
                           <animate
                             fill="freeze"
-                            attributeName="strokeDashoffset"
+                            attributeName="stroke-dashoffset"
                             dur="0.2s"
                             values="4;0"
                           ></animate>
@@ -403,20 +407,20 @@ function NavbarWithSearch() {
                         <path
                           fill="currentColor"
                           fillOpacity="0"
-                          strokeDasharray="28"
-                          strokeDashoffset="28"
+                          stroke-dasharray="28"
+                          stroke-dashoffset="28"
                           d="M12 5C8.68629 5 6 7.68629 6 11L6 17C5 17 4 18 4 19H12M12 5C15.3137 5 18 7.68629 18 11L18 17C19 17 20 18 20 19H12"
                         >
                           <animate
                             fill="freeze"
-                            attributeName="strokeDashoffset"
+                            attributeName="stroke-dashoffset"
                             begin="0.2s"
                             dur="0.4s"
                             values="28;0"
                           ></animate>
                           <animate
                             fill="freeze"
-                            attributeName="fillOpacity"
+                            attributeName="fill-opacity"
                             begin="0.8s"
                             dur="0.15s"
                             values="0;0.3"
@@ -433,13 +437,13 @@ function NavbarWithSearch() {
                         ></animateTransform>
                       </g>
                       <path
-                        strokeDasharray="8"
-                        strokeDashoffset="8"
+                        stroke-dasharray="8"
+                        stroke-dashoffset="8"
                         d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20"
                       >
                         <animate
                           fill="freeze"
-                          attributeName="strokeDashoffset"
+                          attributeName="stroke-dashoffset"
                           begin="0.6s"
                           dur="0.2s"
                           values="8;0"
@@ -455,21 +459,21 @@ function NavbarWithSearch() {
                         ></animateTransform>
                       </path>
                       <path
-                        strokeDasharray="8"
-                        strokeDashoffset="8"
+                        stroke-dasharray="8"
+                        stroke-dashoffset="8"
                         d="M22 6v4"
                         opacity="0"
                       >
                         <set attributeName="opacity" begin="1s" to="1"></set>
                         <animate
                           fill="freeze"
-                          attributeName="strokeDashoffset"
+                          attributeName="stroke-dashoffset"
                           begin="1s"
                           dur="0.2s"
                           values="8;0"
                         ></animate>
                         <animate
-                          attributeName="strokeWidth"
+                          attributeName="stroke-width"
                           begin="1.7s"
                           dur="3s"
                           keyTimes="0;0.1;0.2;0.3;1"
@@ -487,7 +491,7 @@ function NavbarWithSearch() {
                     >
                       <animate
                         fill="freeze"
-                        attributeName="fillOpacity"
+                        attributeName="fill-opacity"
                         begin="1s"
                         dur="0.4s"
                         values="0;1"
@@ -513,39 +517,39 @@ function NavbarWithSearch() {
                     <g
                       fill="none"
                       stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeWidth="2"
+                      stroke-linecap="round"
+                      stroke-width="2"
                     >
                       <g>
                         <path
-                          strokeDasharray="4"
-                          strokeDashoffset="4"
+                          stroke-dasharray="4"
+                          stroke-dashoffset="4"
                           d="M12 3V5"
                         >
                           <animate
                             fill="freeze"
-                            attributeName="strokeDashoffset"
+                            attributeName="stroke-dashoffset"
                             dur="0.2s"
                             values="4;0"
                           />
                         </path>
                         <path
                           fill="currentColor"
-                          fillOpacity="0"
-                          strokeDasharray="28"
-                          strokeDashoffset="28"
+                          fill-opacity="0"
+                          stroke-dasharray="28"
+                          stroke-dashoffset="28"
                           d="M12 5C8.68629 5 6 7.68629 6 11L6 17C5 17 4 18 4 19H12M12 5C15.3137 5 18 7.68629 18 11L18 17C19 17 20 18 20 19H12"
                         >
                           <animate
                             fill="freeze"
-                            attributeName="strokeDashoffset"
+                            attributeName="stroke-dashoffset"
                             begin="0.2s"
                             dur="0.4s"
                             values="28;0"
                           />
                           <animate
                             fill="freeze"
-                            attributeName="fillOpacity"
+                            attributeName="fill-opacity"
                             begin="0.8s"
                             dur="0.15s"
                             values="0;0.3"
@@ -562,13 +566,13 @@ function NavbarWithSearch() {
                         />
                       </g>
                       <path
-                        strokeDasharray="8"
-                        strokeDashoffset="8"
+                        stroke-dasharray="8"
+                        stroke-dashoffset="8"
                         d="M10 20C10 21.1046 10.8954 22 12 22C13.1046 22 14 21.1046 14 20"
                       >
                         <animate
                           fill="freeze"
-                          attributeName="strokeDashoffset"
+                          attributeName="stroke-dashoffset"
                           begin="0.6s"
                           dur="0.2s"
                           values="8;0"
@@ -607,46 +611,46 @@ function NavbarWithSearch() {
                 <g
                   fill="none"
                   stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeWidth="2"
+                  stroke-linecap="round"
+                  stroke-width="2"
                 >
                   <path
-                    strokeDasharray="46"
-                    strokeDashoffset="46"
+                    stroke-dasharray="46"
+                    stroke-dashoffset="46"
                     d="M16 5V4C16 3.44772 15.5523 3 15 3H6C5.44771 3 5 3.44772 5 4V20C5 20.5523 5.44772 21 6 21H15C15.5523 21 16 20.5523 16 20V19"
                   >
                     <animate
                       fill="freeze"
-                      attributeName="strokeDashoffset"
+                      attributeName="stroke-dashoffset"
                       dur="0.5s"
                       values="46;0"
                     ></animate>
                   </path>
                   <path
-                    strokeDasharray="12"
-                    strokeDashoffset="12"
+                    stroke-dasharray="12"
+                    stroke-dashoffset="12"
                     d="M10 12h11"
                     opacity="0"
                   >
                     <set attributeName="opacity" begin="0.6s" to="1"></set>
                     <animate
                       fill="freeze"
-                      attributeName="strokeDashoffset"
+                      attributeName="stroke-dashoffset"
                       begin="0.6s"
                       dur="0.2s"
                       values="12;0"
                     ></animate>
                   </path>
                   <path
-                    strokeDasharray="6"
-                    strokeDashoffset="6"
+                    stroke-dasharray="6"
+                    stroke-dashoffset="6"
                     d="M21 12l-3.5 -3.5M21 12l-3.5 3.5"
                     opacity="0"
                   >
                     <set attributeName="opacity" begin="0.8s" to="1"></set>
                     <animate
                       fill="freeze"
-                      attributeName="strokeDashoffset"
+                      attributeName="stroke-dashoffset"
                       begin="0.8s"
                       dur="0.2s"
                       values="6;0"

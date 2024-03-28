@@ -206,7 +206,7 @@ const Appointment_past = () => {
           <div
             key={index}
             className={`cursor-pointer bg-white rounded-lg border border-black shadow-md p-14 m-2 text-center ${
-              selectedMonth === month ? "bg-[#c4eeff]" : ""
+              selectedMonth === month ? "bg-[#caf0ff]" : ""
             }`}
             onClick={() => handleMonthSelect(month)}
             style={{ transition: "background-color 0.3s" }}
