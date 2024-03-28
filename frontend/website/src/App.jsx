@@ -23,6 +23,12 @@ import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
 
 function App() {
+  function logout() {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userDetails");
+    localStorage.removeItem("allUsers");
+    localStorage.removeItem("userSchedule");
+  }
   // useEffect(() => {
   //   const unsubscribe = auth.onAuthStateChanged(
   //     (user) => {
@@ -61,6 +67,7 @@ function App() {
   useEffect(() => {
     if (refreshed) {
       window.location.href = "/";
+      logout();
     }
   }, [refreshed]);
 
