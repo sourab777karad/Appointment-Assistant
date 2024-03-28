@@ -1,8 +1,7 @@
 // importing react stuff
 
 import { Route, Routes } from "react-router-dom";
-import { useEffect, useContext } from "react";
-
+import { useEffect, useContext, useState } from "react";
 // importing ui and extras stuff
 
 import { Toaster } from "react-hot-toast";
@@ -22,8 +21,51 @@ import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 
 // importing context
 import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
+function logout() {
+  localStorage.removeItem("userToken");
+  localStorage.removeItem("userDetails");
+  localStorage.removeItem("allUsers");
+  localStorage.removeItem("userSchedule");
+  setUserToken(null);
+  setUserDetails(null);
+  setUserSchedule({
+    taken_appointments: [],
+    given_appointments: [],
+    blocked_appointments: [],
+  });
+
+  setAllUsers([]);
+  setCurrentAppointment(null);
+  setCurrentWeek({
+    start_date: this_week_start,
+    end_date: this_week_end,
+  });
+
+  setNotifsExist(false);
+}
 
 function App() {
+  const [refreshed, setRefreshed] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      setRefreshed(true);
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (refreshed) {
+      logout();
+      window.location.href = "/";
+    }
+  }, [refreshed]);
+
   return (
     <>
       <Toaster

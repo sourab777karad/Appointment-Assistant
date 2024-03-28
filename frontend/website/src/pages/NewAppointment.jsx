@@ -16,7 +16,22 @@ const topProfs = [
     contact: "+1 (123) 456-7890",
     image_url: "../assets/img1.jpg",
   },
-
+  {
+    role: "Course Coordinator",
+    name: "Dr. XYZ",
+    department: "Computer Science",
+    roomNo: "A101",
+    contact: "+1 (123) 456-7890",
+    image_url: "../assets/img1.jpg",
+  },
+  {
+    role: "Course Coordinator",
+    name: "Dr. XYZ",
+    department: "Computer Science",
+    roomNo: "A101",
+    contact: "+1 (123) 456-7890",
+    image_url: "../assets/img1.jpg",
+  },
   {
     role: "Dean",
     name: "Dr. John Doe",
@@ -64,6 +79,12 @@ const this_week_end = get_current_week_dates()[5];
 
 export default function NewAppointment() {
   const [selectedUser, setSelectedUser] = useState("");
+  const [selectedProf, setSelectedProf] = useState("");
+
+  const handleProfClick = (prof) => {
+    setSelectedProf(prof);
+    // You can perform additional actions here based on the selected professor
+  };
 
   const {
     userToken,
@@ -270,20 +291,28 @@ export default function NewAppointment() {
 
           {/* Display tiles only when selectedUser is empty */}
           {selectedUser === "" && (
-            <div className="grid grid-cols-4 gap-4 ml-32">
-              {topProfs.map((prof) => (
-                <div className="p-4 border border-black mt-24 mb-12 flex flex-wrap flex-col bg-blue-200 w-[200px] h-[300px] rounded-[15px]">
-                  <img
+            <div className="flex flex-wrap justify-center m-2">
+              {topProfs.map((prof, index) => (
+                <div
+                  key={index}
+                  className="prof-card"
+                  onClick={() => handleProfClick(prof)}
+                >
+                  <div className="p-4 border border-black mt-24 mb-12 m-4 flex flex-wrap flex-col bg-[#caf0ff] w-[200px] h-[200px] rounded-[15px] hover:bg-blue-100 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+                    {/* <img
                     src={prof.profile_pic_url}
                     alt=""
                     className="w-[150px] h-[100px] ml-2 border rounded-full"
-                  />
-                  <div className="mt-6 ml-4">
-                    <div className="text-lg font-bold">{prof.role}</div>
-                    <div className="text-sm">{prof.name}</div>
-                    <div className="text-sm">{prof.contact}</div>
-                    <div className="text-sm">{prof.department}</div>
-                    <div className="text-sm">{prof.roomNo}</div>
+                    /> */}
+                    <div className="mt-6 ml-4">
+                      <div className="text-[16px] font-bold">{prof.name}</div>
+                      <div className="text-sm font-bold underline">
+                        {prof.role}
+                      </div>
+                      <div className="text-sm">{prof.contact}</div>
+                      <div className="text-sm">{prof.department}</div>
+                      <div className="text-sm font-bold">{prof.roomNo}</div>
+                    </div>
                   </div>
                 </div>
               ))}

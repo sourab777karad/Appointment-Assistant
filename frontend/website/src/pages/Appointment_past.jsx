@@ -205,7 +205,8 @@ const Appointment_past = () => {
         ].map((month, index) => (
           <div
             key={index}
-            className={`cursor-pointer bg-white rounded-lg border border-black shadow-md p-14 m-2 text-center ${
+            className={`cursor-pointer bg-white rounded-lg border border-black shadow-md p-14 m-2
+            hover:bg-[#caf0ff] transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 text-center ${
               selectedMonth === month ? "bg-[#caf0ff]" : ""
             }`}
             onClick={() => handleMonthSelect(month)}
@@ -225,7 +226,7 @@ const Appointment_past = () => {
               getAppointmentsForSelectedMonth().map((appointment, index) => (
                 <div
                   key={index}
-                  className="rounded-lg shadow-md bg-[#c4feff] border  border-black w-[200px] h-[200px] m-2 p-4 flex flex-col justify-between"
+                  className="rounded-lg shadow-md bg-[#caf0ff] border  border-black w-[200px] h-[200px] m-2 p-4 flex flex-col justify-between  hover:bg-[#caf0ff] transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
                   style={{
                     borderRadius: "15px",
                     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -248,12 +249,19 @@ const Appointment_past = () => {
                 </div>
               ))
             ) : (
-              <div className=" w-[100%] h-[400px] m-2 flex justify-center items-center">
-                <img
-                  src={NotFound}
-                  alt="No appointments found"
-                  className=" rounded-lg"
-                />
+              <div className=" w-[100%] mt-8 flex justify-center items-center">
+                <div>
+                  <h1 className="text-[72px] flex-wrap mr-48">
+                    No Past <br></br>Appointments<br></br> were found !
+                  </h1>
+                </div>
+                <div>
+                  <img
+                    src={NotFound}
+                    alt="No appointments found"
+                    className=" rounded-lg h-[400px]"
+                  />
+                </div>
               </div>
             )}
           </div>
