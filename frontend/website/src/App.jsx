@@ -5,7 +5,7 @@ import { useEffect, useContext, useState } from "react";
 // importing ui and extras stuff
 
 import { Toaster } from "react-hot-toast";
-import { app } from "./firebase.js"; // to run app file.
+import { app, auth } from "./firebase.js"; // to run app file.
 
 // importing components
 import SideNav from "./components/SideNav.jsx";
@@ -21,30 +21,29 @@ import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 
 // importing context
 import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
-function logout() {
-  localStorage.removeItem("userToken");
-  localStorage.removeItem("userDetails");
-  localStorage.removeItem("allUsers");
-  localStorage.removeItem("userSchedule");
-  setUserToken(null);
-  setUserDetails(null);
-  setUserSchedule({
-    taken_appointments: [],
-    given_appointments: [],
-    blocked_appointments: [],
-  });
-
-  setAllUsers([]);
-  setCurrentAppointment(null);
-  setCurrentWeek({
-    start_date: this_week_start,
-    end_date: this_week_end,
-  });
-
-  setNotifsExist(false);
-}
 
 function App() {
+  // useEffect(() => {
+  //   const unsubscribe = auth.onAuthStateChanged(
+  //     (user) => {
+  //       console.log("Auth state changed:", user);
+  //       if (!user) {
+  //         console.log("User not authenticated. Redirecting to home page...");
+  //         logout();
+  //         window.location.href = "/";
+  //       }
+  //     },
+  //     (error) => {
+  //       console.error("Error in onAuthStateChanged:", error);
+  //     }
+  //   );
+
+  //   return () => {
+  //     console.log("Cleaning up authentication listener...");
+  //     unsubscribe();
+  //   };
+  // }, []);
+
   const [refreshed, setRefreshed] = useState(false);
 
   useEffect(() => {
@@ -61,7 +60,6 @@ function App() {
 
   useEffect(() => {
     if (refreshed) {
-      logout();
       window.location.href = "/";
     }
   }, [refreshed]);
