@@ -60,7 +60,7 @@ export const UserInfoContextProvider = ({ children }) => {
     single_appointment_start_time = 9,
     single_appointment_end_time = 17,
     single_appointment_duration = 30,
-    break_between_appointments = 5,
+    break_between_appointments = 5
   ) {
     let startTime = new Date().setHours(single_appointment_start_time, 0, 0);
     let endTime = new Date().setHours(single_appointment_end_time, 0, 0);
@@ -74,7 +74,7 @@ export const UserInfoContextProvider = ({ children }) => {
       }
 
       time_slots.push(
-        format(startTime, "h:mm a") + " - " + format(appointmentEnd, "h:mm a"),
+        format(startTime, "h:mm a") + " - " + format(appointmentEnd, "h:mm a")
       );
 
       startTime = addMinutes(appointmentEnd, break_between_appointments);
@@ -87,7 +87,7 @@ export const UserInfoContextProvider = ({ children }) => {
     single_appointment_start_time = 9,
     single_appointment_end_time = 17,
     single_appointment_duration = 30,
-    break_between_appointments = 5,
+    break_between_appointments = 5
   ) {
     let startTime = new Date().setHours(single_appointment_start_time, 0, 0);
     let endTime = new Date().setHours(single_appointment_end_time, 0, 0);
@@ -113,13 +113,13 @@ export const UserInfoContextProvider = ({ children }) => {
   function calculate_notifs_exist() {
     const given_appointments = userSchedule.given_appointments;
     const notifs_exist = given_appointments.some(
-      (appointment) => appointment.status === "pending",
+      (appointment) => appointment.status === "pending"
     );
     setNotifsExist(notifs_exist);
   }
 
   function refreshLoggedInUserScheduleForDisplayedWeek(
-    given_week = currentWeek,
+    given_week = currentWeek
   ) {
     // this function will refresh the userSchedule and allUsers
     // it will be called after every change in the userSchedule
@@ -138,7 +138,7 @@ export const UserInfoContextProvider = ({ children }) => {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
-        },
+        }
       )
       .then((response) => {
         let userSchedule = {
@@ -185,7 +185,7 @@ export const UserInfoContextProvider = ({ children }) => {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
-        },
+        }
       )
       .then((response) => {
         let userSchedule = {
