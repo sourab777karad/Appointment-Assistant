@@ -156,6 +156,7 @@ export default function NewAppointment() {
     getUserSchedule(selectedUserDetails.firebase_id, previousWeek);
   };
 
+
   const change_status = (appointment, status) => {
     const response = axios
       .post(
@@ -180,6 +181,7 @@ export default function NewAppointment() {
       error: "Error changing status",
     });
   };
+
 
   const getUserDetails = (firebase_id) => {
     const user = allUsers.find((user) => user.firebase_id === firebase_id);
@@ -327,7 +329,6 @@ export default function NewAppointment() {
           handleDateIncreased={handleDateIncreased}
           handleDateDecreased={handleDateDecreased}
           block_appointment={null}
-          change_status={change_status}
           user_time_slots={user_time_slots}
           json_time_slots={json_time_slots}
         />

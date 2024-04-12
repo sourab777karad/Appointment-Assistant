@@ -56,43 +56,42 @@ export default class basic_functions {
       appointment,
       allUsers,
     );
+    console.log("tf", appointment)
     const response = axios
-      .post(
-        `${base_url}/change-status`,
-        {
-          status: status,
-          appointment_id: appointment._id,
-          scheduler_email_id: scheduler.email,
-          appointee_email_id: appointee.email,
-          message: message,
-          appointment_location: appointee.room,
-          appointment_time: appointment.start_time,
-          appiontment_duration: appointment.duration,
-          appointee_name: appointee.full_name,
-          scheduler_id: scheduler.firebase_id,
-          appointee_id: appointee.firebase_id,
-          appointment_date: appointment.appointment_date,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.data.sendmail_status === true) {
-          toast.success(`Mail sent to ${scheduler.email} successfully`);
-        }
-        if (response.data.sendmail_status === false) {
-          toast.success(
-            `Could not send confirmation mail to ${scheduler.email}`,
-          );
-        }
-        refreshLoggedInUserScheduleForDisplayedWeek();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+		.post(
+			`${base_url}/change-status`,
+			{
+				status: status,
+				appointment_id: appointment._id,
+				scheduler_email_id: scheduler.email,
+				appointee_email_id: appointee.email,
+				message: message,
+				appointment_location: appointee.room,
+				appointment_time: appointment.appointment_time,
+				appointment_end_time: appointment.appointment_end_time,
+				appointee_name: appointee.full_name,
+				scheduler_id: scheduler.firebase_id,
+				appointee_id: appointee.firebase_id,
+				appointment_date: appointment.appointment_date,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		)
+		.then((response) => {
+			if (response.data.sendmail_status === true) {
+				toast.success(`Mail sent to ${scheduler.email} successfully`);
+			}
+			if (response.data.sendmail_status === false) {
+				toast.success(`Could not send confirmation mail to ${scheduler.email}`);
+			}
+			refreshLoggedInUserScheduleForDisplayedWeek();
+		})
+		.catch((error) => {
+			console.log(error);
+		});
 
     toast.promise(response, {
       loading: "Loading",
