@@ -6,6 +6,7 @@ import axios from "axios";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { useContext } from "react";
 import { format } from "date-fns";
+import SearchableDropdown from "../components/SearchableDropdown";
 
 const topProfs = [
   {
@@ -156,7 +157,6 @@ export default function NewAppointment() {
     getUserSchedule(selectedUserDetails.firebase_id, previousWeek);
   };
 
-
   const change_status = (appointment, status) => {
     const response = axios
       .post(
@@ -181,7 +181,6 @@ export default function NewAppointment() {
       error: "Error changing status",
     });
   };
-
 
   const getUserDetails = (firebase_id) => {
     const user = allUsers.find((user) => user.firebase_id === firebase_id);
@@ -269,28 +268,12 @@ export default function NewAppointment() {
           </h1>
         </div>
         <div>
-          <select
-            onChange={(e) => handleUserSelected(e.target.value)}
-            className="block w-1/2 mx-auto my-4 mt-4 p-2 rounded-md border border-gray-300"
-          >
-            <option value="">Select Faculty</option>
-            {allUsers
+          <SearchableDropdown
+            options={allUsers
               .filter((user) => user.firebase_id !== userDetails.firebase_id)
-              .filter((user) => user.is_faculty === true)
-              .map((user) => (
-                <option key={user.firebase_id} value={user.firebase_id}>
-                  <div className="flex flex-row justify-between h-14">
-                    <img
-                      src={user.profile_pic_url}
-                      alt="user"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div>{user.full_name}</div>
-                  </div>
-                </option>
-              ))}
-          </select>
-
+              .filter((user) => user.is_faculty === true)}
+            onSelect={handleUserSelected}
+          />
           {/* Display tiles only when selectedUser is empty */}
           {selectedUser === "" && (
             <div className="flex flex-wrap justify-center m-2">
