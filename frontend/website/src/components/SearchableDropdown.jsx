@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+import { IconSearch } from "@tabler/icons-react";
 
 const SearchableDropdown = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOption, setSelectedOption] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -12,8 +14,12 @@ const SearchableDropdown = ({ options, onSelect }) => {
   const topOptions = filteredOptions.slice(0, 4);
 
   const handleSelect = (firebaseId) => {
+    const selected = options.find(
+      (option) => option.firebase_id === firebaseId
+    );
+    setSelectedOption(selected);
+    setSearchTerm(selected.full_name); // Set search term to selected option
     onSelect(firebaseId);
-    setSearchTerm("");
     setShowDropdown(false); // Close dropdown after selection
   };
 
@@ -35,14 +41,22 @@ const SearchableDropdown = ({ options, onSelect }) => {
       className="block w-1/2 mx-auto my-4 mt-4 p-2 rounded-md border border-gray-300 relative"
       ref={dropdownRef}
     >
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search for a faculty member..."
-        className="w-full p-2 focus:outline-none"
-        onClick={() => setShowDropdown(true)} // Open dropdown on input click
-      />
+      <div className="relative">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search for a faculty member..."
+          className="w-full p-2 pl-10 pr-3 focus:outline-none"
+          onClick={() => setShowDropdown(true)} // Open dropdown on input click
+        />
+        <button
+          className="absolute inset-y-0  flex items-center px-3 text-gray-500 hover:text-gray-700"
+          onClick={() => setShowDropdown(!showDropdown)} // Toggle dropdown visibility on button click
+        >
+          <IconSearch size={25} strokeWidth={1.5} />
+        </button>
+      </div>
       {showDropdown && (
         <ul className="absolute z-10 w-full bg-white shadow-lg rounded-b-md mt-1">
           {topOptions.map((user) => (
