@@ -1,51 +1,35 @@
-// importing react stuff
-
-import { Route, Routes } from "react-router-dom";
-import { useEffect, useContext, useState } from "react";
-// importing ui and extras stuff
+import { useEffect, useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
 import { Toaster } from "react-hot-toast";
-import { app, auth } from "./firebase.js"; // to run app file.
-
-// importing components
+import { auth } from "./firebase.js";
 import SideNav from "./components/SideNav.jsx";
 import AppointmentDetailsNav from "./components/AppointmentDetailsNav.jsx";
-
-// importing pages
+import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
 import ProtectedRoutes from "./ProtectedRoutes";
-import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
-
-// importing context
-import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
 
 function App() {
+  const location = useLocation();
+  const [refreshed, setRefreshed] = useState(false);
+
   useEffect(() => {
     const instance = axios.create({
       baseURL: "http://localhost:3000/assistant",
-      // Other configurations like headers, timeout, etc.
     });
 
     instance.interceptors.response.use(
-      (response) => {
-        // Do something with successful response
-        return response;
-      },
+      (response) => response,
       (error) => {
-        // Handle error responses globally
         const { status } = error.response;
         console.log("Interceptor triggered with status code:", status);
         if (status === 401 || status === 403) {
-          // Perform logout and redirect to home page
           console.log("Logging out...");
-          navigate("/"); // Redirect to home page
+          window.location.href = "/";
+          logout();
         } else {
-          // For other error statuses, log the error
           console.error("Request failed with status code:", status);
         }
         return Promise.reject(error);
@@ -54,46 +38,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Set up Firebase auth state listener
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        // User is not authenticated, perform logout and redirect
-        window.location.href = "/";
-        logout();
-      }
-    });
-
-    // Clean up listener on component unmount
-    return () => unsubscribe();
-  }, []);
-
-  function logout() {
-    // Clear local storage
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("userDetails");
-    localStorage.removeItem("allUsers");
-    localStorage.removeItem("userSchedule");
-
-    // Reset state variables
-    setUserToken(null);
-    setUserDetails(null);
-    setAllUsers([]);
-    setUserSchedule({
-      taken_appointments: [],
-      given_appointments: [],
-      blocked_appointments: [],
-    });
-  }
-
-  const [refreshed, setRefreshed] = useState(false);
+    if (location.pathname !== "/") {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = "/";
+          logout();
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [location]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
       setRefreshed(true);
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
@@ -105,6 +65,14 @@ function App() {
       logout();
     }
   }, [refreshed]);
+
+  function logout() {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userDetails");
+    localStorage.removeItem("allUsers");
+    localStorage.removeItem("userSchedule");
+    // Reset state variables or perform any other cleanup if needed
+  }
 
   return (
     <>
