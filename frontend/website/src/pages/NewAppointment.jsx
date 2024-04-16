@@ -6,6 +6,8 @@ import axios from "axios";
 import { BaseUrlContext } from "../context/BaseUrlContext";
 import { useContext } from "react";
 import { format } from "date-fns";
+import SearchableDropdown from "../components/SearchableDropdown";
+import SearchIt from "../assets/searchit.svg";
 
 const topProfs = [
   {
@@ -82,7 +84,8 @@ export default function NewAppointment() {
   const [selectedProf, setSelectedProf] = useState("");
 
   const handleProfClick = (prof) => {
-    setSelectedProf(prof);
+    // Handle click on professor tile
+    setSelectedUser(""); // Clear selected user when a professor is clicked
     // You can perform additional actions here based on the selected professor
   };
 
@@ -156,7 +159,6 @@ export default function NewAppointment() {
     getUserSchedule(selectedUserDetails.firebase_id, previousWeek);
   };
 
-
   const change_status = (appointment, status) => {
     const response = axios
       .post(
@@ -181,7 +183,6 @@ export default function NewAppointment() {
       error: "Error changing status",
     });
   };
-
 
   const getUserDetails = (firebase_id) => {
     const user = allUsers.find((user) => user.firebase_id === firebase_id);
@@ -254,74 +255,71 @@ export default function NewAppointment() {
   }, [selectedUserDetails]);
 
   return (
-    <div className="pt-24">
-      <div>
-        <div>
-          <h1 className="text-3xl font-semibold text-center mt-4 text-blue-800">
-            Book New Appointment
-          </h1>
+    <div className="mt-10">
+      {/* Book New Appointment Section */}
+      <div className="text-center">
+        <h1 className="text-3xl font-semibold mt-24 mb-4 text-blue-800">
+          Book New Appointment
+        </h1>
+      </div>
+
+      {/* Select Faculty Section */}
+      <div className="mt-2 text-center">
+        <h2 className="text-2xl font-semibold text-blue-800">
+          Select Faculty to Book Appointment With
+        </h2>
+        <div className="mt-4 mx-auto">
+          <SearchableDropdown
+            options={allUsers
+              .filter((user) => user.firebase_id !== userDetails.firebase_id)
+              .filter((user) => user.is_faculty === true)}
+            onSelect={handleUserSelected}
+          />
         </div>
       </div>
-      <div>
-        <div>
-          <h1 className="text-2xl font-semibold text-center mt-4 text-blue-800">
-            Select Faculty to Book Appointment With
-          </h1>
-        </div>
-        <div>
-          <select
-            onChange={(e) => handleUserSelected(e.target.value)}
-            className="block w-1/2 mx-auto my-4 mt-4 p-2 rounded-md border border-gray-300"
-          >
-            <option value="">Select Faculty</option>
-            {allUsers
-              .filter((user) => user.firebase_id !== userDetails.firebase_id)
-              .filter((user) => user.is_faculty === true)
-              .map((user) => (
-                <option key={user.firebase_id} value={user.firebase_id}>
-                  <div className="flex flex-row justify-between h-14">
-                    <img
-                      src={user.profile_pic_url}
-                      alt="user"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div>{user.full_name}</div>
-                  </div>
-                </option>
-              ))}
-          </select>
 
-          {/* Display tiles only when selectedUser is empty */}
-          {selectedUser === "" && (
-            <div className="flex flex-wrap justify-center m-2">
-              {topProfs.map((prof, index) => (
+      {/* Display Tiles or Image Section */}
+      <div className="flex">
+        {/* Left Section (Tiles) */}
+        <div id="abcd" className={`mt-4 ${selectedUser ? "hidden" : "block"}`}>
+          <div className="flex flex-wrap p-4">
+            {selectedUser === "" &&
+              topProfs.map((prof, index) => (
                 <div
                   key={index}
-                  className="prof-card"
+                  className="prof-card cursor-pointer"
                   onClick={() => handleProfClick(prof)}
                 >
-                  <div className="p-4 border border-black mt-24 mb-12 m-4 flex flex-wrap flex-col bg-[#caf0ff] w-[200px] h-[200px] rounded-[15px] hover:bg-blue-100 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
-                    {/* <img
-                    src={prof.profile_pic_url}
-                    alt=""
-                    className="w-[150px] h-[100px] ml-2 border rounded-full"
-                    /> */}
-                    <div className="mt-6 ml-4">
-                      <div className="text-[16px] font-bold">{prof.name}</div>
-                      <div className="text-sm font-bold underline">
+                  <div className="p-4 m-4 h-[200px] w-[200px] border border-black bg-blue-100 rounded-lg shadow-lg hover:bg-blue-200 transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 flex items-center">
+                    {/* Professor Information */}
+                    <div className="ml-4">
+                      <div className="text-lg font-semibold">{prof.name}</div>
+                      <div className="text-sm font-semibold underline">
                         {prof.role}
                       </div>
                       <div className="text-sm">{prof.contact}</div>
                       <div className="text-sm">{prof.department}</div>
-                      <div className="text-sm font-bold">{prof.roomNo}</div>
+                      <div className="text-sm font-semibold">{prof.roomNo}</div>
                     </div>
                   </div>
                 </div>
               ))}
-            </div>
-          )}
+          </div>
         </div>
+
+        {/* Right Section (Image) */}
+        {!selectedUser && (
+          <div className="w-2/5">
+            <img
+              src={SearchIt}
+              alt="Professor"
+              className="h-[500px] rounded-lg pr-12"
+            />
+          </div>
+        )}
       </div>
+
+      {/* Display Schedule Section */}
       {selectedUserDetails && (
         <Schedule
           userSchedule={selectedUserSchedule}
