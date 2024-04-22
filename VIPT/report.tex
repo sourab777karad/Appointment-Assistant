@@ -1,0 +1,485 @@
+
+% This is a Basic Assignment Paper but with like Code and stuff allowed in it, there is also url, hyperlinks from contents included. 
+
+\documentclass[openany]{report}
+
+% Preamble
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{fancyhdr, float, graphicx}
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage{fouriernc} % Use the New Century Schoolbook font
+\usepackage[nottoc, notlot, notlof]{tocbibind}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{blindtext}
+\usepackage{hyperref}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{colortbl}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdfpagemode=FullScreen,
+    }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[L]{\textit{\Large{Vulnerability Identification and Penetration Testing}}}
+\fancyhead[R]{\textit{Report}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\footrulewidth}{1pt}
+
+% Other Doc Editing
+%\parindent 0ex
+%\renewcommand{\baselinestretch}{1.5}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+
+    %---------------------------NAMES-------------------------------
+
+    \huge\textsc{
+        Dr. Vishwanath Karad MIT World Peace University, Pune
+    }\\
+
+    \vspace{0.75\baselineskip} % space after Uni Name
+
+    \LARGE{
+        Vulnerability Identification and Penetration Testing\\
+        Third Year B. Tech, Semester 6\\
+    }
+
+    \vfill % space after Sub Name
+
+    %--------------------------TITLE-------------------------------
+
+    \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+    \rule{\textwidth}{0.6pt}
+    \vspace{0.75\baselineskip} % Whitespace above the title
+
+
+
+    \huge{\textsc{
+            Vulnerability and Penetration Testing on Appointment Assistant System
+        }} \\
+
+
+
+    \vspace{0.5\baselineskip} % Whitespace below the title
+    \rule{\textwidth}{0.6pt}\vspace*{-\baselineskip}\vspace*{2.8pt}
+    \rule{\textwidth}{1.6pt}
+
+    \vspace{1\baselineskip} % Whitespace after the title block
+
+    %--------------------------SUBTITLE --------------------------	
+
+    \LARGE\textsc{
+        VIPT Mini Project Report
+    } % Subtitle or further description
+
+    %--------------------------AUTHOR-------------------------------
+
+    \vspace{0.5\baselineskip} % Whitespace below the editor list
+    Under the Guidance of\\
+    \Large{
+        \textbf{Dr. Dhanashri Wategaonkar}
+    }
+    \vfill
+
+    Prepared By
+    \vspace{0.5\baselineskip} % Whitespace before the editors
+
+    \Large{
+        Krishnaraj Thadesar, PA10, 1032210888\\
+        Parth Zarekar, PA07, 1032210846\\
+        Sourab Karad, PA25, 10332211150\\
+        Saubhagya Singh, PA24, 1032211144\\
+    }
+    \vspace{0.5\baselineskip} % Whitespace before the editors
+    \LARGE{
+        Department of School of Computer Engineering and Technology\\
+        Maharashtra, India.\\
+        2023-2024\\
+    }
+    % \vspace{0.5\baselineskip} % Whitespace below the editor list
+    \today
+
+\end{titlepage}
+
+
+\tableofcontents
+\thispagestyle{empty}
+% \frontmatter
+
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+
+
+\thispagestyle{empty}
+\clearpage
+
+
+\chapter{Document Authorities}
+\begin{table}[H]
+    \begin{tabular}{|l|l|}
+        \hline
+        \rowcolor[HTML]{6434FC}
+        {\color[HTML]{000000} \textbf{Company}} & {\color[HTML]{000000} \textbf{Clarity Boys}}                                              \\ \hline
+        \rowcolor[HTML]{9698ED}
+        {\color[HTML]{000000} Document Title}   & {\color[HTML]{000000} Appointment Assistant Vulnerability Assessment Penetration Testing} \\ \hline
+        Date                                    & 17/04/2024                                                                                \\ \hline
+        Prepared By                             & Krishnaraj Thadesar, Parth Zarekar, Sourab Karad, Saubhagya Singh                         \\ \hline
+        Scope                                   & Application Security Assessment                                                           \\ \hline
+    \end{tabular}
+    \caption{Document Authorities}
+\end{table}
+
+\chapter{Executive Summary}
+\section{Scope of Work}
+The vulnerability assessment was conducted using OWASP Zed Attack Proxy (ZAP) to test various components of the appointment assistant website. The scope of the assessment included but was not limited to the following areas:
+\begin{itemize}
+    \item 1. Login Functionality \\
+          Authentication mechanisms, including username/password validation and session management.\\
+          Potential vulnerabilities such as brute force attacks, session fixation, and authentication bypass.
+    \item 2. Complete Site \\
+          All functionalities accessible to authenticated users, including booking appointments with teachers, administrators, and other personnel.\\
+          Input validation for user-submitted data in forms and interactions with the database.\\
+          Client-side and server-side processing of user inputs.
+    \item 3. Password Management \\
+          Password storage mechanisms, such as encryption and hashing.\\
+          Password reset functionality and security controls to prevent unauthorized access to user accounts.
+    \item Sensitive Data Handling\\
+          Protection of sensitive data, such as personal information, payment details, and communication logs.\\
+          Encryption in transit (HTTPS) and at rest (database encryption).
+    \item 5. Security Headers\\
+          API Endpoints
+          Security of API endpoints used for data exchange with external systems or mobile applications.\\
+          Authorization checks and input validation for API requests.
+    \item 6. Security Headers
+          Presence and effectiveness of security headers, such as Content Security Policy (CSP), Strict-Transport-Security (HSTS), and X-Frame-Options.
+    \item 7. Error Handling
+          Robustness of error handling mechanisms to prevent information disclosure and potential exploitation.
+    \item 8. Third-party Integrations
+          Security considerations for third-party libraries, plugins, and integrations used within the website.
+    \item 9. Session Management
+          Secure handling of user sessions, including session expiration, cookie security, and protection against session hijacking.
+    \item 10. Access Controls
+          Role-based access controls (RBAC) and permissions management to ensure appropriate access levels for different user roles.
+\end{itemize}
+
+\section{Project Objectives}
+The primary goals of the vulnerability assessment are as follows:
+\begin{itemize}
+    \item 1. \textbf{Identify Security Weaknesses:} Conduct a comprehensive evaluation of the appointment assistant website to identify potential vulnerabilities and security weaknesses that could be exploited by malicious actors.
+    \item 2. \textbf{Assess Risks:} Evaluate the severity and potential impact of identified vulnerabilities on the confidentiality, integrity, and availability of the website and its data. Classify vulnerabilities based on their risk levels.
+    \item 3. \textbf{Mitigate Security Risks:} Provide actionable recommendations and remediation strategies to mitigate identified security risks and vulnerabilities effectively.
+    \item 4. \textbf{Enhance Security Posture:} Improve the overall security posture of the appointment assistant website by addressing vulnerabilities, implementing security best practices, and enhancing security controls.
+    \item 5. \textbf{Compliance:} Ensure compliance with relevant security standards, regulations, and industry best practices, such as OWASP Top 10, PCI DSS, and GDPR, where applicable.
+\end{itemize}
+
+\section{Assumptions}
+\begin{itemize}
+    \item System Patching: It is assumed that the appointment assistant website's underlying operating systems, web servers, database servers, and third-party software components are kept up-to-date with the latest security patches and updates. Vulnerability assessment results may vary if systems are not patched regularly.
+    \item Secure Configuration: The assessment assumes that the configuration of the web server, application server, database server, and related components follows industry best practices for security, such as disabling unnecessary services, implementing access controls, and enabling security features like firewalls and intrusion detection systems.
+    \item Secure Development Practices: It is assumed that the appointment assistant website has been developed using secure coding practices, including input validation, output encoding, parameterized queries to prevent SQL injection, and secure authentication mechanisms.
+    \item Access Controls: The assessment assumes that appropriate access controls and permissions are implemented within the website to restrict unauthorized access to sensitive data and functionalities based on user roles and responsibilities.
+    \item Network Security: It is assumed that the network infrastructure supporting the appointment assistant website, including routers, firewalls, and network segmentation, is configured securely to protect against external threats, such as denial-of-service (DoS) attacks and network intrusions.
+\end{itemize}
+
+\section{Timeline}
+The vulnerability assessment project for the appointment assistant website commenced on the 17th of the month and concluded on the 20th of the same month. The timeline was structured as follows:
+\begin{itemize}
+    \item 1. Project Kickoff (Day 1: 17th)\\
+          Initial project briefing and goal setting.\\
+          Allocation of resources and assignment of responsibilities.\\
+          Setup of testing environments, including the configuration of testing tools (e.g., ZAP, Burp Suite).
+    \item 2. Vulnerability Assessment (Days 2-3: 18th-19th)\\
+          Conducted automated scans using ZAP and Burp Suite to identify common vulnerabilities, such as SQL injection, Cross-Site Scripting (XSS), and authentication bypass.\\
+          Executed manual testing procedures to validate automated findings, explore potential attack vectors, and identify complex security issues.\\
+          Documented and categorized vulnerabilities based on severity levels (e.g., critical, high, medium, low).
+\end{itemize}
+\section{summary of Findings}
+\subsection{Cloud Metadata Potentially Exposed}
+\begin{enumerate}
+    \item \textbf{Url} : https://appointment-assistant.vercel.app/latest/meta-data/
+    \item \textbf{Risk} : High
+    \item \textbf{Confidence} : Low
+    \item \textbf{Attack} : 169.254.169.254
+    \item \textbf{CWE ID} : 0
+    \item \textbf{WASC ID} : 0
+    \item \textbf{Source} : Active(90034-Cloud Metadata Potentially Exposed)
+    \item \textbf{description} : The Cloud Metadata Attack attempts to abuse a misconfigured NGINX server in order to access the instance metadata maintained by cloud service providers such as AWS, GCP and Azure. All of these providers provide metadata via an internal unroutable IP address '169.254.169.254'-this can be exposed by incorrectly configured NGINX servers and accessed by using this IP address in the Host header field.
+    \item \textbf{More Info} : Based on the successful response status code cloud metadata may have been returned in the response. Check the response data to see if any cloud metadata has been returned. The meta data returned can include information that would allow an attacker to completely compromise the system.
+    \item \textbf{solution} : Do not trust any user data in NGINX configs. In this case it is probably the use of the host variable which is set from the 'Host' header and can be controlled by an attacker.
+          \begin{figure}[h]
+              \centering
+              \includegraphics[width=0.5\textwidth]{imgs/1.jpg}
+              \caption{Header and Body Script}
+              \label{fig:my_label}
+          \end{figure}
+          \begin{figure}[h]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/High.jpg}
+              \caption{Cloud Metadata Potentially Exposed}
+              \label{fig:my_label1}
+          \end{figure}
+
+\end{enumerate}
+
+\subsection{Content Security Policy (CSP) Header Not Set}
+\begin{enumerate}
+    \item \textbf{Url} : https://appointment-assistant.vercel.app/
+    \item \textbf{Risk} : Medium
+    \item \textbf{Confidence} : High
+    \item \textbf{CWE ID} : 693
+    \item \textbf{WASC ID} : 15
+    \item \textbf{Source} : Passive(10038-Content Security Policy (CSP) Header Not Set)
+    \item \textbf{description} : Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page covered types are JavaScript, CSS, HTML frames, fonts, images and embeddable objects such as Java applets, ActiveX, audio and video files.
+    \item \textbf{solution} :Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/2.jpg}
+              \caption{ Header and Body Script}
+              \label{fig:my_label2}
+          \end{figure}
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/Medium.jpg}
+              \caption{Content Security Policy (CSP) Header Not Set}
+              \label{fig:my_label3}
+          \end{figure}
+\end{enumerate}
+\subsection{Missing Anti-clickjacking Header}
+\begin{enumerate}
+    \item \textbf{Url} : https://appointment-assistant.vercel.app/
+    \item \textbf{Risk} : Medium
+    \item \textbf{Confidence} : Medium
+    \item \textbf{CWE ID} : 1021
+    \item \textbf{WASC ID} : 15
+    \item \textbf{Source} : Passive(10020-Content Security Policy (CSP) Header Not Set)
+    \item \textbf{description} : The response does not include either Content-Security-Policy with 'frame-ancestors' directive or X-Frame-Options to protect against 'Clickjacking' attacks.
+
+    \item \textbf{solution} : Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app. If you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's "frame-ancestors" directive.
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/4.jpg}
+              \caption{ Header and Body Script}
+              \label{fig:my_label4}
+          \end{figure}
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/Medium3.jpg}
+              \caption{Missing Anti-clickjacking Header}
+              \label{fig:my_label6}
+          \end{figure}
+\end{enumerate}
+
+\subsection{Cross-Domain Misconfiguration
+}
+\begin{enumerate}
+    \item \textbf{Url} : https://appointment-assistant.vercel.app/
+    \item \textbf{Risk} : Medium
+    \item \textbf{Confidence} : Medium
+    \item \textbf{CWE ID} : 264
+    \item \textbf{WASC ID} : 14
+    \item \textbf{Source} : Passive(10098-Cross-Domain Misconfiguration)
+    \item \textbf{description} : Web browser data loading may be possible, due to a Cross Origin Resource Sharing (CORS) misconfiguration on the web server
+    \item \textbf{Other info} : The CORS misconfiguration on the web server permits cross-domain read requests from arbitrary third party domains, using unauthenticated APIs on this domain. Web browser implementations do not permit arbitrary third parties to read the response from authenticated APIs, however. This reduces the risk somewhat. This misconfiguration could be used by an attacker to access data that is available in an unauthenticated manner, but which uses some other form of security, such as IP address white-listing
+    \item \textbf{solution} :  Ensure that sensitive data is not available in an unauthenticated manner (using IP address white-listing, for instance). Configure the "Access-Control-Allow-Origin" HTTP header to a more restrictive set of domains, or remove all CORS headers entirely, to allow the web browser to enforce the Same Origin Policy (SOP) in a more restrictive manner.
+
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/3.jpg}
+              \caption{ Header and Body Script}
+              \label{fig:my_label5}
+          \end{figure}
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/Medium2.jpg}
+              \caption{Cross-Domain Misconfiguration}
+              \label{fig:my_label7}
+          \end{figure}
+\end{enumerate}
+
+\subsection{Strict-Transport-Security Header Not Set
+}
+\begin{enumerate}
+    \item \textbf{Url} : https://appointment-assistant.vercel.app/
+    \item \textbf{Risk} : Low
+    \item \textbf{Confidence} : High
+    \item \textbf{CWE ID} :
+    \item \textbf{WASC ID} : 15
+    \item \textbf{Source} : Passive(10035-Strict-Transport-Security Header Not Set)
+    \item \textbf{description} : HTTP Strict Transport Security (HSTS) is a web security policy mechanism whereby a web server declares that complying user agents (such as a web browser) are to interact with it using only secure HTTPS connections (l.e. HTTP layered over TLS/SSL). HSTS is an IETF standards track protocol and is specified in RFC 6797.
+
+
+    \item \textbf{solution} :Ensure that your web server, application server, load balancer, etc. is configured to enforce Strict-Transport-Security.
+
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/5.jpg}
+              \caption{ Header and Body Script}
+              \label{fig:my_label8}
+          \end{figure}
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/Low.jpg}
+              \caption{Strict-Transport-Security Header Not Set}
+              \label{fig:my_label9}
+          \end{figure}
+\end{enumerate}
+\subsection{X-Content-Type-Options Header Missing}
+\begin{enumerate}
+    \item \textbf{Url} : https://appointment-assistant.vercel.app/
+    \item \textbf{Risk} : Low
+    \item \textbf{Confidence} : Medium
+    \item \textbf{CWE ID} : 693
+    \item \textbf{WASC ID} : 15
+    \item \textbf{Source} : Passive(10021-X-Content-Type-Options Header Missing)
+    \item \textbf{Description} : The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Qurrent (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.
+
+    \item \textbf{Solution} Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff for all web pages. If possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing.
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/6.jpg}
+              \caption{ Header and Body Script}
+              \label{fig:my_label10}
+          \end{figure}
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.8\textwidth]{imgs/Low2.jpg}
+              \caption{X-Content-Type-Options Header Missing}
+              \label{fig:my_label11}
+          \end{figure}
+\end{enumerate}
+
+\subsection{Burp Suit Report}
+\begin{enumerate}
+    \item Request Method: OPTIONS
+    \item Request URL: \url {https://identitytoolkit.googleapis.com/v1/accounts:signInwithPassword?key=AIzaSyC3n_giJsoJsyVBWB6Bp4kWAjibEofEALo}
+    \item Host: identitytoolkit.googleapis.com
+    \item Accept: /
+    \item Access-Control-Request-Method: POST
+    \item Access-Control-Request-Headers: content-type, x-client-version, x-firebase-client
+    \item Origin:\url {https://appointment-assistant.vercel.app/}
+    \item User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.112 Safari/537.36
+    \item Sec-Fetch-Mode: cors
+    \item Sec-Fetch-Site: cross-site
+    \item Sec-Fetch-Dest: empty
+    \item Accept-Encoding: gzip, deflate, br
+    \item Accept-Language: en-US, en; q=0.9
+    \item Priority: u=1, 1
+    \item Connection: close
+    \item This information provides details about the intercepted HTTP OPTIONS request, including the target URL, headers, user agent, and other metadata related to the request.
+          \begin{figure}[H]
+              \centering
+              \includegraphics[width=0.91\textwidth]{imgs/PacketCapture.jpg}
+              \caption{ Header and Body Script}
+              \label{fig:my_label12}
+          \end{figure}
+\end{enumerate}
+
+\section{summary of Recommendations}
+\begin{itemize}
+    \item 1. \textbf{Access-Control-Allow-Origin Header}:
+          Ensure that the server's response includes appropriate Access-Control-Allow-Origin headers to control cross-origin resource sharing (CORS) and prevent unauthorized access from different origins.\\
+          Implement strict CORS policies based on the application's requirements, limiting access to trusted domains only.
+    \item 2. \textbf{Sec-Fetch Headers:} Review how the application handles Fetch Metadata headers (Sec-Fetch-Mode, Sec-Fetch-Site, Sec-Fetch-Dest) to prevent potential security bypass or spoofing attacks.\\
+          Implement server-side validation and verification of Fetch Metadata headers to ensure they are consistent with expected behavior.
+    \item 3. \textbf{User-Agent Header:} Be cautious of relying solely on user-agent information for access control or security decisions, as user-agent headers can be manipulated by attackers.\\
+          Implement additional security measures such as session tokens, IP address logging, and behavior analysis to enhance user identification and authentication.
+    \item 4. \textbf{Authentication Endpoint:} Conduct a thorough security assessment of the authentication endpoint (/v1/accounts:signInwithPassword) to identify and remediate vulnerabilities related to authentication and session management.\\
+          Implement secure authentication practices, including strong password policies, multi-factor authentication (MFA), account lockout mechanisms, and secure session handling.
+    \item 5. \textbf{Input Validation and Sanitization:}Implement rigorous input validation and sanitization mechanisms across all input fields, parameters, and payloads to prevent injection vulnerabilities (e.g., SQL injection, XSS).\\
+          Utilize parameterized queries for database interactions, encode user inputs properly, and sanitize data before rendering it in HTML to mitigate XSS risks.
+
+\end{itemize}
+\chapter{Methodology}
+\section{Planning}
+The vulnerability assessment was meticulously planned to ensure comprehensive coverage of the appointment assistant website's security posture. The planning phase involved the following key steps
+\begin{itemize}
+    \item 1. \textbf{Scope Definition:} Clearly defined the scope of the assessment, including specific functionalities, components, and areas of the website to be tested (e.g., login functionality, data handling, API endpoints).
+    \item 2. \textbf{Tool Selection:} Selected appropriate tools for vulnerability assessment, including OWASP Zed Attack Proxy (ZAP) and Burp Suite, considering their capabilities for automated scanning, manual testing, and in-depth analysis.
+    \item 3. \textbf{Resource Allocation:} Assigned skilled security professionals to perform the assessment, including penetration testers, security analysts, and developers with expertise in web application security.
+    \item 4. \textbf{Environment Setup :} Set up testing environments, such as staging servers or virtualized environments, to simulate real-world scenarios without impacting the production environment.
+    \item 5. \textbf{Documentation:} Documented the assessment plan, including objectives, methodologies, testing protocols, timelines, and reporting guidelines, to ensure clarity and alignment with project goals.
+\end{itemize}
+\section{Exploitation}
+The exploitation phase involved testing and exploiting identified vulnerabilities to assess their severity and potential impact on the appointment assistant website. The following techniques and approaches were used:
+\begin{itemize}
+    \item Automated Scanning: Utilized automated scanning tools like ZAP and Burp Suite to conduct vulnerability scans across the defined scope, identifying common vulnerabilities such as SQL injection, Cross-Site Scripting (XSS), and insecure configurations.
+    \item Manual Testing: Performed manual testing procedures to validate automated findings, explore complex attack vectors, and identify nuanced security weaknesses that automated scans might miss.
+    \item Attack Simulation: Simulated real-world attack scenarios, including but not limited to authentication bypass, privilege escalation, data exfiltration, and business logic vulnerabilities, to assess the application's resilience against advanced threats.
+\end{itemize}
+\section{Reporting}
+The reporting phase involved documenting and communicating assessment findings, vulnerabilities, and recommended actions to stakeholders. The reporting process followed these steps:
+\begin{itemize}
+    \item Vulnerability Classification: Classified identified vulnerabilities based on severity levels (e.g., critical, high, medium, low) and potential impact on the security, functionality, and data integrity of the appointment assistant website.
+    \item Detailed Documentation: Documented detailed findings for each identified vulnerability, including descriptions, attack vectors, exploitation scenarios, risk assessments, and recommendations for mitigation.
+\end{itemize}
+\chapter{Detail Findings}
+\begin{itemize}
+    \item \textbf{ Cloud Metadata Potentially Exposed}
+    \item \textbf{ Content Security Policy (CSP) Header Not Set}
+    \item \textbf{ Missing Anti-clickjacking Header}
+    \item \textbf{ Cross-Domain Misconfiguration}
+    \item \textbf{ Strict-Transport-Security Header Not Set}
+    \item \textbf{ X-Content-Type-Options Header Missing}
+    \item \textbf{ Burp Suit Report}
+\end{itemize}
+
+\section{Windows Server Information}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.91\textwidth]{imgs/Windowsinfo.jpg}
+    \caption{ Windows Server Information}
+    \label{fig:my_label14}
+\end{figure}
+
+
+
+\clearpage
+\begin{thebibliography}{10}
+    \bibitem{zaproxy} \url{https://www.zaproxy.org/getting-started/}
+    \bibitem{burp} \url{https://portswigger.net/burp/documentation}
+    \bibitem{infopercept} \url{https://demo.infopercept.com/assets/download/VAPT-Sample-Report.pdf}
+\end{thebibliography}
+\end{document}
+
