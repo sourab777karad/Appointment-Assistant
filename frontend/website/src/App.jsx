@@ -1,29 +1,79 @@
-// importing react stuff
-
-import { Route, Routes } from "react-router-dom";
-import { useEffect, useContext } from "react";
-
-// importing ui and extras stuff
-
+import { useEffect, useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import axios from "axios";
 import { Toaster } from "react-hot-toast";
-import { app } from "./firebase.js"; // to run app file.
-
-// importing components
+import { auth } from "./firebase.js";
 import SideNav from "./components/SideNav.jsx";
 import AppointmentDetailsNav from "./components/AppointmentDetailsNav.jsx";
-
-// importing pages
+import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup.jsx";
 import NotFound from "./pages/NotFound.jsx";
-
 import ProtectedRoutes from "./ProtectedRoutes";
-import BookAppointmentNav from "./components/BookAppointmentNav.jsx";
-
-// importing context
-import { BaseUrlContext } from "./context/BaseUrlContext.jsx";
 
 function App() {
+  const location = useLocation();
+  const [refreshed, setRefreshed] = useState(false);
+
+  useEffect(() => {
+    const instance = axios.create({
+      baseURL: "http://localhost:3000/assistant",
+    });
+
+    instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const { status } = error.response;
+        console.log("Interceptor triggered with status code:", status);
+        if (status === 401 || status === 403) {
+          console.log("Logging out...");
+          window.location.href = "/";
+          logout();
+        } else {
+          console.error("Request failed with status code:", status);
+        }
+        return Promise.reject(error);
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = "/";
+          logout();
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      setRefreshed(true);
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (refreshed) {
+      window.location.href = "/";
+      logout();
+    }
+  }, [refreshed]);
+
+  function logout() {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("userDetails");
+    localStorage.removeItem("allUsers");
+    localStorage.removeItem("userSchedule");
+    // Reset state variables or perform any other cleanup if needed
+  }
+
   return (
     <>
       <Toaster

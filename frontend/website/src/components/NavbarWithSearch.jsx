@@ -372,7 +372,7 @@ function NavbarWithSearch() {
               className="flex items-center gap-x-2 p-2 hover:scale-105 transform transition duration-300 ease-in-out hover:cursor-pointer rounded-lg px-3 hover:bg-gray-300"
               onClick={() => {
                 document.getElementById(
-                  "notif-drawer",
+                  "notif-drawer"
                   // "appointment-drawer"
                 ).checked = true;
               }}

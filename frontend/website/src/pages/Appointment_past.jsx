@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import YearScroll from "../components/YearScroll";
-
+import NotFound from "../assets/notfound.svg";
 const Appointment_past = () => {
   const pastAppointments = [
     {
@@ -35,10 +35,134 @@ const Appointment_past = () => {
       time: "9:15 AM",
       description: "Follow-up on medication",
     },
-    // Add more past appointments here
+    // 2024 appointments
+    // January
+    {
+      title: "Annual Physical Exam",
+      month: "January",
+      year: 2024,
+      date: 10,
+      time: "8:30 AM",
+      description: "Routine health check-up",
+    },
+    {
+      title: "Team Meeting",
+      month: "January",
+      year: 2024,
+      date: 15,
+      time: "10:00 AM",
+      description: "Discuss project progress",
+    },
+    {
+      title: "Training Workshop",
+      month: "January",
+      year: 2024,
+      date: 25,
+      time: "1:00 PM",
+      description: "Employee skill development",
+    },
+    // February
+    {
+      title: "Project Kickoff",
+      month: "February",
+      year: 2024,
+      date: 5,
+      time: "9:00 AM",
+      description: "Start of new project",
+    },
+    {
+      title: "Monthly Review",
+      month: "February",
+      year: 2024,
+      date: 15,
+      time: "3:30 PM",
+      description: "Review performance and goals",
+    },
+    // March
+    {
+      title: "Client Presentation",
+      month: "March",
+      year: 2024,
+      date: 8,
+      time: "11:00 AM",
+      description: "Present project updates to client",
+    },
+    {
+      title: "Training Session",
+      month: "April",
+      year: 2024,
+      date: 18,
+      time: "2:00 PM",
+      description: "New software training",
+    },
+    {
+      title: "Training Session",
+      month: "April",
+      year: 2024,
+      date: 18,
+      time: "2:00 PM",
+      description: "New software training",
+    },
+    {
+      title: "Training Session",
+      month: "April",
+      year: 2024,
+      date: 18,
+      time: "2:00 PM",
+      description: "New software training",
+    },
+    {
+      title: "Training Session",
+      month: "April",
+      year: 2024,
+      date: 18,
+      time: "2:00 PM",
+      description: "New software training",
+    },
+    {
+      title: "Training Session",
+      month: "April",
+      year: 2024,
+      date: 18,
+      time: "2:00 PM",
+      description: "New software training",
+    },
+    {
+      title: "Board Meeting",
+      month: "March",
+      year: 2024,
+      date: 25,
+      time: "9:30 AM",
+      description: "Monthly board meeting",
+    },
+    // April
+    {
+      title: "Team Building Activity",
+      month: "April",
+      year: 2024,
+      date: 10,
+      time: "10:00 AM",
+      description: "Promote team bonding",
+    },
+    {
+      title: "Product Launch",
+      month: "April",
+      year: 2024,
+      date: 22,
+      time: "1:00 PM",
+      description: "Launch new product line",
+    },
+    {
+      title: "Training Workshop",
+      month: "April",
+      year: 2024,
+      date: 28,
+      time: "9:00 AM",
+      description: "Employee skill development",
+    },
   ];
 
-  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(null);
 
   const handleYearSelect = (year) => {
@@ -50,17 +174,16 @@ const Appointment_past = () => {
   };
 
   const getAppointmentsForSelectedMonth = () => {
-    if (!selectedYear || !selectedMonth) return []; // If year or month not selected, return empty array
+    if (!selectedYear || !selectedMonth) return [];
     const filteredAppointments = pastAppointments.filter(
       (appointment) =>
-        appointment.year === selectedYear &&
-        appointment.month === selectedMonth,
+        appointment.year === selectedYear && appointment.month === selectedMonth
     );
     return filteredAppointments;
   };
 
   return (
-    <div className="mx-auto px-4 pt-24">
+    <div className="mx-auto px-4 pt-24 mb-[200px]">
       <h1 className="text-3xl font-semibold my-4 text-center text-blue-700">
         Past Appointments
       </h1>
@@ -82,10 +205,12 @@ const Appointment_past = () => {
         ].map((month, index) => (
           <div
             key={index}
-            className={`cursor-pointer bg-white rounded-lg shadow-md p-4 text-center ${
-              selectedMonth === month ? "bg-blue-200" : ""
+            className={`cursor-pointer bg-white rounded-lg border border-black shadow-md p-14 m-2
+            hover:bg-[#caf0ff] transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 text-center ${
+              selectedMonth === month ? "bg-[#caf0ff]" : ""
             }`}
             onClick={() => handleMonthSelect(month)}
+            style={{ transition: "background-color 0.3s" }}
           >
             {month}
           </div>
@@ -93,20 +218,52 @@ const Appointment_past = () => {
       </div>
       {selectedMonth && selectedYear && (
         <div>
-          <h2 className="text-xl font-bold mb-4">
+          <h2 className="ml-6 text-2xl font-bold mb-12 mt-12">
             {selectedMonth} {selectedYear}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {getAppointmentsForSelectedMonth().map((appointment, index) => (
-              <div key={index} className="bg-gray-200 rounded-lg shadow-md p-4">
-                <h2 className="text-lg font-bold mb-2">{appointment.title}</h2>
-                <p className="text-gray-600">
-                  {appointment.date} {appointment.month}, {appointment.year}
-                </p>
-                <p className="text-gray-600">{appointment.time}</p>
-                <p className="text-gray-600">{appointment.description}</p>
+          <div className="grid grid-cols-1 md:flex gap-4 flex-wrap ml-12">
+            {getAppointmentsForSelectedMonth().length > 0 ? (
+              getAppointmentsForSelectedMonth().map((appointment, index) => (
+                <div
+                  key={index}
+                  className="rounded-lg shadow-md bg-[#caf0ff] border  border-black w-[200px] h-[200px] m-2 p-4 flex flex-col justify-between  hover:bg-[#caf0ff] transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+                  style={{
+                    borderRadius: "15px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    width: "200px",
+                    height: "200px",
+                    margin: "10px",
+                    padding: "20px",
+                  }}
+                >
+                  <div>
+                    <h2 className="text-lg font-bold mb-2">
+                      {appointment.title}
+                    </h2>
+                    <p className="text-gray-600 mb-2">
+                      {appointment.date} {appointment.month}, {appointment.year}
+                    </p>
+                    <p className="text-gray-600 mb-2">{appointment.time}</p>
+                    <p className="text-gray-600">{appointment.description}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className=" w-[100%] mt-8 flex justify-center items-center">
+                <div>
+                  <h1 className="text-[72px] flex-wrap mr-48">
+                    No Past <br></br>Appointments<br></br> were found !
+                  </h1>
+                </div>
+                <div>
+                  <img
+                    src={NotFound}
+                    alt="No appointments found"
+                    className=" rounded-lg h-[400px]"
+                  />
+                </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}

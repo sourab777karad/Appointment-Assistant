@@ -1,6 +1,5 @@
 // React imports
 import { useEffect, useState, useContext } from "react";
-
 // Context imports
 import { UserInfoContext } from "../context/UserInfoContext";
 import { BaseUrlContext } from "../context/BaseUrlContext";
@@ -32,7 +31,7 @@ export default function DayDetailsTable({ given_date }) {
   useEffect(() => {
     const appointments = basic_functions.getAppointments(
       userSchedule,
-      given_date,
+      given_date
     );
     setAppointments(appointments);
   }, [userSchedule]);
@@ -50,7 +49,7 @@ export default function DayDetailsTable({ given_date }) {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
-      },
+      }
     );
     response
       .then(() => {
@@ -97,7 +96,7 @@ export default function DayDetailsTable({ given_date }) {
                     {
                       basic_functions.get_people_from_appointment(
                         appointment,
-                        allUsers,
+                        allUsers
                       ).scheduler.full_name
                     }
                   </td>
@@ -105,7 +104,7 @@ export default function DayDetailsTable({ given_date }) {
                     {
                       basic_functions.get_people_from_appointment(
                         appointment,
-                        allUsers,
+                        allUsers
                       ).appointee.full_name
                     }
                   </td>
@@ -170,15 +169,15 @@ export default function DayDetailsTable({ given_date }) {
                           userToken,
                           refreshLoggedInUserScheduleForDisplayedWeek,
                           allUsers,
-                          "Your appointment has been completed",
+                          "Your appointment has been completed"
                         );
                       }}
                       disabled={isPast(
                         parse(
                           appointment.appointment_time,
                           "h:mm a",
-                          new Date(),
-                        ),
+                          new Date()
+                        )
                       )}
                     >
                       <div className="flex gap-1">

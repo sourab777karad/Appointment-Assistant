@@ -19,8 +19,8 @@ const BookAppointmentNav = () => {
     refreshLoggedInUserScheduleForDisplayedWeek,
   } = useContext(UserInfoContext);
   const base_url = useContext(BaseUrlContext).baseUrl;
-  const [title, setTitle] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   // function to book appointment
   function book_appointment() {
@@ -47,7 +47,7 @@ const BookAppointmentNav = () => {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
-        },
+        }
       )
       .then(() => {
         update_did_book_new_appointment();
@@ -82,6 +82,7 @@ const BookAppointmentNav = () => {
           id="book-drawer"
           type="checkbox"
           className="drawer-toggle hidden"
+          value=""
         />
         {/* <label
           id="cartlabel"
